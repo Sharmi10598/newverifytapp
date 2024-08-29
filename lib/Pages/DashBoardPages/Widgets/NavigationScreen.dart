@@ -49,6 +49,10 @@ class _NavigationBtnScreensState extends State<NavigationBtnScreens> {
             ),
             label: 'Config',
           ),
+          BottomNavigationBarItem(
+            icon: ImageIcon(AssetImage('assets/power-button.png')),
+            label: 'Logout',
+          ),
         ],
         currentIndex: context.watch<DashBoardCtrlProvider>().selectedIndex,
         selectedItemColor: const Color(0xFF009292),
@@ -57,7 +61,9 @@ class _NavigationBtnScreensState extends State<NavigationBtnScreens> {
           color: Color(0xFF009292),
         ),
         showUnselectedLabels: true,
-        onTap: context.read<DashBoardCtrlProvider>().onItemTapped,
+        onTap: context.read<DashBoardCtrlProvider>().selectedIndex == 5
+            ? context.read<DashBoardCtrlProvider>().onLogoutTapped
+            : context.read<DashBoardCtrlProvider>().onItemTapped,
       ),
     );
   }

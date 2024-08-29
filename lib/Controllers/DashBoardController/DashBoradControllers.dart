@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:verifytapp/Constant/Configuration.dart';
 import 'package:verifytapp/Constant/ConstantRoutes.dart';
@@ -18,7 +19,10 @@ import '../../Pages/AuditPages/Screens/AuditScreens.dart';
 import '../../Pages/ConfigPage/ConfigPageScreen.dart';
 import '../../Pages/DataScreen/Widgets/DataDownloadScreen.dart';
 import '../../Pages/SearchScreen/widgets/InwardScreen.dart';
+import '../../Pages/logoutscreens.dart';
 import '../../Services/GetAuditApi/GetAuditByDeviceAPI.dart';
+import '../../driftDB/driftTablecreation.dart';
+import '../../driftDB/driftoperation.dart';
 
 class DashBoardCtrlProvider extends ChangeNotifier {
   init() {
@@ -107,7 +111,10 @@ class DashBoardCtrlProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  clearallData() {}
+  clearallData() {
+    int selectedIndex = 0;
+  }
+
   int selectedIndex = 0;
   List<GetAuditDataModel> openAuditList = [];
   List<GetAuditDataModel> getAllAuditList = [];
@@ -117,88 +124,27 @@ class DashBoardCtrlProvider extends ChangeNotifier {
     const AuditAllScreens(),
     const DataScreenPage(),
     const SearchScreenPage(),
-    const ConfigScreenPage()
+    const ConfigScreenPage(),
+    const LogoutScreenPage()
+
     //  Text('Config',
     //     style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
   ];
 
-  void onItemTapped(int index) {
-    // log('index::$index');
+  onItemTapped(int index) {
     selectedIndex = 0;
     selectedIndex = index;
-
     notifyListeners();
   }
 
-  // List<GetDisPositonList> dispositionDataList = [];
-  // callDispValApi() async {
-  //   Database db = (await DBHelper.getInstance())!;
-  //   dispositionDataList = []; connectionStatusconnectionStatus:
-  //   await DispListapi.getData().then((value) async {
-  //     if (value.stsCode >= 200 && value.stsCode <= 210) {
-  //       dispositionDataList = value.dispositionData;
-  //       DBOperation.insertDispData(db, dispositionDataList);
-  //     } else if (value.stsCode >= 400 && value.stsCode <= 400) {
-  //       notifyListeners();
-  //     }
-  //   });
-  // }
-
-  // List<AuditScannLogDataModel> auditScannData = [];
-  // String errorMsg = '';
-  // callScannLockedApi(
-  //   BuildContext context,
-  //   ThemeData theme,
-  // ) async {
-  //   errorMsg = '';
-  //   List<ScanDataPost> scandatax = [];
-  //   List<CheckList> checklistt = [];
-  //   Database db = (await DBHelper.getInstance())!;
-  //   List<Map<String, Object?>> result2 = await DBOperation.getscandataData(db);
-  //   List<Map<String, Object?>> result3 = await DBOperation.getchecklistData(db);
-  //   if (result2.isNotEmpty && result3.isNotEmpty) {
-  //     for (var ij = 0; ij < result3.length; ij++) {
-  //       checklistt.add(CheckList(
-  //           attachurl: result3[ij]['Attachurl'].toString(),
-  //           auditid: int.parse(result3[ij]['Auditid'].toString()),
-  //           checklistcode: result3[ij]['Checklistcode'].toString(),
-  //           checklistvalue: result3[ij]['Checklistvalue'].toString()));
-  //     }
-  //     for (var i = 0; i < result2.length; i++) {
-  //       scandatax.add(ScanDataPost(
-  //           auditid: int.parse(result2[i]['Auditid'].toString()),
-  //           bincode: result2[i]['Bincode'].toString(),
-  //           devicecode: result2[i]['Devicecode'].toString(),
-  //           ismanual: result2[i]['Ismanual'] != null
-  //               ? int.parse(result2[i]['Ismanual'].toString())
-  //               : 0,
-  //           itemCode: result2[i]['ItemCode'].toString(),
-  //           notes: result2[i]['Notes'].toString(),
-  //           quantity: double.parse(result2[i]['Quantity'].toString()),
-  //           scandatetime: result2[i]['Scandatetime'].toString(),
-  //           serialbatch: result2[i]['Serialbatch'].toString(),
-  //           stockstatus: result2[i]['Stockstatus'].toString(),
-  //           templateid: int.parse(result2[i]['Templateid'].toString()),
-  //           scanguid: result2[i]['scanguid'].toString(),
-  //           whscode: result2[i]['Whscode'].toString(),
-  //           checklist: checklistt));
-  //     }
-
-  //     ScannLockedAPiApi.checklist = checklistt;
-  //     await ScannLockedAPiApi.getData(scandatax).then((value) async {
-  //       if (value.stsCode >= 200 && value.stsCode <= 210) {
-  //         auditScannData = value.scannData;
-  //         log('getAuditList::${auditScannData.length}');
-  //         notifyListeners();
-  //       } else if (value.stsCode >= 400 && value.stsCode <= 410) {
-  //         errorMsg = value.exception;
-  //         apiResponseDialog(context, theme, errorMsg);
-  //         notifyListeners();
-  //       }
-  //     });
-  //     notifyListeners();
-  //   }
-  // }
+  onLogoutTapped(
+    int index,
+  ) {
+    selectedIndex = 0;
+    selectedIndex = index;
+    Get.offAllNamed(ConstantRoutes.dashboard);
+    notifyListeners();
+  }
 
   void onItemDetTapped(
     int index,

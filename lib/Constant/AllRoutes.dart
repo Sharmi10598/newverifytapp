@@ -1,6 +1,7 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:verifytapp/Constant/ConstantRoutes.dart';
+import 'package:verifytapp/Controllers/DashBoardController/DashBoradControllers.dart';
 import 'package:verifytapp/Pages/AuditPages/Widgets/AuditOpenPage.dart';
 import 'package:verifytapp/Pages/DashBoardPages/Screens/DashBoardScreens.dart';
 import 'package:verifytapp/Pages/DashBoardPages/Widgets/HomePage.dart';
@@ -27,7 +28,7 @@ class Routes {
         transition: Transition.fade,
         transitionDuration: const Duration(seconds: 1)),
     GetPage<dynamic>(
-        name: ConstantRoutes.binScreen,
+        name: ConstantRoutes.dataScreen,
         page: () => const DataScreenPage(),
         transition: Transition.fade,
         transitionDuration: const Duration(seconds: 1)),

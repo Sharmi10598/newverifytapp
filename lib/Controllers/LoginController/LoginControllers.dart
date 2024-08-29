@@ -93,6 +93,7 @@ class LoginController extends ChangeNotifier {
     await DispListapi.getData().then((value) async {
       if (value.stsCode >= 200 && value.stsCode <= 210) {
         dispositionDataList = value.dispositionData;
+        DBOperation.truncatedispval(db);
         DBOperation.insertDispData(db, dispositionDataList);
       } else if (value.stsCode >= 400 && value.stsCode <= 400) {
         notifyListeners();

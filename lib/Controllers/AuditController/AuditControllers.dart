@@ -1001,7 +1001,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   FocusNode noteFocus = FocusNode();
   FocusNode itemFocus = FocusNode();
 
-  static const platform = MethodChannel('com.example.verifytapp/time');
+  static const platform = MethodChannel('com.buson.verifytapp/time');
   String networkTimeStatus = '';
   Future<void> _openDateTimeSettings(BuildContext context) async {
     Get.back();
@@ -3243,8 +3243,8 @@ class AuditCtrlProvider extends ChangeNotifier {
 
                                 // await driftoperation.deleteListItemById(
                                 //     docEntry, database);
-                                // await driftoperation.deletHeaderItemById(
-                                //     docEntry, database);
+                                await driftoperation.deletItemCodeDataById(
+                                    docEntry, database);
                                 Get.back();
                                 String mssgg2 =
                                     'This Operation may take few minutes. Closing the application may interrupt the process.\n Do you want to continue ?';

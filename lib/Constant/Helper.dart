@@ -44,6 +44,11 @@ class HelperFunctions {
     return preferences.getString(whsecode);
   }
 
+  static clearWhsCode() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.remove(whsecode);
+  }
+
   static Future<String?> getSlpCode() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return preferences.getString(whsecode);
@@ -62,6 +67,11 @@ class HelperFunctions {
   static Future<String?> getPasswordSharedPreference() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return preferences.getString(sharedPreferencePaassword);
+  }
+
+  static Future clearPasswordSharedPreference() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences.remove(sharedPreferencePaassword);
   }
 
   static Future<bool> savedbUserName(String dbUserName1) async {

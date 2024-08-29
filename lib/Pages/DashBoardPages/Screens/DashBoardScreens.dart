@@ -18,6 +18,7 @@ class _DashboardScreensState extends State<DashboardScreens> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<DashBoardCtrlProvider>().clearallData();
       context.read<DashBoardCtrlProvider>().init();
       context.read<DashBoardCtrlProvider>().onItemTapped;
       context.read<DashBoardCtrlProvider>().onItemDetTapped;
@@ -26,7 +27,7 @@ class _DashboardScreensState extends State<DashboardScreens> {
 
   @override
   Widget build(BuildContext context) {
-    final theme=Theme.of(context);
+    final theme = Theme.of(context);
     return WillPopScope(
       onWillPop: () => context.read<DashBoardCtrlProvider>().selectedIndex == 0
           ? onBackPressExit(theme)
@@ -50,12 +51,13 @@ class _DashboardScreensState extends State<DashboardScreens> {
         now.difference(currentBackPressHome!) > const Duration(seconds: 2)) {
       currentBackPressHome = now;
       context.read<DashBoardCtrlProvider>().onItemTapped(0);
+
       return Future.value(false);
     }
     return Future.value(false);
   }
 
-  Future<bool> onBackPressExit( ThemeData theme) async {
+  Future<bool> onBackPressExit(ThemeData theme) async {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -79,8 +81,7 @@ class _DashboardScreensState extends State<DashboardScreens> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.primaryColor,
 
-                          textStyle: const TextStyle(
-                              ),
+                          textStyle: const TextStyle(),
                           shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
                             topRight: Radius.circular(10),

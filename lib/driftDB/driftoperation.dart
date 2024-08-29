@@ -312,7 +312,7 @@ class driftoperation {
   static Future<List<CheckListHeader>> getcheckListHeader(
       AppDatabase database) async {
     final result =
-        await database.customSelect("Select * from driftchecklistmaster").get();
+        await database.customSelect("Select * from driftchecklistheader").get();
     log("driftchecklistmaster result22::${result.length}");
 
     return result.map((row) {
@@ -644,11 +644,46 @@ class driftoperation {
     return result;
   }
 
+  static Future deleteChecklistMaster(AppDatabase database) async {
+    // return (delete(items)..where((tbl) => tbl.id.equals(id))).go();
+    var result = database.customStatement("delete from driftchecklistmaster");
+    log("driftchecklistmaster::" + {result}.toString());
+    return result;
+  }
+
+  static Future deleteChecklistHeader(AppDatabase database) async {
+    // return (delete(items)..where((tbl) => tbl.id.equals(id))).go();
+    var result = database.customStatement("delete from driftchecklistheader");
+    log("driftchecklistheader::" + {result}.toString());
+    return result;
+  }
+
+  static Future deleteChecklistLine(AppDatabase database) async {
+    // return (delete(items)..where((tbl) => tbl.id.equals(id))).go();
+    var result = database.customStatement("delete from driftchecklinemaster");
+    log("driftchecklinemaster::" + {result}.toString());
+    return result;
+  }
+
   static Future deletHeaderItemById(int id, AppDatabase database) async {
     // return (delete(items)..where((tbl) => tbl.id.equals(id))).go();
     var result = database.customStatement(
         "delete from drifitemmaster where AuditSchedule_ID=$id");
     // log("fgfff::" + result.toString());
+    return result;
+  }
+
+  static Future deletItemCodeDataById(int id, AppDatabase database) async {
+    // return (delete(items)..where((tbl) => tbl.id.equals(id))).go();
+    var result = database.customStatement(
+        "delete from drifitemcodemaster where AuditSchedule_ID=$id");
+    getItemCodeMasterdata(database, id);
+    return result;
+  }
+
+  static Future deletItemCodeData(AppDatabase database) async {
+    // return (delete(items)..where((tbl) => tbl.id.equals(id))).go();
+    var result = database.customStatement("delete from drifitemcodemaster");
     return result;
   }
 
