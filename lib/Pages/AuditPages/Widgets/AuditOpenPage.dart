@@ -58,15 +58,14 @@ class _AuditingOpenScreenState extends State<AuditingOpenScreen> {
                   bottom: Screens.padingHeight(context) * 0.07,
                 ),
                 height: Screens.padingHeight(context) * 0.825,
-                child:
-                    //  context.watch<AuditCtrlProvider>().isLoading == true &&
-                    //         context.watch<AuditCtrlProvider>().errorMsg.isEmpty &&
-                    //         context.watch<AuditCtrlProvider>().openAuditList.isEmpty
-                    //     ? Center(
-                    //         child: CircularProgressIndicator(
-                    //           color: theme.primaryColor,
-                    //         ),
-                    //       )
+                child: context.watch<AuditCtrlProvider>().isLoading == true &&
+                        context.watch<AuditCtrlProvider>().errorMsg.isEmpty &&
+                        context.watch<AuditCtrlProvider>().openAuditList.isEmpty
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: theme.primaryColor,
+                        ),
+                      )
                     // : context.watch<AuditCtrlProvider>().isLoading == false &&
                     //         context
                     //             .watch<AuditCtrlProvider>()
@@ -85,7 +84,11 @@ class _AuditingOpenScreenState extends State<AuditingOpenScreen> {
                     //       )
                     //     :
 
-                    context.watch<AuditCtrlProvider>().openAuditList.isEmpty
+                    : context.watch<AuditCtrlProvider>().isLoading == false &&
+                            context
+                                .watch<AuditCtrlProvider>()
+                                .openAuditList
+                                .isEmpty
                         ? Container(child: Center(child: Text('No Audit Data')))
                         : ListView.builder(
                             padding: EdgeInsets.all(0),

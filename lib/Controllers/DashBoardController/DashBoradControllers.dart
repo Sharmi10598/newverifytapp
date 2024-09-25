@@ -19,7 +19,7 @@ import '../../Pages/AuditPages/Screens/AuditScreens.dart';
 import '../../Pages/ConfigPage/ConfigPageScreen.dart';
 import '../../Pages/DataScreen/Widgets/DataDownloadScreen.dart';
 import '../../Pages/SearchScreen/widgets/InwardScreen.dart';
-import '../../Pages/logoutscreens.dart';
+import '../../Pages/LogoutScreens/logoutscreen.dart';
 import '../../Services/GetAuditApi/GetAuditByDeviceAPI.dart';
 import '../../driftDB/driftTablecreation.dart';
 import '../../driftDB/driftoperation.dart';

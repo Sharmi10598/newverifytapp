@@ -14,8 +14,9 @@ class AuditingUpComingScreen extends StatefulWidget {
 }
 
 class _AuditingUpComingScreenState extends State<AuditingUpComingScreen> {
-  @override
   Config config = Config();
+
+  @override
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -37,7 +38,7 @@ class _AuditingUpComingScreenState extends State<AuditingUpComingScreen> {
             ),
             height: Screens.padingHeight(context) * 0.825,
             child:
-                //  context.watch<AuditCtrlProvider>().isLoading == true &&
+                // context.watch<AuditCtrlProvider>().isLoading == true &&
                 //         context.watch<AuditCtrlProvider>().errorMsg.isEmpty &&
                 //         context
                 //             .watch<AuditCtrlProvider>()
@@ -48,11 +49,12 @@ class _AuditingUpComingScreenState extends State<AuditingUpComingScreen> {
                 //           color: theme.primaryColor,
                 //         ),
                 //       )
-                //     : context.watch<AuditCtrlProvider>().isLoading == false &&
-                //             context.watch<AuditCtrlProvider>().errorMsg.isEmpty &&
+                //     //     : context.watch<AuditCtrlProvider>().isLoading == false &&
+                //     //             context.watch<AuditCtrlProvider>().errorMsg.isEmpty &&
+                //     :
                 context.watch<AuditCtrlProvider>().upcomingtAuditList.isEmpty
                     ? Container(
-                        child: Center(child: Text('No Data..!!')),
+                        child: Center(child: Text('No Upcomming Data..!!')),
                       )
                     : ListView.builder(
                         padding: EdgeInsets.all(0),

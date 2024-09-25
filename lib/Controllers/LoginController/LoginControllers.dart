@@ -275,17 +275,20 @@ class LoginController extends ChangeNotifier {
   }
 
   callGetTenentIdApi(BuildContext context) {
-    String? customerid = "";
-    String? stocksnap = "";
-
     TenantIdApi.getData(mycontroller[3].text).then((value) async {
+      await HelperFunctions.clearSaveHostSP();
+      await HelperFunctions.clearStockHostSP();
+      Url.queryApi = '';
+      Url.stockSnapApi = '';
       if (value.stcode! >= 200 && value.stcode! <= 210) {
+        print("url method111::" + value.customeridUrl.toString());
+
         if (value.customeridUrl != null) {
-          customerid = value.customeridUrl;
-          stocksnap = value.stocksnapUrl;
-          print("url method::" + customerid.toString());
-          await HelperFunctions.saveHostSP(customerid!.trim());
-          await HelperFunctions.saveStockHostSP(stocksnap!.trim());
+          // customerid = value.customeridUrl;
+          // stocksnap = value.stocksnapUrl;
+          print("url method::" + value.customeridUrl.toString());
+          await HelperFunctions.saveHostSP(value.customeridUrl!.trim());
+          await HelperFunctions.saveStockHostSP(value.stocksnapUrl!.trim());
           await HelperFunctions.saveTenetIDSharedPreference(
               mycontroller[3].text.toString().trim());
           setURL();

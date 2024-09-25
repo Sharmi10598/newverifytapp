@@ -1,74 +1,34 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:verifytapp/Constant/ConstantRoutes.dart';
-import 'package:verifytapp/Constant/Screen.dart';
-import 'package:verifytapp/DBHelper/DBOperations.dart';
-import '../Constant/Helper.dart';
-import '../Controllers/DashBoardController/DashBoradControllers.dart';
-import '../DBHelper/DBHelpers.dart';
-import '../driftDB/driftTablecreation.dart';
-import '../driftDB/driftoperation.dart';
+import 'package:verifytapp/driftDB/driftTablecreation.dart';
 
-class LogoutScreenPage extends StatefulWidget {
-  const LogoutScreenPage({super.key});
+import '../../Constant/ConstantRoutes.dart';
+import '../../Constant/Helper.dart';
+import '../../Constant/Screen.dart';
+import '../../Controllers/DashBoardController/DashBoradControllers.dart';
+import '../../DBHelper/DBHelpers.dart';
+import '../../DBHelper/DBOperations.dart';
+import '../../driftDB/driftoperation.dart';
+
+class LogoutAlertDialog extends StatefulWidget {
+  const LogoutAlertDialog({super.key});
 
   @override
-  State<LogoutScreenPage> createState() => _LogoutScreenPageState();
+  State<LogoutAlertDialog> createState() => _LogoutAlertDialogState();
 }
 
-class _LogoutScreenPageState extends State<LogoutScreenPage> {
-  @override
-  void initState() {
-    super.initState();
-    log('yessssssssss');
-    new Future.delayed(Duration.zero, () {
-      onBackPressLogout();
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // final localizations = Localizations.of(context, AppLocalizations);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return WillPopScope(
-      onWillPop: () => onBackPressHome(context),
-      child: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppBar(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.blue,
-              centerTitle: true,
-              automaticallyImplyLeading: false,
-              title: const Text('Logout'),
-            ),
-            Container(
-              color: Colors.grey,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
+class _LogoutAlertDialogState extends State<LogoutAlertDialog> {
   Future<SharedPreferences> pref = SharedPreferences.getInstance();
-  DateTime? currentBackPressHome;
+  DateTime? currentBackPress;
   Future<bool> onBackPressHome(BuildContext context) {
     DateTime now = DateTime.now();
-    if (currentBackPressHome == null ||
-        now.difference(currentBackPressHome!) > const Duration(seconds: 2)) {
-      currentBackPressHome = now;
+    if (currentBackPress == null ||
+        now.difference(currentBackPress!) > const Duration(seconds: 2)) {
+      Get.back();
+      currentBackPress = now;
       context.read<DashBoardCtrlProvider>().onItemTapped(0);
 
       return Future.value(false);
@@ -76,13 +36,12 @@ class _LogoutScreenPageState extends State<LogoutScreenPage> {
     return Future.value(false);
   }
 
-  onBackPressLogout() {
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => AlertDialog(
+    return WillPopScope(
+      onWillPop: () => onBackPressHome(context),
+      child: AlertDialog(
         insetPadding: const EdgeInsets.all(10),
         contentPadding: const EdgeInsets.all(0),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -167,6 +126,8 @@ class _LogoutScreenPageState extends State<LogoutScreenPage> {
                           await pref2.remove('tenantId');
                           final database = (await AppDatabase.initialize())!;
                           Database db = (await DBHelper.getInstance())!;
+                          await HelperFunctions.clearSaveHostSP();
+                          await HelperFunctions.clearStockHostSP();
                           await HelperFunctions
                               .clearCheckedTennetIDSharedPref();
                           await HelperFunctions
@@ -184,6 +145,7 @@ class _LogoutScreenPageState extends State<LogoutScreenPage> {
                           await driftoperation.deletHeaderItem(database);
                           await driftoperation.deletHeaderItem(database);
                           await DBOperation.truncateScanpostDataT(db);
+                          await DBOperation.truncateCheckListT(db);
                           await DBOperation.truncateWarehouseDb(db);
                           await DBOperation.truncateAuditByDevice(db);
                           await DBOperation.truncateAuditByDevice(db);

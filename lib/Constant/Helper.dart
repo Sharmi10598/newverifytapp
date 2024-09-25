@@ -8,6 +8,7 @@ class HelperFunctions {
   static String sharedPreferenceDeviceID = "DeviceID";
   static String sharedPreferenceTenetID = "TenetID";
   static String sharedPreferenceTenetID1 = "TenetID1";
+  static String sharedPreferenceUserCheckedsplash = "Splash";
 
   static String sharedPreferenceLogginUserCode = "Usercode";
   static String userName = "UserName";
@@ -138,6 +139,12 @@ class HelperFunctions {
     return await preferences.setString(spHost, spHost1);
   }
 
+  static clearSaveHostSP() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    // preferences.reload();
+    return await preferences.remove(spHost);
+  }
+
   static Future<String?> getHostDSP() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     // preferences.reload();
@@ -157,6 +164,13 @@ class HelperFunctions {
     // preferences.reload();
 
     return preferences.getString(Stockurl);
+  }
+
+  static Future<bool> clearStockHostSP() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    // preferences.reload();
+
+    return await preferences.remove(Stockurl);
   }
 
   static Future<bool> saveTenetIDSharedPreference(String userEmail) async {
@@ -234,5 +248,21 @@ class HelperFunctions {
   static Future<String?> getTokenSharedPreference() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return preferences.getString(sharedPreferenceToken);
+  }
+
+  static Future<bool> saveOnBoardSharedPreference(bool userName) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.setBool(
+        sharedPreferenceUserCheckedsplash, userName);
+  }
+
+  static Future<bool?> getOnBoardSharedPreference() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences.getBool(sharedPreferenceUserCheckedsplash);
+  }
+
+  static clearCheckedOnBoardSharedPref() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.remove(sharedPreferenceUserCheckedsplash);
   }
 }

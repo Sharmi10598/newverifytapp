@@ -5,4 +5,5 @@ class ConstantValues {
   static String Usercode = '';
   static String Whsecode = '';
   static String userNamePM = '';
+  static String appversion = '';
 }

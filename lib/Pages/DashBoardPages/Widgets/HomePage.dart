@@ -109,15 +109,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            // Navigator.push(
-                            //     context,
-                            //     (MaterialPageRoute(
-                            //         builder: (context) => NetworkTimeCheck())));
-                            // context
-                            //     .read<DashBoardCtrlProvider>()
-                            //     .onItemTapped(1);
-                          },
+                          onTap: () {},
                           child: Container(
                             padding: EdgeInsets.only(
                                 left: Screens.width(context) * 0.015,

@@ -743,6 +743,8 @@ class AuditCtrlProvider extends ChangeNotifier {
   }
 
   String errorMsg = '';
+  String NoDataMsg = 'No Data Found..!!';
+
   String? deviceId = '';
   callGetAuditApi(BuildContext context, ThemeData theme) async {
     // final theme = Theme.of(context);
@@ -1224,7 +1226,7 @@ class AuditCtrlProvider extends ChangeNotifier {
       } else if (value.stsCode >= 400 && value.stsCode <= 410) {
         openAuditList[indx].isStarting = false;
         errorMsg = value.exception;
-        // apiResponseDialog(context, theme, value.exception);
+        apiResponseDialog(context, theme, value.exception);
         await Get.defaultDialog(
             title: 'Alert',
             content: Column(
@@ -2914,6 +2916,7 @@ class AuditCtrlProvider extends ChangeNotifier {
               totalItems: getAuditList[i].totalItems));
         } else if (getAuditList[i].status == 'Completed' ||
             getAuditList[i].status == 'Closed') {
+          NoDataMsg = '';
           completedAuditList.add(GetAuditDataModel(
               auditFrom: getAuditList[i].auditFrom,
               percent: getAuditList[i].percent,
@@ -2943,6 +2946,8 @@ class AuditCtrlProvider extends ChangeNotifier {
               whsCode: getAuditList[i].whsCode));
         } else if (getAuditList[i].status == 'Upcoming' ||
             getAuditList[i].status == 'Draft') {
+          NoDataMsg = '';
+
           upcomingtAuditList.add(GetAuditDataModel(
               auditFrom: getAuditList[i].auditFrom,
               auditTo: getAuditList[i].auditTo,
@@ -3779,25 +3784,13 @@ class ViewDetailsData {
 // .scanTime.toString());
 // }
 //52141601SD00393
-// linemaster limitresult::BINSTOCK:::10000MAH WIRELESS POWER BANK:: B001
-// [log] linemaster limitresult::SBC001:::52141601SD00387:: BIN001
-// [log] linemaster limitresult::SBC002:::52141601SD00388:: BIN001
-// [log] linemaster limitresult::SBC003:::52141601SD00389:: BIN001
-// [log] linemaster limitresult::SBC004:::52141601SD00390:: BIN001
-// [log] linemaster limitresult::SBC005:::52141601SD00392:: BIN001
-// [log] linemaster limitresult::SBC006:::52141601SD00393:: BIN001
-// [log] linemaster limitresult::SBC007:::52141601SD00394:: BIN001
-// [log] linemaster limitresult::SBC008:::52141601SD00395:: BIN001
-// [log] linemaster limitresult::SBC009:::52141601SD00418:: BIN001
-// [log] linemaster limitresult::SBC010:::52141601SD00422:: BIN001
-// [log] linemaster limitresult::SBC011:::52141601SD00444:: BIN001
-// [log] linemaster limitresult::SBC012:::52141601SD00455:: BIN001
-// [log] linemaster limitresult::SBC013:::52141603SD00017:: BIN001
-// [log] linemaster limitresult::SBC014:::5310 DS BLACK/RED:: BIN001
-// [log] linemaster limitresult::SBC015:::5310 DS WHITE/RED:: BIN001
-// [log] linemaster limitresult::SBC016:::53121600SD00721:: BIN001
-// [log] linemaster limitresult::SBC017:::533T9PA:: BIN001
-// [log] linemaster limitresult::SBC018:::533U4PA:: BIN001
-// [log] linemaster limitresult::SBC019:::536B5PA:: BIN001
-// [log] linemaster limitresult::SBC020:::536C2PA:: BIN001
-// [log] linemaster limitresult::SBC021:::536C3PA:: BIN001
+// linemaster limitresult::S0001125241:vue52::.SS UTENSIL FLASK:: 565
+// [log] linemaster limitresult::S0001125242:vue53::0 NO OVEL LADDLE:: 767
+// [log] linemaster limitresult::S0001125243:vue54::001@:: 784555
+// [log] linemaster limitresult::S0001125244:vue55::002 DRESSING TABLE:: 852
+// [log] linemaster limitresult::S0001125245:vue56::006 SIL dummy item10:: abcd
+// [log] linemaster limitresult::S0001125246:vue57::006 SIL dummy item35:: B001
+// [log] linemaster limitresult::S0001125247:vue58::006 SIL dummy item36:: B0011
+// [log] linemaster limitresult::S0001125248:vue59::006 SIL dummy item37:: B0012
+// [log] linemaster limitresult::S0001125249:vue60::006 SIL dummy item39:: B002
+// [log] linemaster limitresult::S0001125250:vue61::006 SIL dummy item41:: B00265

@@ -13,7 +13,7 @@ class TenantIdApi {
     int resCode = 500;
 
     try {
-      log('ConstantValues.token::${ConstantValues.token}');
+      log('http://91.203.133.224:92/api/WareSmart/v1/GetCustomerUrl?TenantId=$tenentid');
       final response = await http.get(
         Uri.parse(
             "http://91.203.133.224:92/api/WareSmart/v1/GetCustomerUrl?TenantId=$tenentid"),

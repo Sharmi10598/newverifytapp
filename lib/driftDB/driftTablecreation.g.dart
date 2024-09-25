@@ -7084,218 +7084,6 @@ typedef $$DriftItemMasterTableUpdateCompanionBuilder = DriftItemMasterCompanion
   Value<String?> color,
 });
 
-class $$DriftItemMasterTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DriftItemMasterTable,
-    DriftItemMasterData,
-    $$DriftItemMasterTableFilterComposer,
-    $$DriftItemMasterTableOrderingComposer,
-    $$DriftItemMasterTableCreateCompanionBuilder,
-    $$DriftItemMasterTableUpdateCompanionBuilder> {
-  $$DriftItemMasterTableTableManager(
-      _$AppDatabase db, $DriftItemMasterTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$DriftItemMasterTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$DriftItemMasterTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> auditScheduleID = const Value.absent(),
-            Value<int?> id = const Value.absent(),
-            Value<int?> itemDisposition = const Value.absent(),
-            Value<int?> dispId = const Value.absent(),
-            Value<String?> itemCode = const Value.absent(),
-            Value<String?> itemType = const Value.absent(),
-            Value<String?> itemName = const Value.absent(),
-            Value<String?> category = const Value.absent(),
-            Value<String?> subCategory = const Value.absent(),
-            Value<String?> brand = const Value.absent(),
-            Value<String?> itemDescription = const Value.absent(),
-            Value<String?> modelNo = const Value.absent(),
-            Value<String?> partCode = const Value.absent(),
-            Value<String?> skucode = const Value.absent(),
-            Value<String?> brandCode = const Value.absent(),
-            Value<String?> itemGroup = const Value.absent(),
-            Value<String?> specification = const Value.absent(),
-            Value<String?> sizeCapacity = const Value.absent(),
-            Value<String?> clasification = const Value.absent(),
-            Value<String?> updatedDateTime = const Value.absent(),
-            Value<String?> uoM = const Value.absent(),
-            Value<double?> taxRate = const Value.absent(),
-            Value<String?> imageUrl1 = const Value.absent(),
-            Value<String?> textNote = const Value.absent(),
-            Value<String?> status = const Value.absent(),
-            Value<int?> movingType = const Value.absent(),
-            Value<String?> traceId = const Value.absent(),
-            Value<String?> updatedBy = const Value.absent(),
-            Value<int?> createdBy = const Value.absent(),
-            Value<double?> lengthh = const Value.absent(),
-            Value<double?> width = const Value.absent(),
-            Value<double?> height = const Value.absent(),
-            Value<double?> weight = const Value.absent(),
-            Value<double?> volume = const Value.absent(),
-            Value<String?> inwardUoM = const Value.absent(),
-            Value<double?> inwardPackQty = const Value.absent(),
-            Value<String?> outwardUoM = const Value.absent(),
-            Value<double?> outwardPackQty = const Value.absent(),
-            Value<bool?> isPerishable = const Value.absent(),
-            Value<bool?> hasExpiryDate = const Value.absent(),
-            Value<int?> expiryDays = const Value.absent(),
-            Value<int?> isFragile = const Value.absent(),
-            Value<String?> manageBy = const Value.absent(),
-            Value<String?> createdDateTime = const Value.absent(),
-            Value<String?> color = const Value.absent(),
-          }) =>
-              DriftItemMasterCompanion(
-            IMid: IMid,
-            auditScheduleID: auditScheduleID,
-            id: id,
-            itemDisposition: itemDisposition,
-            dispId: dispId,
-            itemCode: itemCode,
-            itemType: itemType,
-            itemName: itemName,
-            category: category,
-            subCategory: subCategory,
-            brand: brand,
-            itemDescription: itemDescription,
-            modelNo: modelNo,
-            partCode: partCode,
-            skucode: skucode,
-            brandCode: brandCode,
-            itemGroup: itemGroup,
-            specification: specification,
-            sizeCapacity: sizeCapacity,
-            clasification: clasification,
-            updatedDateTime: updatedDateTime,
-            uoM: uoM,
-            taxRate: taxRate,
-            imageUrl1: imageUrl1,
-            textNote: textNote,
-            status: status,
-            movingType: movingType,
-            traceId: traceId,
-            updatedBy: updatedBy,
-            createdBy: createdBy,
-            lengthh: lengthh,
-            width: width,
-            height: height,
-            weight: weight,
-            volume: volume,
-            inwardUoM: inwardUoM,
-            inwardPackQty: inwardPackQty,
-            outwardUoM: outwardUoM,
-            outwardPackQty: outwardPackQty,
-            isPerishable: isPerishable,
-            hasExpiryDate: hasExpiryDate,
-            expiryDays: expiryDays,
-            isFragile: isFragile,
-            manageBy: manageBy,
-            createdDateTime: createdDateTime,
-            color: color,
-          ),
-          createCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> auditScheduleID = const Value.absent(),
-            Value<int?> id = const Value.absent(),
-            Value<int?> itemDisposition = const Value.absent(),
-            Value<int?> dispId = const Value.absent(),
-            Value<String?> itemCode = const Value.absent(),
-            Value<String?> itemType = const Value.absent(),
-            Value<String?> itemName = const Value.absent(),
-            Value<String?> category = const Value.absent(),
-            Value<String?> subCategory = const Value.absent(),
-            Value<String?> brand = const Value.absent(),
-            Value<String?> itemDescription = const Value.absent(),
-            Value<String?> modelNo = const Value.absent(),
-            Value<String?> partCode = const Value.absent(),
-            Value<String?> skucode = const Value.absent(),
-            Value<String?> brandCode = const Value.absent(),
-            Value<String?> itemGroup = const Value.absent(),
-            Value<String?> specification = const Value.absent(),
-            Value<String?> sizeCapacity = const Value.absent(),
-            Value<String?> clasification = const Value.absent(),
-            Value<String?> updatedDateTime = const Value.absent(),
-            Value<String?> uoM = const Value.absent(),
-            Value<double?> taxRate = const Value.absent(),
-            Value<String?> imageUrl1 = const Value.absent(),
-            Value<String?> textNote = const Value.absent(),
-            Value<String?> status = const Value.absent(),
-            Value<int?> movingType = const Value.absent(),
-            Value<String?> traceId = const Value.absent(),
-            Value<String?> updatedBy = const Value.absent(),
-            Value<int?> createdBy = const Value.absent(),
-            Value<double?> lengthh = const Value.absent(),
-            Value<double?> width = const Value.absent(),
-            Value<double?> height = const Value.absent(),
-            Value<double?> weight = const Value.absent(),
-            Value<double?> volume = const Value.absent(),
-            Value<String?> inwardUoM = const Value.absent(),
-            Value<double?> inwardPackQty = const Value.absent(),
-            Value<String?> outwardUoM = const Value.absent(),
-            Value<double?> outwardPackQty = const Value.absent(),
-            Value<bool?> isPerishable = const Value.absent(),
-            Value<bool?> hasExpiryDate = const Value.absent(),
-            Value<int?> expiryDays = const Value.absent(),
-            Value<int?> isFragile = const Value.absent(),
-            Value<String?> manageBy = const Value.absent(),
-            Value<String?> createdDateTime = const Value.absent(),
-            Value<String?> color = const Value.absent(),
-          }) =>
-              DriftItemMasterCompanion.insert(
-            IMid: IMid,
-            auditScheduleID: auditScheduleID,
-            id: id,
-            itemDisposition: itemDisposition,
-            dispId: dispId,
-            itemCode: itemCode,
-            itemType: itemType,
-            itemName: itemName,
-            category: category,
-            subCategory: subCategory,
-            brand: brand,
-            itemDescription: itemDescription,
-            modelNo: modelNo,
-            partCode: partCode,
-            skucode: skucode,
-            brandCode: brandCode,
-            itemGroup: itemGroup,
-            specification: specification,
-            sizeCapacity: sizeCapacity,
-            clasification: clasification,
-            updatedDateTime: updatedDateTime,
-            uoM: uoM,
-            taxRate: taxRate,
-            imageUrl1: imageUrl1,
-            textNote: textNote,
-            status: status,
-            movingType: movingType,
-            traceId: traceId,
-            updatedBy: updatedBy,
-            createdBy: createdBy,
-            lengthh: lengthh,
-            width: width,
-            height: height,
-            weight: weight,
-            volume: volume,
-            inwardUoM: inwardUoM,
-            inwardPackQty: inwardPackQty,
-            outwardUoM: outwardUoM,
-            outwardPackQty: outwardPackQty,
-            isPerishable: isPerishable,
-            hasExpiryDate: hasExpiryDate,
-            expiryDays: expiryDays,
-            isFragile: isFragile,
-            manageBy: manageBy,
-            createdDateTime: createdDateTime,
-            color: color,
-          ),
-        ));
-}
-
 class $$DriftItemMasterTableFilterComposer
     extends FilterComposer<_$AppDatabase, $DriftItemMasterTable> {
   $$DriftItemMasterTableFilterComposer(super.$state);
@@ -7764,6 +7552,242 @@ class $$DriftItemMasterTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$DriftItemMasterTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DriftItemMasterTable,
+    DriftItemMasterData,
+    $$DriftItemMasterTableFilterComposer,
+    $$DriftItemMasterTableOrderingComposer,
+    $$DriftItemMasterTableCreateCompanionBuilder,
+    $$DriftItemMasterTableUpdateCompanionBuilder,
+    (
+      DriftItemMasterData,
+      BaseReferences<_$AppDatabase, $DriftItemMasterTable, DriftItemMasterData>
+    ),
+    DriftItemMasterData,
+    PrefetchHooks Function()> {
+  $$DriftItemMasterTableTableManager(
+      _$AppDatabase db, $DriftItemMasterTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$DriftItemMasterTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$DriftItemMasterTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> auditScheduleID = const Value.absent(),
+            Value<int?> id = const Value.absent(),
+            Value<int?> itemDisposition = const Value.absent(),
+            Value<int?> dispId = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> itemType = const Value.absent(),
+            Value<String?> itemName = const Value.absent(),
+            Value<String?> category = const Value.absent(),
+            Value<String?> subCategory = const Value.absent(),
+            Value<String?> brand = const Value.absent(),
+            Value<String?> itemDescription = const Value.absent(),
+            Value<String?> modelNo = const Value.absent(),
+            Value<String?> partCode = const Value.absent(),
+            Value<String?> skucode = const Value.absent(),
+            Value<String?> brandCode = const Value.absent(),
+            Value<String?> itemGroup = const Value.absent(),
+            Value<String?> specification = const Value.absent(),
+            Value<String?> sizeCapacity = const Value.absent(),
+            Value<String?> clasification = const Value.absent(),
+            Value<String?> updatedDateTime = const Value.absent(),
+            Value<String?> uoM = const Value.absent(),
+            Value<double?> taxRate = const Value.absent(),
+            Value<String?> imageUrl1 = const Value.absent(),
+            Value<String?> textNote = const Value.absent(),
+            Value<String?> status = const Value.absent(),
+            Value<int?> movingType = const Value.absent(),
+            Value<String?> traceId = const Value.absent(),
+            Value<String?> updatedBy = const Value.absent(),
+            Value<int?> createdBy = const Value.absent(),
+            Value<double?> lengthh = const Value.absent(),
+            Value<double?> width = const Value.absent(),
+            Value<double?> height = const Value.absent(),
+            Value<double?> weight = const Value.absent(),
+            Value<double?> volume = const Value.absent(),
+            Value<String?> inwardUoM = const Value.absent(),
+            Value<double?> inwardPackQty = const Value.absent(),
+            Value<String?> outwardUoM = const Value.absent(),
+            Value<double?> outwardPackQty = const Value.absent(),
+            Value<bool?> isPerishable = const Value.absent(),
+            Value<bool?> hasExpiryDate = const Value.absent(),
+            Value<int?> expiryDays = const Value.absent(),
+            Value<int?> isFragile = const Value.absent(),
+            Value<String?> manageBy = const Value.absent(),
+            Value<String?> createdDateTime = const Value.absent(),
+            Value<String?> color = const Value.absent(),
+          }) =>
+              DriftItemMasterCompanion(
+            IMid: IMid,
+            auditScheduleID: auditScheduleID,
+            id: id,
+            itemDisposition: itemDisposition,
+            dispId: dispId,
+            itemCode: itemCode,
+            itemType: itemType,
+            itemName: itemName,
+            category: category,
+            subCategory: subCategory,
+            brand: brand,
+            itemDescription: itemDescription,
+            modelNo: modelNo,
+            partCode: partCode,
+            skucode: skucode,
+            brandCode: brandCode,
+            itemGroup: itemGroup,
+            specification: specification,
+            sizeCapacity: sizeCapacity,
+            clasification: clasification,
+            updatedDateTime: updatedDateTime,
+            uoM: uoM,
+            taxRate: taxRate,
+            imageUrl1: imageUrl1,
+            textNote: textNote,
+            status: status,
+            movingType: movingType,
+            traceId: traceId,
+            updatedBy: updatedBy,
+            createdBy: createdBy,
+            lengthh: lengthh,
+            width: width,
+            height: height,
+            weight: weight,
+            volume: volume,
+            inwardUoM: inwardUoM,
+            inwardPackQty: inwardPackQty,
+            outwardUoM: outwardUoM,
+            outwardPackQty: outwardPackQty,
+            isPerishable: isPerishable,
+            hasExpiryDate: hasExpiryDate,
+            expiryDays: expiryDays,
+            isFragile: isFragile,
+            manageBy: manageBy,
+            createdDateTime: createdDateTime,
+            color: color,
+          ),
+          createCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> auditScheduleID = const Value.absent(),
+            Value<int?> id = const Value.absent(),
+            Value<int?> itemDisposition = const Value.absent(),
+            Value<int?> dispId = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> itemType = const Value.absent(),
+            Value<String?> itemName = const Value.absent(),
+            Value<String?> category = const Value.absent(),
+            Value<String?> subCategory = const Value.absent(),
+            Value<String?> brand = const Value.absent(),
+            Value<String?> itemDescription = const Value.absent(),
+            Value<String?> modelNo = const Value.absent(),
+            Value<String?> partCode = const Value.absent(),
+            Value<String?> skucode = const Value.absent(),
+            Value<String?> brandCode = const Value.absent(),
+            Value<String?> itemGroup = const Value.absent(),
+            Value<String?> specification = const Value.absent(),
+            Value<String?> sizeCapacity = const Value.absent(),
+            Value<String?> clasification = const Value.absent(),
+            Value<String?> updatedDateTime = const Value.absent(),
+            Value<String?> uoM = const Value.absent(),
+            Value<double?> taxRate = const Value.absent(),
+            Value<String?> imageUrl1 = const Value.absent(),
+            Value<String?> textNote = const Value.absent(),
+            Value<String?> status = const Value.absent(),
+            Value<int?> movingType = const Value.absent(),
+            Value<String?> traceId = const Value.absent(),
+            Value<String?> updatedBy = const Value.absent(),
+            Value<int?> createdBy = const Value.absent(),
+            Value<double?> lengthh = const Value.absent(),
+            Value<double?> width = const Value.absent(),
+            Value<double?> height = const Value.absent(),
+            Value<double?> weight = const Value.absent(),
+            Value<double?> volume = const Value.absent(),
+            Value<String?> inwardUoM = const Value.absent(),
+            Value<double?> inwardPackQty = const Value.absent(),
+            Value<String?> outwardUoM = const Value.absent(),
+            Value<double?> outwardPackQty = const Value.absent(),
+            Value<bool?> isPerishable = const Value.absent(),
+            Value<bool?> hasExpiryDate = const Value.absent(),
+            Value<int?> expiryDays = const Value.absent(),
+            Value<int?> isFragile = const Value.absent(),
+            Value<String?> manageBy = const Value.absent(),
+            Value<String?> createdDateTime = const Value.absent(),
+            Value<String?> color = const Value.absent(),
+          }) =>
+              DriftItemMasterCompanion.insert(
+            IMid: IMid,
+            auditScheduleID: auditScheduleID,
+            id: id,
+            itemDisposition: itemDisposition,
+            dispId: dispId,
+            itemCode: itemCode,
+            itemType: itemType,
+            itemName: itemName,
+            category: category,
+            subCategory: subCategory,
+            brand: brand,
+            itemDescription: itemDescription,
+            modelNo: modelNo,
+            partCode: partCode,
+            skucode: skucode,
+            brandCode: brandCode,
+            itemGroup: itemGroup,
+            specification: specification,
+            sizeCapacity: sizeCapacity,
+            clasification: clasification,
+            updatedDateTime: updatedDateTime,
+            uoM: uoM,
+            taxRate: taxRate,
+            imageUrl1: imageUrl1,
+            textNote: textNote,
+            status: status,
+            movingType: movingType,
+            traceId: traceId,
+            updatedBy: updatedBy,
+            createdBy: createdBy,
+            lengthh: lengthh,
+            width: width,
+            height: height,
+            weight: weight,
+            volume: volume,
+            inwardUoM: inwardUoM,
+            inwardPackQty: inwardPackQty,
+            outwardUoM: outwardUoM,
+            outwardPackQty: outwardPackQty,
+            isPerishable: isPerishable,
+            hasExpiryDate: hasExpiryDate,
+            expiryDays: expiryDays,
+            isFragile: isFragile,
+            manageBy: manageBy,
+            createdDateTime: createdDateTime,
+            color: color,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DriftItemMasterTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DriftItemMasterTable,
+    DriftItemMasterData,
+    $$DriftItemMasterTableFilterComposer,
+    $$DriftItemMasterTableOrderingComposer,
+    $$DriftItemMasterTableCreateCompanionBuilder,
+    $$DriftItemMasterTableUpdateCompanionBuilder,
+    (
+      DriftItemMasterData,
+      BaseReferences<_$AppDatabase, $DriftItemMasterTable, DriftItemMasterData>
+    ),
+    DriftItemMasterData,
+    PrefetchHooks Function()>;
 typedef $$DriftLineMasterTableCreateCompanionBuilder = DriftLineMasterCompanion
     Function({
   Value<int> IMid,
@@ -7806,106 +7830,6 @@ typedef $$DriftLineMasterTableUpdateCompanionBuilder = DriftLineMasterCompanion
   Value<String?> updatedDatetime,
   Value<String?> traceid,
 });
-
-class $$DriftLineMasterTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DriftLineMasterTable,
-    DriftLineMasterData,
-    $$DriftLineMasterTableFilterComposer,
-    $$DriftLineMasterTableOrderingComposer,
-    $$DriftLineMasterTableCreateCompanionBuilder,
-    $$DriftLineMasterTableUpdateCompanionBuilder> {
-  $$DriftLineMasterTableTableManager(
-      _$AppDatabase db, $DriftLineMasterTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$DriftLineMasterTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$DriftLineMasterTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> autoId = const Value.absent(),
-            Value<int?> scheduleID = const Value.absent(),
-            Value<String?> whsCode = const Value.absent(),
-            Value<int?> itemDisposition = const Value.absent(),
-            Value<String?> itemCode = const Value.absent(),
-            Value<String?> binCode = const Value.absent(),
-            Value<String?> serialbatch = const Value.absent(),
-            Value<String?> altSerialbatch = const Value.absent(),
-            Value<double?> quantity = const Value.absent(),
-            Value<String?> uom = const Value.absent(),
-            Value<int?> createdBy = const Value.absent(),
-            Value<String?> createdDatetime = const Value.absent(),
-            Value<String?> inDate = const Value.absent(),
-            Value<String?> expDate = const Value.absent(),
-            Value<String?> updatedBy = const Value.absent(),
-            Value<String?> updatedDatetime = const Value.absent(),
-            Value<String?> traceid = const Value.absent(),
-          }) =>
-              DriftLineMasterCompanion(
-            IMid: IMid,
-            autoId: autoId,
-            scheduleID: scheduleID,
-            whsCode: whsCode,
-            itemDisposition: itemDisposition,
-            itemCode: itemCode,
-            binCode: binCode,
-            serialbatch: serialbatch,
-            altSerialbatch: altSerialbatch,
-            quantity: quantity,
-            uom: uom,
-            createdBy: createdBy,
-            createdDatetime: createdDatetime,
-            inDate: inDate,
-            expDate: expDate,
-            updatedBy: updatedBy,
-            updatedDatetime: updatedDatetime,
-            traceid: traceid,
-          ),
-          createCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> autoId = const Value.absent(),
-            Value<int?> scheduleID = const Value.absent(),
-            Value<String?> whsCode = const Value.absent(),
-            Value<int?> itemDisposition = const Value.absent(),
-            Value<String?> itemCode = const Value.absent(),
-            Value<String?> binCode = const Value.absent(),
-            Value<String?> serialbatch = const Value.absent(),
-            Value<String?> altSerialbatch = const Value.absent(),
-            Value<double?> quantity = const Value.absent(),
-            Value<String?> uom = const Value.absent(),
-            Value<int?> createdBy = const Value.absent(),
-            Value<String?> createdDatetime = const Value.absent(),
-            Value<String?> inDate = const Value.absent(),
-            Value<String?> expDate = const Value.absent(),
-            Value<String?> updatedBy = const Value.absent(),
-            Value<String?> updatedDatetime = const Value.absent(),
-            Value<String?> traceid = const Value.absent(),
-          }) =>
-              DriftLineMasterCompanion.insert(
-            IMid: IMid,
-            autoId: autoId,
-            scheduleID: scheduleID,
-            whsCode: whsCode,
-            itemDisposition: itemDisposition,
-            itemCode: itemCode,
-            binCode: binCode,
-            serialbatch: serialbatch,
-            altSerialbatch: altSerialbatch,
-            quantity: quantity,
-            uom: uom,
-            createdBy: createdBy,
-            createdDatetime: createdDatetime,
-            inDate: inDate,
-            expDate: expDate,
-            updatedBy: updatedBy,
-            updatedDatetime: updatedDatetime,
-            traceid: traceid,
-          ),
-        ));
-}
 
 class $$DriftLineMasterTableFilterComposer
     extends FilterComposer<_$AppDatabase, $DriftLineMasterTable> {
@@ -8095,6 +8019,130 @@ class $$DriftLineMasterTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$DriftLineMasterTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DriftLineMasterTable,
+    DriftLineMasterData,
+    $$DriftLineMasterTableFilterComposer,
+    $$DriftLineMasterTableOrderingComposer,
+    $$DriftLineMasterTableCreateCompanionBuilder,
+    $$DriftLineMasterTableUpdateCompanionBuilder,
+    (
+      DriftLineMasterData,
+      BaseReferences<_$AppDatabase, $DriftLineMasterTable, DriftLineMasterData>
+    ),
+    DriftLineMasterData,
+    PrefetchHooks Function()> {
+  $$DriftLineMasterTableTableManager(
+      _$AppDatabase db, $DriftLineMasterTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$DriftLineMasterTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$DriftLineMasterTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> autoId = const Value.absent(),
+            Value<int?> scheduleID = const Value.absent(),
+            Value<String?> whsCode = const Value.absent(),
+            Value<int?> itemDisposition = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> binCode = const Value.absent(),
+            Value<String?> serialbatch = const Value.absent(),
+            Value<String?> altSerialbatch = const Value.absent(),
+            Value<double?> quantity = const Value.absent(),
+            Value<String?> uom = const Value.absent(),
+            Value<int?> createdBy = const Value.absent(),
+            Value<String?> createdDatetime = const Value.absent(),
+            Value<String?> inDate = const Value.absent(),
+            Value<String?> expDate = const Value.absent(),
+            Value<String?> updatedBy = const Value.absent(),
+            Value<String?> updatedDatetime = const Value.absent(),
+            Value<String?> traceid = const Value.absent(),
+          }) =>
+              DriftLineMasterCompanion(
+            IMid: IMid,
+            autoId: autoId,
+            scheduleID: scheduleID,
+            whsCode: whsCode,
+            itemDisposition: itemDisposition,
+            itemCode: itemCode,
+            binCode: binCode,
+            serialbatch: serialbatch,
+            altSerialbatch: altSerialbatch,
+            quantity: quantity,
+            uom: uom,
+            createdBy: createdBy,
+            createdDatetime: createdDatetime,
+            inDate: inDate,
+            expDate: expDate,
+            updatedBy: updatedBy,
+            updatedDatetime: updatedDatetime,
+            traceid: traceid,
+          ),
+          createCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> autoId = const Value.absent(),
+            Value<int?> scheduleID = const Value.absent(),
+            Value<String?> whsCode = const Value.absent(),
+            Value<int?> itemDisposition = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> binCode = const Value.absent(),
+            Value<String?> serialbatch = const Value.absent(),
+            Value<String?> altSerialbatch = const Value.absent(),
+            Value<double?> quantity = const Value.absent(),
+            Value<String?> uom = const Value.absent(),
+            Value<int?> createdBy = const Value.absent(),
+            Value<String?> createdDatetime = const Value.absent(),
+            Value<String?> inDate = const Value.absent(),
+            Value<String?> expDate = const Value.absent(),
+            Value<String?> updatedBy = const Value.absent(),
+            Value<String?> updatedDatetime = const Value.absent(),
+            Value<String?> traceid = const Value.absent(),
+          }) =>
+              DriftLineMasterCompanion.insert(
+            IMid: IMid,
+            autoId: autoId,
+            scheduleID: scheduleID,
+            whsCode: whsCode,
+            itemDisposition: itemDisposition,
+            itemCode: itemCode,
+            binCode: binCode,
+            serialbatch: serialbatch,
+            altSerialbatch: altSerialbatch,
+            quantity: quantity,
+            uom: uom,
+            createdBy: createdBy,
+            createdDatetime: createdDatetime,
+            inDate: inDate,
+            expDate: expDate,
+            updatedBy: updatedBy,
+            updatedDatetime: updatedDatetime,
+            traceid: traceid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DriftLineMasterTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DriftLineMasterTable,
+    DriftLineMasterData,
+    $$DriftLineMasterTableFilterComposer,
+    $$DriftLineMasterTableOrderingComposer,
+    $$DriftLineMasterTableCreateCompanionBuilder,
+    $$DriftLineMasterTableUpdateCompanionBuilder,
+    (
+      DriftLineMasterData,
+      BaseReferences<_$AppDatabase, $DriftLineMasterTable, DriftLineMasterData>
+    ),
+    DriftLineMasterData,
+    PrefetchHooks Function()>;
 typedef $$DriftBinMasterTableCreateCompanionBuilder = DriftBinMasterCompanion
     Function({
   Value<String?> areaCode,
@@ -8117,66 +8165,6 @@ typedef $$DriftBinMasterTableUpdateCompanionBuilder = DriftBinMasterCompanion
   Value<String?> zoneCode,
   Value<int> rowid,
 });
-
-class $$DriftBinMasterTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DriftBinMasterTable,
-    DriftBinMasterData,
-    $$DriftBinMasterTableFilterComposer,
-    $$DriftBinMasterTableOrderingComposer,
-    $$DriftBinMasterTableCreateCompanionBuilder,
-    $$DriftBinMasterTableUpdateCompanionBuilder> {
-  $$DriftBinMasterTableTableManager(
-      _$AppDatabase db, $DriftBinMasterTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$DriftBinMasterTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$DriftBinMasterTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<String?> areaCode = const Value.absent(),
-            Value<int?> auditId = const Value.absent(),
-            Value<String?> binCode = const Value.absent(),
-            Value<String?> rackCode = const Value.absent(),
-            Value<int?> status = const Value.absent(),
-            Value<String?> whsCode = const Value.absent(),
-            Value<String?> zoneCode = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              DriftBinMasterCompanion(
-            areaCode: areaCode,
-            auditId: auditId,
-            binCode: binCode,
-            rackCode: rackCode,
-            status: status,
-            whsCode: whsCode,
-            zoneCode: zoneCode,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            Value<String?> areaCode = const Value.absent(),
-            Value<int?> auditId = const Value.absent(),
-            Value<String?> binCode = const Value.absent(),
-            Value<String?> rackCode = const Value.absent(),
-            Value<int?> status = const Value.absent(),
-            Value<String?> whsCode = const Value.absent(),
-            Value<String?> zoneCode = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              DriftBinMasterCompanion.insert(
-            areaCode: areaCode,
-            auditId: auditId,
-            binCode: binCode,
-            rackCode: rackCode,
-            status: status,
-            whsCode: whsCode,
-            zoneCode: zoneCode,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$DriftBinMasterTableFilterComposer
     extends FilterComposer<_$AppDatabase, $DriftBinMasterTable> {
@@ -8256,6 +8244,90 @@ class $$DriftBinMasterTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$DriftBinMasterTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DriftBinMasterTable,
+    DriftBinMasterData,
+    $$DriftBinMasterTableFilterComposer,
+    $$DriftBinMasterTableOrderingComposer,
+    $$DriftBinMasterTableCreateCompanionBuilder,
+    $$DriftBinMasterTableUpdateCompanionBuilder,
+    (
+      DriftBinMasterData,
+      BaseReferences<_$AppDatabase, $DriftBinMasterTable, DriftBinMasterData>
+    ),
+    DriftBinMasterData,
+    PrefetchHooks Function()> {
+  $$DriftBinMasterTableTableManager(
+      _$AppDatabase db, $DriftBinMasterTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$DriftBinMasterTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$DriftBinMasterTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String?> areaCode = const Value.absent(),
+            Value<int?> auditId = const Value.absent(),
+            Value<String?> binCode = const Value.absent(),
+            Value<String?> rackCode = const Value.absent(),
+            Value<int?> status = const Value.absent(),
+            Value<String?> whsCode = const Value.absent(),
+            Value<String?> zoneCode = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              DriftBinMasterCompanion(
+            areaCode: areaCode,
+            auditId: auditId,
+            binCode: binCode,
+            rackCode: rackCode,
+            status: status,
+            whsCode: whsCode,
+            zoneCode: zoneCode,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<String?> areaCode = const Value.absent(),
+            Value<int?> auditId = const Value.absent(),
+            Value<String?> binCode = const Value.absent(),
+            Value<String?> rackCode = const Value.absent(),
+            Value<int?> status = const Value.absent(),
+            Value<String?> whsCode = const Value.absent(),
+            Value<String?> zoneCode = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              DriftBinMasterCompanion.insert(
+            areaCode: areaCode,
+            auditId: auditId,
+            binCode: binCode,
+            rackCode: rackCode,
+            status: status,
+            whsCode: whsCode,
+            zoneCode: zoneCode,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DriftBinMasterTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DriftBinMasterTable,
+    DriftBinMasterData,
+    $$DriftBinMasterTableFilterComposer,
+    $$DriftBinMasterTableOrderingComposer,
+    $$DriftBinMasterTableCreateCompanionBuilder,
+    $$DriftBinMasterTableUpdateCompanionBuilder,
+    (
+      DriftBinMasterData,
+      BaseReferences<_$AppDatabase, $DriftBinMasterTable, DriftBinMasterData>
+    ),
+    DriftBinMasterData,
+    PrefetchHooks Function()>;
 typedef $$DriftItemCodeMasterTableCreateCompanionBuilder
     = DriftItemCodeMasterCompanion Function({
   Value<int> IMid,
@@ -8272,54 +8344,6 @@ typedef $$DriftItemCodeMasterTableUpdateCompanionBuilder
   Value<String?> manageBy,
   Value<int?> dispId,
 });
-
-class $$DriftItemCodeMasterTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DriftItemCodeMasterTable,
-    DriftItemCodeMasterData,
-    $$DriftItemCodeMasterTableFilterComposer,
-    $$DriftItemCodeMasterTableOrderingComposer,
-    $$DriftItemCodeMasterTableCreateCompanionBuilder,
-    $$DriftItemCodeMasterTableUpdateCompanionBuilder> {
-  $$DriftItemCodeMasterTableTableManager(
-      _$AppDatabase db, $DriftItemCodeMasterTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer: $$DriftItemCodeMasterTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$DriftItemCodeMasterTableOrderingComposer(
-              ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> auditScheduleID = const Value.absent(),
-            Value<String?> itemCode = const Value.absent(),
-            Value<String?> manageBy = const Value.absent(),
-            Value<int?> dispId = const Value.absent(),
-          }) =>
-              DriftItemCodeMasterCompanion(
-            IMid: IMid,
-            auditScheduleID: auditScheduleID,
-            itemCode: itemCode,
-            manageBy: manageBy,
-            dispId: dispId,
-          ),
-          createCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> auditScheduleID = const Value.absent(),
-            Value<String?> itemCode = const Value.absent(),
-            Value<String?> manageBy = const Value.absent(),
-            Value<int?> dispId = const Value.absent(),
-          }) =>
-              DriftItemCodeMasterCompanion.insert(
-            IMid: IMid,
-            auditScheduleID: auditScheduleID,
-            itemCode: itemCode,
-            manageBy: manageBy,
-            dispId: dispId,
-          ),
-        ));
-}
 
 class $$DriftItemCodeMasterTableFilterComposer
     extends FilterComposer<_$AppDatabase, $DriftItemCodeMasterTable> {
@@ -8379,6 +8403,80 @@ class $$DriftItemCodeMasterTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$DriftItemCodeMasterTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DriftItemCodeMasterTable,
+    DriftItemCodeMasterData,
+    $$DriftItemCodeMasterTableFilterComposer,
+    $$DriftItemCodeMasterTableOrderingComposer,
+    $$DriftItemCodeMasterTableCreateCompanionBuilder,
+    $$DriftItemCodeMasterTableUpdateCompanionBuilder,
+    (
+      DriftItemCodeMasterData,
+      BaseReferences<_$AppDatabase, $DriftItemCodeMasterTable,
+          DriftItemCodeMasterData>
+    ),
+    DriftItemCodeMasterData,
+    PrefetchHooks Function()> {
+  $$DriftItemCodeMasterTableTableManager(
+      _$AppDatabase db, $DriftItemCodeMasterTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer: $$DriftItemCodeMasterTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$DriftItemCodeMasterTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> auditScheduleID = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> manageBy = const Value.absent(),
+            Value<int?> dispId = const Value.absent(),
+          }) =>
+              DriftItemCodeMasterCompanion(
+            IMid: IMid,
+            auditScheduleID: auditScheduleID,
+            itemCode: itemCode,
+            manageBy: manageBy,
+            dispId: dispId,
+          ),
+          createCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> auditScheduleID = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> manageBy = const Value.absent(),
+            Value<int?> dispId = const Value.absent(),
+          }) =>
+              DriftItemCodeMasterCompanion.insert(
+            IMid: IMid,
+            auditScheduleID: auditScheduleID,
+            itemCode: itemCode,
+            manageBy: manageBy,
+            dispId: dispId,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DriftItemCodeMasterTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DriftItemCodeMasterTable,
+    DriftItemCodeMasterData,
+    $$DriftItemCodeMasterTableFilterComposer,
+    $$DriftItemCodeMasterTableOrderingComposer,
+    $$DriftItemCodeMasterTableCreateCompanionBuilder,
+    $$DriftItemCodeMasterTableUpdateCompanionBuilder,
+    (
+      DriftItemCodeMasterData,
+      BaseReferences<_$AppDatabase, $DriftItemCodeMasterTable,
+          DriftItemCodeMasterData>
+    ),
+    DriftItemCodeMasterData,
+    PrefetchHooks Function()>;
 typedef $$CheckListHeaderTableTableCreateCompanionBuilder
     = CheckListHeaderTableCompanion Function({
   Value<int?> docEntry,
@@ -8391,46 +8489,6 @@ typedef $$CheckListHeaderTableTableUpdateCompanionBuilder
   Value<String?> templateName,
   Value<int> rowid,
 });
-
-class $$CheckListHeaderTableTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $CheckListHeaderTableTable,
-    CheckListHeaderTableData,
-    $$CheckListHeaderTableTableFilterComposer,
-    $$CheckListHeaderTableTableOrderingComposer,
-    $$CheckListHeaderTableTableCreateCompanionBuilder,
-    $$CheckListHeaderTableTableUpdateCompanionBuilder> {
-  $$CheckListHeaderTableTableTableManager(
-      _$AppDatabase db, $CheckListHeaderTableTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer: $$CheckListHeaderTableTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$CheckListHeaderTableTableOrderingComposer(
-              ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int?> docEntry = const Value.absent(),
-            Value<String?> templateName = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              CheckListHeaderTableCompanion(
-            docEntry: docEntry,
-            templateName: templateName,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            Value<int?> docEntry = const Value.absent(),
-            Value<String?> templateName = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              CheckListHeaderTableCompanion.insert(
-            docEntry: docEntry,
-            templateName: templateName,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$CheckListHeaderTableTableFilterComposer
     extends FilterComposer<_$AppDatabase, $CheckListHeaderTableTable> {
@@ -8460,6 +8518,73 @@ class $$CheckListHeaderTableTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$CheckListHeaderTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $CheckListHeaderTableTable,
+    CheckListHeaderTableData,
+    $$CheckListHeaderTableTableFilterComposer,
+    $$CheckListHeaderTableTableOrderingComposer,
+    $$CheckListHeaderTableTableCreateCompanionBuilder,
+    $$CheckListHeaderTableTableUpdateCompanionBuilder,
+    (
+      CheckListHeaderTableData,
+      BaseReferences<_$AppDatabase, $CheckListHeaderTableTable,
+          CheckListHeaderTableData>
+    ),
+    CheckListHeaderTableData,
+    PrefetchHooks Function()> {
+  $$CheckListHeaderTableTableTableManager(
+      _$AppDatabase db, $CheckListHeaderTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer: $$CheckListHeaderTableTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$CheckListHeaderTableTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int?> docEntry = const Value.absent(),
+            Value<String?> templateName = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CheckListHeaderTableCompanion(
+            docEntry: docEntry,
+            templateName: templateName,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<int?> docEntry = const Value.absent(),
+            Value<String?> templateName = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CheckListHeaderTableCompanion.insert(
+            docEntry: docEntry,
+            templateName: templateName,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CheckListHeaderTableTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $CheckListHeaderTableTable,
+        CheckListHeaderTableData,
+        $$CheckListHeaderTableTableFilterComposer,
+        $$CheckListHeaderTableTableOrderingComposer,
+        $$CheckListHeaderTableTableCreateCompanionBuilder,
+        $$CheckListHeaderTableTableUpdateCompanionBuilder,
+        (
+          CheckListHeaderTableData,
+          BaseReferences<_$AppDatabase, $CheckListHeaderTableTable,
+              CheckListHeaderTableData>
+        ),
+        CheckListHeaderTableData,
+        PrefetchHooks Function()>;
 typedef $$CheckListMasterTableTableCreateCompanionBuilder
     = CheckListMasterTableCompanion Function({
   Value<String?> areaCode,
@@ -8528,158 +8653,6 @@ typedef $$CheckListMasterTableTableUpdateCompanionBuilder
   Value<String?> traceid,
   Value<int> rowid,
 });
-
-class $$CheckListMasterTableTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $CheckListMasterTableTable,
-    CheckListMasterTableData,
-    $$CheckListMasterTableTableFilterComposer,
-    $$CheckListMasterTableTableOrderingComposer,
-    $$CheckListMasterTableTableCreateCompanionBuilder,
-    $$CheckListMasterTableTableUpdateCompanionBuilder> {
-  $$CheckListMasterTableTableTableManager(
-      _$AppDatabase db, $CheckListMasterTableTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer: $$CheckListMasterTableTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$CheckListMasterTableTableOrderingComposer(
-              ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<String?> areaCode = const Value.absent(),
-            Value<int?> docEntry = const Value.absent(),
-            Value<String?> binCode = const Value.absent(),
-            Value<String?> rackCode = const Value.absent(),
-            Value<int?> status = const Value.absent(),
-            Value<String?> whsCode = const Value.absent(),
-            Value<String?> whsName = const Value.absent(),
-            Value<String?> zoneCode = const Value.absent(),
-            Value<String?> category = const Value.absent(),
-            Value<String?> brand = const Value.absent(),
-            Value<int?> createdBy = const Value.absent(),
-            Value<String?> createdDateTime = const Value.absent(),
-            Value<int?> checklistTemplate = const Value.absent(),
-            Value<String?> disposition = const Value.absent(),
-            Value<int?> forAgesAbove = const Value.absent(),
-            Value<String?> hasExpiryDate = const Value.absent(),
-            Value<int?> isFragile = const Value.absent(),
-            Value<String?> itemCode = const Value.absent(),
-            Value<String?> itemStatus = const Value.absent(),
-            Value<String?> manageBy = const Value.absent(),
-            Value<String?> previousDispute = const Value.absent(),
-            Value<String?> serialBatchManualTyped = const Value.absent(),
-            Value<String?> serialBatch = const Value.absent(),
-            Value<String?> sizeCapacity = const Value.absent(),
-            Value<String?> specification = const Value.absent(),
-            Value<String?> subCategory = const Value.absent(),
-            Value<String?> updatedBy = const Value.absent(),
-            Value<String?> updatedDateTime = const Value.absent(),
-            Value<String?> whileOffline = const Value.absent(),
-            Value<String?> traceid = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              CheckListMasterTableCompanion(
-            areaCode: areaCode,
-            docEntry: docEntry,
-            binCode: binCode,
-            rackCode: rackCode,
-            status: status,
-            whsCode: whsCode,
-            whsName: whsName,
-            zoneCode: zoneCode,
-            category: category,
-            brand: brand,
-            createdBy: createdBy,
-            createdDateTime: createdDateTime,
-            checklistTemplate: checklistTemplate,
-            disposition: disposition,
-            forAgesAbove: forAgesAbove,
-            hasExpiryDate: hasExpiryDate,
-            isFragile: isFragile,
-            itemCode: itemCode,
-            itemStatus: itemStatus,
-            manageBy: manageBy,
-            previousDispute: previousDispute,
-            serialBatchManualTyped: serialBatchManualTyped,
-            serialBatch: serialBatch,
-            sizeCapacity: sizeCapacity,
-            specification: specification,
-            subCategory: subCategory,
-            updatedBy: updatedBy,
-            updatedDateTime: updatedDateTime,
-            whileOffline: whileOffline,
-            traceid: traceid,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            Value<String?> areaCode = const Value.absent(),
-            Value<int?> docEntry = const Value.absent(),
-            Value<String?> binCode = const Value.absent(),
-            Value<String?> rackCode = const Value.absent(),
-            Value<int?> status = const Value.absent(),
-            Value<String?> whsCode = const Value.absent(),
-            Value<String?> whsName = const Value.absent(),
-            Value<String?> zoneCode = const Value.absent(),
-            Value<String?> category = const Value.absent(),
-            Value<String?> brand = const Value.absent(),
-            Value<int?> createdBy = const Value.absent(),
-            Value<String?> createdDateTime = const Value.absent(),
-            Value<int?> checklistTemplate = const Value.absent(),
-            Value<String?> disposition = const Value.absent(),
-            Value<int?> forAgesAbove = const Value.absent(),
-            Value<String?> hasExpiryDate = const Value.absent(),
-            Value<int?> isFragile = const Value.absent(),
-            Value<String?> itemCode = const Value.absent(),
-            Value<String?> itemStatus = const Value.absent(),
-            Value<String?> manageBy = const Value.absent(),
-            Value<String?> previousDispute = const Value.absent(),
-            Value<String?> serialBatchManualTyped = const Value.absent(),
-            Value<String?> serialBatch = const Value.absent(),
-            Value<String?> sizeCapacity = const Value.absent(),
-            Value<String?> specification = const Value.absent(),
-            Value<String?> subCategory = const Value.absent(),
-            Value<String?> updatedBy = const Value.absent(),
-            Value<String?> updatedDateTime = const Value.absent(),
-            Value<String?> whileOffline = const Value.absent(),
-            Value<String?> traceid = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              CheckListMasterTableCompanion.insert(
-            areaCode: areaCode,
-            docEntry: docEntry,
-            binCode: binCode,
-            rackCode: rackCode,
-            status: status,
-            whsCode: whsCode,
-            whsName: whsName,
-            zoneCode: zoneCode,
-            category: category,
-            brand: brand,
-            createdBy: createdBy,
-            createdDateTime: createdDateTime,
-            checklistTemplate: checklistTemplate,
-            disposition: disposition,
-            forAgesAbove: forAgesAbove,
-            hasExpiryDate: hasExpiryDate,
-            isFragile: isFragile,
-            itemCode: itemCode,
-            itemStatus: itemStatus,
-            manageBy: manageBy,
-            previousDispute: previousDispute,
-            serialBatchManualTyped: serialBatchManualTyped,
-            serialBatch: serialBatch,
-            sizeCapacity: sizeCapacity,
-            specification: specification,
-            subCategory: subCategory,
-            updatedBy: updatedBy,
-            updatedDateTime: updatedDateTime,
-            whileOffline: whileOffline,
-            traceid: traceid,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$CheckListMasterTableTableFilterComposer
     extends FilterComposer<_$AppDatabase, $CheckListMasterTableTable> {
@@ -8990,6 +8963,185 @@ class $$CheckListMasterTableTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$CheckListMasterTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $CheckListMasterTableTable,
+    CheckListMasterTableData,
+    $$CheckListMasterTableTableFilterComposer,
+    $$CheckListMasterTableTableOrderingComposer,
+    $$CheckListMasterTableTableCreateCompanionBuilder,
+    $$CheckListMasterTableTableUpdateCompanionBuilder,
+    (
+      CheckListMasterTableData,
+      BaseReferences<_$AppDatabase, $CheckListMasterTableTable,
+          CheckListMasterTableData>
+    ),
+    CheckListMasterTableData,
+    PrefetchHooks Function()> {
+  $$CheckListMasterTableTableTableManager(
+      _$AppDatabase db, $CheckListMasterTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer: $$CheckListMasterTableTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$CheckListMasterTableTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String?> areaCode = const Value.absent(),
+            Value<int?> docEntry = const Value.absent(),
+            Value<String?> binCode = const Value.absent(),
+            Value<String?> rackCode = const Value.absent(),
+            Value<int?> status = const Value.absent(),
+            Value<String?> whsCode = const Value.absent(),
+            Value<String?> whsName = const Value.absent(),
+            Value<String?> zoneCode = const Value.absent(),
+            Value<String?> category = const Value.absent(),
+            Value<String?> brand = const Value.absent(),
+            Value<int?> createdBy = const Value.absent(),
+            Value<String?> createdDateTime = const Value.absent(),
+            Value<int?> checklistTemplate = const Value.absent(),
+            Value<String?> disposition = const Value.absent(),
+            Value<int?> forAgesAbove = const Value.absent(),
+            Value<String?> hasExpiryDate = const Value.absent(),
+            Value<int?> isFragile = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> itemStatus = const Value.absent(),
+            Value<String?> manageBy = const Value.absent(),
+            Value<String?> previousDispute = const Value.absent(),
+            Value<String?> serialBatchManualTyped = const Value.absent(),
+            Value<String?> serialBatch = const Value.absent(),
+            Value<String?> sizeCapacity = const Value.absent(),
+            Value<String?> specification = const Value.absent(),
+            Value<String?> subCategory = const Value.absent(),
+            Value<String?> updatedBy = const Value.absent(),
+            Value<String?> updatedDateTime = const Value.absent(),
+            Value<String?> whileOffline = const Value.absent(),
+            Value<String?> traceid = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CheckListMasterTableCompanion(
+            areaCode: areaCode,
+            docEntry: docEntry,
+            binCode: binCode,
+            rackCode: rackCode,
+            status: status,
+            whsCode: whsCode,
+            whsName: whsName,
+            zoneCode: zoneCode,
+            category: category,
+            brand: brand,
+            createdBy: createdBy,
+            createdDateTime: createdDateTime,
+            checklistTemplate: checklistTemplate,
+            disposition: disposition,
+            forAgesAbove: forAgesAbove,
+            hasExpiryDate: hasExpiryDate,
+            isFragile: isFragile,
+            itemCode: itemCode,
+            itemStatus: itemStatus,
+            manageBy: manageBy,
+            previousDispute: previousDispute,
+            serialBatchManualTyped: serialBatchManualTyped,
+            serialBatch: serialBatch,
+            sizeCapacity: sizeCapacity,
+            specification: specification,
+            subCategory: subCategory,
+            updatedBy: updatedBy,
+            updatedDateTime: updatedDateTime,
+            whileOffline: whileOffline,
+            traceid: traceid,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<String?> areaCode = const Value.absent(),
+            Value<int?> docEntry = const Value.absent(),
+            Value<String?> binCode = const Value.absent(),
+            Value<String?> rackCode = const Value.absent(),
+            Value<int?> status = const Value.absent(),
+            Value<String?> whsCode = const Value.absent(),
+            Value<String?> whsName = const Value.absent(),
+            Value<String?> zoneCode = const Value.absent(),
+            Value<String?> category = const Value.absent(),
+            Value<String?> brand = const Value.absent(),
+            Value<int?> createdBy = const Value.absent(),
+            Value<String?> createdDateTime = const Value.absent(),
+            Value<int?> checklistTemplate = const Value.absent(),
+            Value<String?> disposition = const Value.absent(),
+            Value<int?> forAgesAbove = const Value.absent(),
+            Value<String?> hasExpiryDate = const Value.absent(),
+            Value<int?> isFragile = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> itemStatus = const Value.absent(),
+            Value<String?> manageBy = const Value.absent(),
+            Value<String?> previousDispute = const Value.absent(),
+            Value<String?> serialBatchManualTyped = const Value.absent(),
+            Value<String?> serialBatch = const Value.absent(),
+            Value<String?> sizeCapacity = const Value.absent(),
+            Value<String?> specification = const Value.absent(),
+            Value<String?> subCategory = const Value.absent(),
+            Value<String?> updatedBy = const Value.absent(),
+            Value<String?> updatedDateTime = const Value.absent(),
+            Value<String?> whileOffline = const Value.absent(),
+            Value<String?> traceid = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CheckListMasterTableCompanion.insert(
+            areaCode: areaCode,
+            docEntry: docEntry,
+            binCode: binCode,
+            rackCode: rackCode,
+            status: status,
+            whsCode: whsCode,
+            whsName: whsName,
+            zoneCode: zoneCode,
+            category: category,
+            brand: brand,
+            createdBy: createdBy,
+            createdDateTime: createdDateTime,
+            checklistTemplate: checklistTemplate,
+            disposition: disposition,
+            forAgesAbove: forAgesAbove,
+            hasExpiryDate: hasExpiryDate,
+            isFragile: isFragile,
+            itemCode: itemCode,
+            itemStatus: itemStatus,
+            manageBy: manageBy,
+            previousDispute: previousDispute,
+            serialBatchManualTyped: serialBatchManualTyped,
+            serialBatch: serialBatch,
+            sizeCapacity: sizeCapacity,
+            specification: specification,
+            subCategory: subCategory,
+            updatedBy: updatedBy,
+            updatedDateTime: updatedDateTime,
+            whileOffline: whileOffline,
+            traceid: traceid,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CheckListMasterTableTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $CheckListMasterTableTable,
+        CheckListMasterTableData,
+        $$CheckListMasterTableTableFilterComposer,
+        $$CheckListMasterTableTableOrderingComposer,
+        $$CheckListMasterTableTableCreateCompanionBuilder,
+        $$CheckListMasterTableTableUpdateCompanionBuilder,
+        (
+          CheckListMasterTableData,
+          BaseReferences<_$AppDatabase, $CheckListMasterTableTable,
+              CheckListMasterTableData>
+        ),
+        CheckListMasterTableData,
+        PrefetchHooks Function()>;
 typedef $$DriftCheckLineTableCreateCompanionBuilder = DriftCheckLineCompanion
     Function({
   Value<int?> docEntry,
@@ -9026,94 +9178,6 @@ typedef $$DriftCheckLineTableUpdateCompanionBuilder = DriftCheckLineCompanion
   Value<String?> traceid,
   Value<int> rowid,
 });
-
-class $$DriftCheckLineTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DriftCheckLineTable,
-    DriftCheckLineData,
-    $$DriftCheckLineTableFilterComposer,
-    $$DriftCheckLineTableOrderingComposer,
-    $$DriftCheckLineTableCreateCompanionBuilder,
-    $$DriftCheckLineTableUpdateCompanionBuilder> {
-  $$DriftCheckLineTableTableManager(
-      _$AppDatabase db, $DriftCheckLineTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$DriftCheckLineTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$DriftCheckLineTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int?> docEntry = const Value.absent(),
-            Value<int?> docEntry1 = const Value.absent(),
-            Value<String?> templateName = const Value.absent(),
-            Value<String?> checklistCode = const Value.absent(),
-            Value<String?> checklistName = const Value.absent(),
-            Value<String?> listValue = const Value.absent(),
-            Value<bool?> acceptAttach = const Value.absent(),
-            Value<bool?> acceptMultiValue = const Value.absent(),
-            Value<bool?> isMandaory = const Value.absent(),
-            Value<int?> createdBy = const Value.absent(),
-            Value<String?> createdDatetime = const Value.absent(),
-            Value<String?> updatedBy = const Value.absent(),
-            Value<String?> updatedDatetime = const Value.absent(),
-            Value<String?> traceid = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              DriftCheckLineCompanion(
-            docEntry: docEntry,
-            docEntry1: docEntry1,
-            templateName: templateName,
-            checklistCode: checklistCode,
-            checklistName: checklistName,
-            listValue: listValue,
-            acceptAttach: acceptAttach,
-            acceptMultiValue: acceptMultiValue,
-            isMandaory: isMandaory,
-            createdBy: createdBy,
-            createdDatetime: createdDatetime,
-            updatedBy: updatedBy,
-            updatedDatetime: updatedDatetime,
-            traceid: traceid,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            Value<int?> docEntry = const Value.absent(),
-            Value<int?> docEntry1 = const Value.absent(),
-            Value<String?> templateName = const Value.absent(),
-            Value<String?> checklistCode = const Value.absent(),
-            Value<String?> checklistName = const Value.absent(),
-            Value<String?> listValue = const Value.absent(),
-            Value<bool?> acceptAttach = const Value.absent(),
-            Value<bool?> acceptMultiValue = const Value.absent(),
-            Value<bool?> isMandaory = const Value.absent(),
-            Value<int?> createdBy = const Value.absent(),
-            Value<String?> createdDatetime = const Value.absent(),
-            Value<String?> updatedBy = const Value.absent(),
-            Value<String?> updatedDatetime = const Value.absent(),
-            Value<String?> traceid = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              DriftCheckLineCompanion.insert(
-            docEntry: docEntry,
-            docEntry1: docEntry1,
-            templateName: templateName,
-            checklistCode: checklistCode,
-            checklistName: checklistName,
-            listValue: listValue,
-            acceptAttach: acceptAttach,
-            acceptMultiValue: acceptMultiValue,
-            isMandaory: isMandaory,
-            createdBy: createdBy,
-            createdDatetime: createdDatetime,
-            updatedBy: updatedBy,
-            updatedDatetime: updatedDatetime,
-            traceid: traceid,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$DriftCheckLineTableFilterComposer
     extends FilterComposer<_$AppDatabase, $DriftCheckLineTable> {
@@ -9263,6 +9327,118 @@ class $$DriftCheckLineTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$DriftCheckLineTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DriftCheckLineTable,
+    DriftCheckLineData,
+    $$DriftCheckLineTableFilterComposer,
+    $$DriftCheckLineTableOrderingComposer,
+    $$DriftCheckLineTableCreateCompanionBuilder,
+    $$DriftCheckLineTableUpdateCompanionBuilder,
+    (
+      DriftCheckLineData,
+      BaseReferences<_$AppDatabase, $DriftCheckLineTable, DriftCheckLineData>
+    ),
+    DriftCheckLineData,
+    PrefetchHooks Function()> {
+  $$DriftCheckLineTableTableManager(
+      _$AppDatabase db, $DriftCheckLineTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$DriftCheckLineTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$DriftCheckLineTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int?> docEntry = const Value.absent(),
+            Value<int?> docEntry1 = const Value.absent(),
+            Value<String?> templateName = const Value.absent(),
+            Value<String?> checklistCode = const Value.absent(),
+            Value<String?> checklistName = const Value.absent(),
+            Value<String?> listValue = const Value.absent(),
+            Value<bool?> acceptAttach = const Value.absent(),
+            Value<bool?> acceptMultiValue = const Value.absent(),
+            Value<bool?> isMandaory = const Value.absent(),
+            Value<int?> createdBy = const Value.absent(),
+            Value<String?> createdDatetime = const Value.absent(),
+            Value<String?> updatedBy = const Value.absent(),
+            Value<String?> updatedDatetime = const Value.absent(),
+            Value<String?> traceid = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              DriftCheckLineCompanion(
+            docEntry: docEntry,
+            docEntry1: docEntry1,
+            templateName: templateName,
+            checklistCode: checklistCode,
+            checklistName: checklistName,
+            listValue: listValue,
+            acceptAttach: acceptAttach,
+            acceptMultiValue: acceptMultiValue,
+            isMandaory: isMandaory,
+            createdBy: createdBy,
+            createdDatetime: createdDatetime,
+            updatedBy: updatedBy,
+            updatedDatetime: updatedDatetime,
+            traceid: traceid,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<int?> docEntry = const Value.absent(),
+            Value<int?> docEntry1 = const Value.absent(),
+            Value<String?> templateName = const Value.absent(),
+            Value<String?> checklistCode = const Value.absent(),
+            Value<String?> checklistName = const Value.absent(),
+            Value<String?> listValue = const Value.absent(),
+            Value<bool?> acceptAttach = const Value.absent(),
+            Value<bool?> acceptMultiValue = const Value.absent(),
+            Value<bool?> isMandaory = const Value.absent(),
+            Value<int?> createdBy = const Value.absent(),
+            Value<String?> createdDatetime = const Value.absent(),
+            Value<String?> updatedBy = const Value.absent(),
+            Value<String?> updatedDatetime = const Value.absent(),
+            Value<String?> traceid = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              DriftCheckLineCompanion.insert(
+            docEntry: docEntry,
+            docEntry1: docEntry1,
+            templateName: templateName,
+            checklistCode: checklistCode,
+            checklistName: checklistName,
+            listValue: listValue,
+            acceptAttach: acceptAttach,
+            acceptMultiValue: acceptMultiValue,
+            isMandaory: isMandaory,
+            createdBy: createdBy,
+            createdDatetime: createdDatetime,
+            updatedBy: updatedBy,
+            updatedDatetime: updatedDatetime,
+            traceid: traceid,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DriftCheckLineTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DriftCheckLineTable,
+    DriftCheckLineData,
+    $$DriftCheckLineTableFilterComposer,
+    $$DriftCheckLineTableOrderingComposer,
+    $$DriftCheckLineTableCreateCompanionBuilder,
+    $$DriftCheckLineTableUpdateCompanionBuilder,
+    (
+      DriftCheckLineData,
+      BaseReferences<_$AppDatabase, $DriftCheckLineTable, DriftCheckLineData>
+    ),
+    DriftCheckLineData,
+    PrefetchHooks Function()>;
 typedef $$DriftScanPostMasterTableCreateCompanionBuilder
     = DriftScanPostMasterCompanion Function({
   Value<int> IMid,
@@ -9297,90 +9473,6 @@ typedef $$DriftScanPostMasterTableUpdateCompanionBuilder
   Value<int?> templateid,
   Value<String?> scanguid,
 });
-
-class $$DriftScanPostMasterTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DriftScanPostMasterTable,
-    DriftScanPostMasterData,
-    $$DriftScanPostMasterTableFilterComposer,
-    $$DriftScanPostMasterTableOrderingComposer,
-    $$DriftScanPostMasterTableCreateCompanionBuilder,
-    $$DriftScanPostMasterTableUpdateCompanionBuilder> {
-  $$DriftScanPostMasterTableTableManager(
-      _$AppDatabase db, $DriftScanPostMasterTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer: $$DriftScanPostMasterTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$DriftScanPostMasterTableOrderingComposer(
-              ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> auditid = const Value.absent(),
-            Value<String?> whscode = const Value.absent(),
-            Value<String?> bincode = const Value.absent(),
-            Value<String?> itemcode = const Value.absent(),
-            Value<String?> serialbatch = const Value.absent(),
-            Value<double?> quantity = const Value.absent(),
-            Value<String?> stockstatus = const Value.absent(),
-            Value<String?> notes = const Value.absent(),
-            Value<String?> devicecode = const Value.absent(),
-            Value<String?> scandatetime = const Value.absent(),
-            Value<int?> ismanual = const Value.absent(),
-            Value<int?> templateid = const Value.absent(),
-            Value<String?> scanguid = const Value.absent(),
-          }) =>
-              DriftScanPostMasterCompanion(
-            IMid: IMid,
-            auditid: auditid,
-            whscode: whscode,
-            bincode: bincode,
-            itemcode: itemcode,
-            serialbatch: serialbatch,
-            quantity: quantity,
-            stockstatus: stockstatus,
-            notes: notes,
-            devicecode: devicecode,
-            scandatetime: scandatetime,
-            ismanual: ismanual,
-            templateid: templateid,
-            scanguid: scanguid,
-          ),
-          createCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> auditid = const Value.absent(),
-            Value<String?> whscode = const Value.absent(),
-            Value<String?> bincode = const Value.absent(),
-            Value<String?> itemcode = const Value.absent(),
-            Value<String?> serialbatch = const Value.absent(),
-            Value<double?> quantity = const Value.absent(),
-            Value<String?> stockstatus = const Value.absent(),
-            Value<String?> notes = const Value.absent(),
-            Value<String?> devicecode = const Value.absent(),
-            Value<String?> scandatetime = const Value.absent(),
-            Value<int?> ismanual = const Value.absent(),
-            Value<int?> templateid = const Value.absent(),
-            Value<String?> scanguid = const Value.absent(),
-          }) =>
-              DriftScanPostMasterCompanion.insert(
-            IMid: IMid,
-            auditid: auditid,
-            whscode: whscode,
-            bincode: bincode,
-            itemcode: itemcode,
-            serialbatch: serialbatch,
-            quantity: quantity,
-            stockstatus: stockstatus,
-            notes: notes,
-            devicecode: devicecode,
-            scandatetime: scandatetime,
-            ismanual: ismanual,
-            templateid: templateid,
-            scanguid: scanguid,
-          ),
-        ));
-}
 
 class $$DriftScanPostMasterTableFilterComposer
     extends FilterComposer<_$AppDatabase, $DriftScanPostMasterTable> {
@@ -9530,6 +9622,116 @@ class $$DriftScanPostMasterTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$DriftScanPostMasterTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DriftScanPostMasterTable,
+    DriftScanPostMasterData,
+    $$DriftScanPostMasterTableFilterComposer,
+    $$DriftScanPostMasterTableOrderingComposer,
+    $$DriftScanPostMasterTableCreateCompanionBuilder,
+    $$DriftScanPostMasterTableUpdateCompanionBuilder,
+    (
+      DriftScanPostMasterData,
+      BaseReferences<_$AppDatabase, $DriftScanPostMasterTable,
+          DriftScanPostMasterData>
+    ),
+    DriftScanPostMasterData,
+    PrefetchHooks Function()> {
+  $$DriftScanPostMasterTableTableManager(
+      _$AppDatabase db, $DriftScanPostMasterTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer: $$DriftScanPostMasterTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$DriftScanPostMasterTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> auditid = const Value.absent(),
+            Value<String?> whscode = const Value.absent(),
+            Value<String?> bincode = const Value.absent(),
+            Value<String?> itemcode = const Value.absent(),
+            Value<String?> serialbatch = const Value.absent(),
+            Value<double?> quantity = const Value.absent(),
+            Value<String?> stockstatus = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<String?> devicecode = const Value.absent(),
+            Value<String?> scandatetime = const Value.absent(),
+            Value<int?> ismanual = const Value.absent(),
+            Value<int?> templateid = const Value.absent(),
+            Value<String?> scanguid = const Value.absent(),
+          }) =>
+              DriftScanPostMasterCompanion(
+            IMid: IMid,
+            auditid: auditid,
+            whscode: whscode,
+            bincode: bincode,
+            itemcode: itemcode,
+            serialbatch: serialbatch,
+            quantity: quantity,
+            stockstatus: stockstatus,
+            notes: notes,
+            devicecode: devicecode,
+            scandatetime: scandatetime,
+            ismanual: ismanual,
+            templateid: templateid,
+            scanguid: scanguid,
+          ),
+          createCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> auditid = const Value.absent(),
+            Value<String?> whscode = const Value.absent(),
+            Value<String?> bincode = const Value.absent(),
+            Value<String?> itemcode = const Value.absent(),
+            Value<String?> serialbatch = const Value.absent(),
+            Value<double?> quantity = const Value.absent(),
+            Value<String?> stockstatus = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<String?> devicecode = const Value.absent(),
+            Value<String?> scandatetime = const Value.absent(),
+            Value<int?> ismanual = const Value.absent(),
+            Value<int?> templateid = const Value.absent(),
+            Value<String?> scanguid = const Value.absent(),
+          }) =>
+              DriftScanPostMasterCompanion.insert(
+            IMid: IMid,
+            auditid: auditid,
+            whscode: whscode,
+            bincode: bincode,
+            itemcode: itemcode,
+            serialbatch: serialbatch,
+            quantity: quantity,
+            stockstatus: stockstatus,
+            notes: notes,
+            devicecode: devicecode,
+            scandatetime: scandatetime,
+            ismanual: ismanual,
+            templateid: templateid,
+            scanguid: scanguid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DriftScanPostMasterTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DriftScanPostMasterTable,
+    DriftScanPostMasterData,
+    $$DriftScanPostMasterTableFilterComposer,
+    $$DriftScanPostMasterTableOrderingComposer,
+    $$DriftScanPostMasterTableCreateCompanionBuilder,
+    $$DriftScanPostMasterTableUpdateCompanionBuilder,
+    (
+      DriftScanPostMasterData,
+      BaseReferences<_$AppDatabase, $DriftScanPostMasterTable,
+          DriftScanPostMasterData>
+    ),
+    DriftScanPostMasterData,
+    PrefetchHooks Function()>;
 typedef $$DriftDispMasterTableCreateCompanionBuilder = DriftDispMasterCompanion
     Function({
   Value<int> IMid,
@@ -9546,54 +9748,6 @@ typedef $$DriftDispMasterTableUpdateCompanionBuilder = DriftDispMasterCompanion
   Value<String?> checklistvalue,
   Value<String?> attachurl,
 });
-
-class $$DriftDispMasterTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DriftDispMasterTable,
-    DriftDispMasterData,
-    $$DriftDispMasterTableFilterComposer,
-    $$DriftDispMasterTableOrderingComposer,
-    $$DriftDispMasterTableCreateCompanionBuilder,
-    $$DriftDispMasterTableUpdateCompanionBuilder> {
-  $$DriftDispMasterTableTableManager(
-      _$AppDatabase db, $DriftDispMasterTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$DriftDispMasterTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$DriftDispMasterTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> auditid = const Value.absent(),
-            Value<String?> checklistcode = const Value.absent(),
-            Value<String?> checklistvalue = const Value.absent(),
-            Value<String?> attachurl = const Value.absent(),
-          }) =>
-              DriftDispMasterCompanion(
-            IMid: IMid,
-            auditid: auditid,
-            checklistcode: checklistcode,
-            checklistvalue: checklistvalue,
-            attachurl: attachurl,
-          ),
-          createCompanionCallback: ({
-            Value<int> IMid = const Value.absent(),
-            Value<int?> auditid = const Value.absent(),
-            Value<String?> checklistcode = const Value.absent(),
-            Value<String?> checklistvalue = const Value.absent(),
-            Value<String?> attachurl = const Value.absent(),
-          }) =>
-              DriftDispMasterCompanion.insert(
-            IMid: IMid,
-            auditid: auditid,
-            checklistcode: checklistcode,
-            checklistvalue: checklistvalue,
-            attachurl: attachurl,
-          ),
-        ));
-}
 
 class $$DriftDispMasterTableFilterComposer
     extends FilterComposer<_$AppDatabase, $DriftDispMasterTable> {
@@ -9652,6 +9806,79 @@ class $$DriftDispMasterTableOrderingComposer
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
+
+class $$DriftDispMasterTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DriftDispMasterTable,
+    DriftDispMasterData,
+    $$DriftDispMasterTableFilterComposer,
+    $$DriftDispMasterTableOrderingComposer,
+    $$DriftDispMasterTableCreateCompanionBuilder,
+    $$DriftDispMasterTableUpdateCompanionBuilder,
+    (
+      DriftDispMasterData,
+      BaseReferences<_$AppDatabase, $DriftDispMasterTable, DriftDispMasterData>
+    ),
+    DriftDispMasterData,
+    PrefetchHooks Function()> {
+  $$DriftDispMasterTableTableManager(
+      _$AppDatabase db, $DriftDispMasterTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$DriftDispMasterTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$DriftDispMasterTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> auditid = const Value.absent(),
+            Value<String?> checklistcode = const Value.absent(),
+            Value<String?> checklistvalue = const Value.absent(),
+            Value<String?> attachurl = const Value.absent(),
+          }) =>
+              DriftDispMasterCompanion(
+            IMid: IMid,
+            auditid: auditid,
+            checklistcode: checklistcode,
+            checklistvalue: checklistvalue,
+            attachurl: attachurl,
+          ),
+          createCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<int?> auditid = const Value.absent(),
+            Value<String?> checklistcode = const Value.absent(),
+            Value<String?> checklistvalue = const Value.absent(),
+            Value<String?> attachurl = const Value.absent(),
+          }) =>
+              DriftDispMasterCompanion.insert(
+            IMid: IMid,
+            auditid: auditid,
+            checklistcode: checklistcode,
+            checklistvalue: checklistvalue,
+            attachurl: attachurl,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DriftDispMasterTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DriftDispMasterTable,
+    DriftDispMasterData,
+    $$DriftDispMasterTableFilterComposer,
+    $$DriftDispMasterTableOrderingComposer,
+    $$DriftDispMasterTableCreateCompanionBuilder,
+    $$DriftDispMasterTableUpdateCompanionBuilder,
+    (
+      DriftDispMasterData,
+      BaseReferences<_$AppDatabase, $DriftDispMasterTable, DriftDispMasterData>
+    ),
+    DriftDispMasterData,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

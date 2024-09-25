@@ -1,11 +1,14 @@
 import 'dart:developer';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:verifytapp/Constant/ConstantRoutes.dart';
 import 'package:verifytapp/Constant/Screen.dart';
+import 'package:verifytapp/Pages/ForceUpdateScreens/Configuration.dart';
 import '../../Constant/Configuration.dart';
 import '../../Constant/ConstantSapValues.dart';
 import '../../Constant/Helper.dart';
@@ -74,7 +77,9 @@ class SplashScreenpageState extends State<SplashScreenpage>
       _networkTimeStatus = networkTimeStatuss;
 
       if (_networkTimeStatus == 'Enabled') {
-        checkLoginPage();
+        showVersion();
+        checkVesionNum(context);
+
         // bool? isNoNetwork = await configg.haveNoInterNet();
         // if (isNoNetwork == true) {
         //   validateMethod(context);
@@ -246,5 +251,167 @@ class SplashScreenpageState extends State<SplashScreenpage>
         // child: const Image(image: AssetImage('assets/Designer.png')),
       ),
     );
+  }
+
+  Future<void> showVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    // log("packageInfo.version::" + packageInfo.version.toString());
+    ConstantValues.appversion = packageInfo.version;
+    //   print(
+    //       "packageInfo.versionConstant::" + ConstantValues.appversion.toString());
+  }
+
+  bool visibleLoading = true;
+  String? plyStoreVersionNumber = '';
+  void checkVesionNum(BuildContext context) async {
+    CheckVersionConfig checkverConfig = CheckVersionConfig();
+
+    visibleLoading = true;
+    plyStoreVersionNumber =
+        await checkverConfig.getStoreVersion('com.buson.verifytapp');
+    if (plyStoreVersionNumber == ConstantValues.appversion) {
+      await checkLoginPage();
+
+      log('versionNumber11::$plyStoreVersionNumber::AppVersionversion11::${ConstantValues.appversion}');
+    } else {
+      final theme = Theme.of(context);
+      log('versionNumber22::$plyStoreVersionNumber::AppVersionversion22::${ConstantValues.appversion}');
+
+      await Future.delayed(
+        const Duration(seconds: 1),
+        () {
+          visibleLoading = true;
+          updateDialog();
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     duration: const Duration(seconds: 7),
+          //     backgroundColor: Colors.white,
+          //     content: Text(
+          //       'Please Download the Latest Version From PalyStore',
+          //       style: TextStyle(color: theme.primaryColor),
+          //     ),
+          //   ),
+          // );
+        },
+      );
+    }
+  }
+
+  updateDialog() {
+    final theme = Theme.of(context);
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: SizedBox(
+              width: Screens.width(context),
+              height: Screens.bodyheight(context) * 0.27,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Update available",
+                    style: theme.textTheme.titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: Screens.bodyheight(context) * 0.01,
+                  ),
+                  Text(
+                    "There is a new version of the app",
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Container(
+                          height: Screens.bodyheight(context) * 0.08,
+                          width: Screens.width(context) * 0.18,
+                          padding: EdgeInsets.all(
+                              Screens.bodyheight(context) * 0.008),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.grey[200]),
+                          child: Image.asset(
+                            'assets/appiconlaunch.png',
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.all(
+                              Screens.bodyheight(context) * 0.008),
+                          // decoration: BoxDecoration(
+                          //   borderRadius: BorderRadius.circular(5),
+                          //   color: Colors.grey[200]
+                          // ),
+                          child: Text(
+                            'Version : ${plyStoreVersionNumber}',
+                            style: theme.textTheme.bodySmall!
+                                .copyWith(color: Colors.black),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // context
+                  // .read<ConfigurationContoller>()
+                  // .checkStartingPage(pagename, docEntry);
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: Screens.width(context) * 0.25,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+                            ),
+                            onPressed: () async {
+                              if (Platform.isAndroid || Platform.isIOS) {
+                                final appId = Platform.isAndroid
+                                    ? 'com.buson.verifytapp'
+                                    : 'com.buson.verifytapp';
+                                final url = Uri.parse(
+                                  Platform.isAndroid
+                                      ? "https://play.google.com/store/apps/details?id=com.buson.verifytapp"
+                                      : "https://apps.apple.com/app/id$appId",
+                                );
+                                launchUrl(
+                                  url,
+                                  mode: LaunchMode.externalApplication,
+                                ).then((value) {
+                                  // exit(0);
+                                });
+                              }
+                            },
+                            child: Text(
+                              'Update',
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.white),
+                            )),
+                      ),
+                      SizedBox(
+                        width: Screens.width(context) * 0.25,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop('Close');
+                            },
+                            child: Text(
+                              'Close',
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.white),
+                            )),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
