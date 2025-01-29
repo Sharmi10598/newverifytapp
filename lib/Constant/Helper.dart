@@ -18,6 +18,8 @@ class HelperFunctions {
   static String userType = "userType";
   static String whsecode = "whseCode";
   static String spHost = "spHost";
+  static String spMasterHost = "spMasterHost";
+
   static String Stockurl = "Stockurl";
 
   static Future<bool> saveUserType(String userType1) async {
@@ -134,8 +136,6 @@ class HelperFunctions {
 
   static Future<bool> saveHostSP(String spHost1) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    // preferences.reload();
-
     return await preferences.setString(spHost, spHost1);
   }
 
@@ -147,9 +147,23 @@ class HelperFunctions {
 
   static Future<String?> getHostDSP() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    // preferences.reload();
-
     return preferences.getString(spHost);
+  }
+
+  static Future<bool> saveMasterHostSP(String spMasterHost1) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.setString(spMasterHost, spMasterHost1);
+  }
+
+  static clearMasterHostSP() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    // preferences.reload();
+    return await preferences.remove(spMasterHost);
+  }
+
+  static Future<String?> getMasterHostDSP() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences.getString(spMasterHost);
   }
 
   static Future<bool> saveStockHostSP(String Stocsnapkurl) async {

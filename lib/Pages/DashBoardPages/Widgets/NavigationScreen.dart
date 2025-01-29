@@ -50,7 +50,10 @@ class _NavigationBtnScreensState extends State<NavigationBtnScreens> {
             label: 'Config',
           ),
           BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/power-button.png')),
+            icon: ImageIcon(
+              AssetImage('assets/power-button.png'),
+              size: 20,
+            ),
             label: 'Logout',
           ),
         ],

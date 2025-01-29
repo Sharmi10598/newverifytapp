@@ -9,11 +9,13 @@ import 'package:provider/provider.dart';
 
 import 'package:verifytapp/Pages/LoginPage/Widgets/HeaderPage.dart';
 
+import '../../../Constant/Screen.dart';
 import '../../../Controllers/LoginController/LoginControllers.dart';
 
 class LoginPageScreens extends StatefulWidget {
-  const LoginPageScreens({super.key});
-
+  LoginPageScreens({
+    super.key,
+  });
   @override
   State<LoginPageScreens> createState() => _LoginPageScreensState();
 }
@@ -27,7 +29,7 @@ class _LoginPageScreensState extends State<LoginPageScreens>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      callTimeEnableMethod();
+      callTimeEnableMethod(context);
       // context.read<LoginController>().clear();
       // context.read<LoginController>().init();
       initConnectivity();
@@ -45,7 +47,9 @@ class _LoginPageScreensState extends State<LoginPageScreens>
       // Wait for a short time to allow settings to be applied.
       await Future.delayed(const Duration(seconds: 1));
       // Recheck the status after navigating to settings.
-      _checkAutomaticTimeZoneSetting();
+      _checkAutomaticTimeZoneSetting(
+        context,
+      );
     } on PlatformException catch (e) {
       log('$e');
       // Handle error if needed
@@ -55,11 +59,15 @@ class _LoginPageScreensState extends State<LoginPageScreens>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _checkAutomaticTimeZoneSetting();
+      _checkAutomaticTimeZoneSetting(
+        context,
+      );
     }
   }
 
-  Future<void> _checkAutomaticTimeZoneSetting() async {
+  Future<void> _checkAutomaticTimeZoneSetting(
+    BuildContext context,
+  ) async {
     bool isAutomatic;
     String networkTimeStatuss = '';
     _networkTimeStatus = '';
@@ -70,7 +78,7 @@ class _LoginPageScreensState extends State<LoginPageScreens>
 
       if (_networkTimeStatus == 'Enabled') {
         context.read<LoginController>().clear();
-        context.read<LoginController>().init();
+        context.read<LoginController>().init(context);
         // ScaffoldMessenger.of(context).showSnackBar(
         //   const SnackBar(
         //     content: Text('Automatic time zone is already enabled.'),
@@ -79,20 +87,45 @@ class _LoginPageScreensState extends State<LoginPageScreens>
         // );
       } else if (_networkTimeStatus == 'Disabled') {
         showDialog(
-            barrierDismissible: true,
+            barrierDismissible: false,
             context: context,
             builder: (context) {
               return AlertDialog(
-                content:
-                    const Text('Enable Network-Provided Time on Your Device '),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Get.back();
-                        _openDateTimeSettings();
-                      },
-                      child: const Text('OK'))
-                ],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                insetPadding: EdgeInsets.all(10),
+                contentPadding: EdgeInsets.all(8),
+                content: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: Screens.padingHeight(context) * 0.02,
+                    ),
+                    const Text('Enable network-provided time on your device.'),
+                    SizedBox(
+                      height: Screens.padingHeight(context) * 0.02,
+                    ),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          textStyle: const TextStyle(),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          )),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            Navigator.pop(context);
+                            _openDateTimeSettings();
+                          });
+                        },
+                        child: const Text('OK'))
+                  ],
+                ),
               );
             });
       }
@@ -115,10 +148,14 @@ class _LoginPageScreensState extends State<LoginPageScreens>
     // });
   }
 
-  callTimeEnableMethod() {
+  callTimeEnableMethod(
+    BuildContext context,
+  ) {
     // WidgetsBinding.instance.addObserver(this);
     _networkTimeStatus = '';
-    _checkAutomaticTimeZoneSetting();
+    _checkAutomaticTimeZoneSetting(
+      context,
+    );
   }
 
   // @override

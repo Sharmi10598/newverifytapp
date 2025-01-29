@@ -14,7 +14,7 @@ class CheckListtMasterApi {
     try {
       // log('ConstantValues.token::${ConstantValues.token}');
       final response = await http.get(
-        Uri.parse(Url.queryApi + "WareSmart/v1/GetAuditChecklistMaster"),
+        Uri.parse(Url.queryApi + "Verifyt/v1/GetAuditChecklistMaster"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": 'bearer ' + ConstantValues.token,

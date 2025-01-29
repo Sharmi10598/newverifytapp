@@ -15,10 +15,10 @@ class GetAuditRescheduleApi {
     try {
       // log('ConstantValues.token::${ConstantValues.token}');
       log(Url.queryApi +
-          'WareSmart/v1/PostAuditReshedule/$docEntry/$rescheduleDate');
+          'Verifyt/v1/PostAuditReshedule/$docEntry/$rescheduleDate');
       final response = await http.post(
         Uri.parse(Url.queryApi +
-            'WareSmart/v1/PostAuditReschedule/$docEntry/$rescheduleDate'),
+            'Verifyt/v1/PostAuditReschedule/$docEntry/$rescheduleDate'),
         headers: {
           "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,

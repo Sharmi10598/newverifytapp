@@ -10,8 +10,8 @@ class OrderAttachmentApiApi {
     try {
       Config config = Config();
       log('filenamefilenameapi::${filename}');
-      var url = Uri.parse(Url.queryApi +
-          'WareSmart/v1/UploadMedia?filename=${filename.split('/').last}');
+      var url = Uri.parse(
+          '${Url.queryMasterApi}Masters/v1/UploadMedia?filename=${filename.split('/').last}');
       print("url: ${url}");
       var request = http.MultipartRequest('POST', url);
       var file = await http.MultipartFile.fromPath(
@@ -39,11 +39,11 @@ class OrderAttachmentApiApi {
 
         return resposbody.toString();
       } else {
-        return "No Data Found..!!";
+        return "No Data Found.";
       }
     } catch (e) {
       log("eerrorattachments::" + e.toString());
-      return "No Data Found..!!";
+      return "No Data Found.";
     }
   }
 }

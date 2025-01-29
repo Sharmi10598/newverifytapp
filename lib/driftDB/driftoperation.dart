@@ -393,63 +393,61 @@ class driftoperation {
       String disposition,
       int whileoffline,
       int manualtype) async {
-    log('dispositiondisposition qry:::' +
-        '''Select d.ChecklistTemplate From driftstocksnapmaster a 
-       left join drifitemmaster b on a.ItemCode = b.ItemCode 
-       left join driftbinmaster c on a.BinCode = c.Bincode 
-       left join driftchecklistmaster d on (a.BinCode = d.BinCode or  'All' = d.BinCode)  
-        AND(c.RackCode = d.RackCode or  'All' = d.RackCode)  
-        AND(c.AreaCode = d.AreaCode or  'All' = d.AreaCode)  
-       AND(c.ZoneCode = d.ZoneCode or  'All' = d.ZoneCode)  
-        AND(a.WhsCode = d.WhsCode or  'All' = d.WhsCode)  
-       AND(b.Category = d.Category or  'All' = d.Category)  
-       AND(b.SubCategory = d.SubCategory or  'All' = d.SubCategory)  
-       AND (b.Brand = d.Brand or  'All' = d.Brand) 
-       AND(b.hasExpiryDate = d.hasExpiryDate or  'All' = IfNULL (d.hasExpiryDate,''))  
-       AND(b.isFragile = d.isFragile or  'All' = IfNULL (d.isFragile,''))  
-      AND (b.itemcode = d.itemcode or  'All' = d.itemcode)  
-      AND (b.Status = d.ItemStatus or  'All' = d.ItemStatus)  
-       AND(b.ManageBy = d.ManageBy or  'All' = d.ManageBy)  
-      AND (a.SerailBatch = d.SerialBatch or 'All' = d.SerialBatch)  
-       AND(d.Disposition = '$disposition' or 'All' = d.Disposition)  
-      AND IFNULL(julianday('now') - julianday(COALESCE(a.indate, 'now')), 1) >= COALESCE(d.ForAgesAbove, 1) 
-      AND (d.SerialBatchManualTyped = '$manualtype' or 'All' = IfNULL (d.SerialBatchManualTyped , ''))  
-      AND (d.WhileOffline = '$whileoffline' or 'All' = IfNULL (d.WhileOffline , ''))
-       where a.SerailBatch ='$serialbatch'
-''');
+//     log('dispositiondisposition qry:::' +
+//         '''Select d.ChecklistTemplate From driftstocksnapmaster a
+//        left join drifitemmaster b on a.ItemCode = b.ItemCode
+//        left join driftbinmaster c on a.BinCode = c.Bincode
+//        left join driftchecklistmaster d on (a.BinCode = d.BinCode or  'all' = Lower(d.BinCode))
+//         AND(c.RackCode = d.RackCode or  'all' = Lower(d.RackCode))
+//         AND(c.AreaCode = d.AreaCode or  'all' = Lower(d.AreaCode))
+//        AND(c.ZoneCode = d.ZoneCode or  'all' = Lower(d.ZoneCode))
+//         AND(a.WhsCode = d.WhsCode or  'all' = Lower(d.WhsCode))
+//        AND(b.Category = d.Category or  'all' = Lower(d.Category))
+//        AND(b.SubCategory = d.SubCategory or  'all' = Lower(d.SubCategory))
+//        AND (b.Brand = d.Brand or  'all' = Lower(d.Brand))
+//        AND(b.hasExpiryDate = d.hasExpiryDate or  'all' = Lower(IfNULL (d.hasExpiryDate,'')))
+//        AND(b.isFragile = d.isFragile or  'all' = IfNULL (d.isFragile,''))
+//       AND (b.itemcode = d.itemcode or  'all' = Lower(d.itemcode))
+//       AND (b.Status = d.ItemStatus or  'all' = Lower(d.ItemStatus))
+//        AND(b.ManageBy = d.ManageBy or  'all' = Lower(d.ManageBy))
+//       AND (a.SerailBatch = d.SerialBatch or 'all' = Lower(d.SerialBatch))
+//        AND(d.Disposition = '$disposition' or 'all' = Lower(d.Disposition))
+//       AND IFNULL(julianday('now') - julianday(COALESCE(a.indate, 'now')), 1) >= COALESCE(d.ForAgesAbove, 1)
+//       AND (d.SerialBatchManualTyped = '$manualtype' or 'all' = Lower(IfNULL (d.SerialBatchManualTyped , '')))
+//       AND (d.WhileOffline = '$whileoffline' or 'all' = Lower(IfNULL (d.WhileOffline , '')))
+//        where a.SerailBatch ='$serialbatch' LIMIT 1
+// ''');
+
     // isnull(datediff(day, isnull(a.indate, getdate()), getdate()),1) >= isNull(d.ForAgesAbove,1) and
     // --  (b.Brand = d.Brand or  'All' = d.Brand) AND
     final result = await database
         .customSelect('''Select d.ChecklistTemplate From driftstocksnapmaster a 
        left join drifitemmaster b on a.ItemCode = b.ItemCode 
        left join driftbinmaster c on a.BinCode = c.Bincode 
-       left join driftchecklistmaster d on (a.BinCode = d.BinCode or  'All' = d.BinCode)  
-        AND(c.RackCode = d.RackCode or  'All' = d.RackCode)  
-        AND(c.AreaCode = d.AreaCode or  'All' = d.AreaCode)  
-       AND(c.ZoneCode = d.ZoneCode or  'All' = d.ZoneCode)  
-        AND(a.WhsCode = d.WhsCode or  'All' = d.WhsCode)  
-       AND(b.Category = d.Category or  'All' = d.Category)  
-       AND(b.SubCategory = d.SubCategory or  'All' = d.SubCategory)  
-       AND (b.Brand = d.Brand or  'All' = d.Brand) 
-       AND(b.hasExpiryDate = d.hasExpiryDate or  'All' = IfNULL (d.hasExpiryDate,''))  
-       AND(b.isFragile = d.isFragile or  'All' = IfNULL (d.isFragile,''))  
-      AND (b.itemcode = d.itemcode or  'All' = d.itemcode)  
-      AND (b.Status = d.ItemStatus or  'All' = d.ItemStatus)  
-       AND(b.ManageBy = d.ManageBy or  'All' = d.ManageBy)  
-      AND (a.SerailBatch = d.SerialBatch or 'All' = d.SerialBatch)  
-       AND(d.Disposition = '$disposition' or 'All' = d.Disposition)  
-      AND IFNULL(julianday('now') - julianday(COALESCE(a.indate, 'now')), 1) >= COALESCE(d.ForAgesAbove, 1) 
-      AND (d.SerialBatchManualTyped = '$manualtype' or 'All' = IfNULL (d.SerialBatchManualTyped , ''))  
-      AND (d.WhileOffline = '$whileoffline' or 'All' = IfNULL (d.WhileOffline , ''))
-       where a.SerailBatch ='$serialbatch'
+       left join driftchecklistmaster d on (a.BinCode = d.BinCode or  'all' = Lower(d.BinCode))  
+        AND(c.RackCode = d.RackCode or  'all' = Lower(d.RackCode))  
+        AND(c.AreaCode = d.AreaCode or  'all' = Lower(d.AreaCode))  
+       AND(c.ZoneCode = d.ZoneCode or  'all' = Lower(d.ZoneCode))  
+        AND(a.WhsCode = d.WhsCode or  'all' = Lower(d.WhsCode))  
+       AND(b.Category = d.Category or  'all' = Lower(d.Category))  
+       AND(b.SubCategory = d.SubCategory or  'all' = Lower(d.SubCategory))  
+       AND (b.Brand = d.Brand or  'all' = Lower(d.Brand)) 
+       AND(b.hasExpiryDate = d.hasExpiryDate or  'all' = Lower(IfNULL (d.hasExpiryDate,'')))  
+       AND(b.isFragile = d.isFragile or  'all' = IfNULL (d.isFragile,''))  
+      AND (b.itemcode = d.itemcode or  'all' = Lower(d.itemcode))  
+      AND (b.Status = d.ItemStatus or  'all' = Lower(d.ItemStatus))  
+       AND(b.ManageBy = d.ManageBy or  'all' = Lower(d.ManageBy))  
+      AND (a.SerailBatch = d.SerialBatch or 'all' = Lower(d.SerialBatch))  
+       AND(d.Disposition = '$disposition' or 'all' = Lower(d.Disposition))  
+      AND (d.SerialBatchManualTyped = '$manualtype' or 'all' = Lower(IfNULL (d.SerialBatchManualTyped , '')))  
+      AND (d.WhileOffline = '$whileoffline' or 'all' = Lower(IfNULL (d.WhileOffline , '')))
+       where a.SerailBatch ='$serialbatch' LIMIT 1
 ''').get();
-    //  LIMIT 1
-    // AND IFNULL(julianday('now') - julianday(COALESCE(a.indate, 'now')), 1) >= COALESCE(d.ForAgesAbove, 1)
-    //  AND(b.SubCategory = d.SubCategory or  'All' = d.SubCategory)
-    //  AND(d.Disposition = '$disposition' or 'All' = d.Disposition)
+
+    // AND julianday('now')  - julianday(coalesce(a.indate,'now')) >= COALESCE(d.ForAgesAbove, 0)
 
     return result.map((row) {
-      log('resultresultresultresult::${row.read<int?>('ChecklistTemplate').toString()}');
+      log('Checklist result::${row.read<int?>('ChecklistTemplate').toString()}');
 
       return Checklisttemplate(templateid: row.read<int?>('ChecklistTemplate'));
     }).toList();
@@ -459,7 +457,7 @@ class driftoperation {
       AppDatabase database) async {
     final result =
         await database.customSelect("Select * from driftchecklinemaster").get();
-    // log("CheckLine resultresult::${result.length}");
+    log("CheckLine resultresult::${result.length}");
 
     return result.map((row) {
       // log("CheckLine resultresult::${row.read<int?>('docEntry') ?? 0}");
@@ -647,7 +645,7 @@ class driftoperation {
   static Future deleteChecklistMaster(AppDatabase database) async {
     // return (delete(items)..where((tbl) => tbl.id.equals(id))).go();
     var result = database.customStatement("delete from driftchecklistmaster");
-    log("driftchecklistmaster::" + {result}.toString());
+    // log("driftchecklistmaster::" + {result}.toString());
     return result;
   }
 
@@ -695,7 +693,7 @@ class driftoperation {
     return result;
   }
 
-  static Future deleteListItem(AppDatabase database) async {
+  static Future deletestocksnap(AppDatabase database) async {
     // return (delete(items)..where((tbl) => tbl.id.equals(id))).go();
     var result = database.customStatement("delete from driftstocksnapmaster");
     // log("fgfff::" + result.toString());
@@ -1148,17 +1146,16 @@ class driftoperation {
     }).toList();
   }
 }
-// linemaster limitresult::S00001-3:BUSON1::001@:: B011
-// [log] linemaster limitresult::S00002DRESSINGTABLE-3:BUSON2::002 DRESSING TABLE:: B04
-// [log] linemaster limitresult::S00006SILDUMMY-3:BUSON3::006 SIL dummy:: B015
-// [log] linemaster limitresult::S00006SILDUMMYITEM-3:BUSON4::006 SIL dummy item:: B02
-// [log] linemaster limitresult::S00006SILDUMMYITEM10-3:BUSON5::006 SIL dummy item10:: B09
-// [log] linemaster limitresult::S00006SILDUMMYITEM11-3:BUSON::006 SIL dummy item11:: B014
-// [log] linemaster limitresult::S00006SILDUMMYITEM12-3:::006 SIL dummy item12:: B013
-// [log] linemaster limitresult::S00006SILDUMMYITEM120-3:::006 SIL dummy item120:: B020
-// [log] linemaster limitresult::S00006SILDUMMYITEM13-3:::006 SIL dummy item13:: B019
-// [log] linemaster limitresult::S00006SILDUMMYITEM14-3:::006 SIL dummy item14:: B02
-
+// [log] linemaster limitresult::S0001125241:vue52::.SS UTENSIL FLASK:: 565
+// [log] linemaster limitresult::S0001125242:vue53::0 NO OVEL LADDLE:: 767
+// [log] linemaster limitresult::S0001125243:vue54::001@:: 784555
+// [log] linemaster limitresult::S0001125244:vue55::002 DRESSING TABLE:: 852
+// [log] linemaster limitresult::S0001125245:vue56::006 SIL dummy item10:: abcd
+// [log] linemaster limitresult::S0001125246:vue57::006 SIL dummy item35:: B001
+// [log] linemaster limitresult::S0001125247:vue58::006 SIL dummy item36:: B0011
+// [log] linemaster limitresult::S0001125248:vue59::006 SIL dummy item37:: B0012
+// [log] linemaster limitresult::S0001125249:vue60::006 SIL dummy item39:: B002
+// [log] linemaster limitresult::S0001125250:vue61::006 SIL dummy item41:: B00265
 // Select  d.ChecklistTemplate From driftstocksnapmaster a
 //  left join drifitemmaster b on a.ItemCode = b.ItemCode
 //  left join driftbinmaster c on a.BinCode = c.Bincode

@@ -54,10 +54,16 @@ class _BinDetailstableState extends State<BinDetailstable> {
           textDirection: TextDirection.ltr,
         )));
         cells.add(DataCell(Text(item.itemCode.toString())));
-        cells.add(DataCell(Text(item.quantity.toString())));
+        cells.add(DataCell(Container(
+          alignment: Alignment.centerRight,
+          child: Text(
+            item.quantity.toString().replaceAll('.0', ''),
+            textAlign: TextAlign.right,
+            textDirection: TextDirection.rtl,
+          ),
+        )));
         cells.add(DataCell(Text(item.stockstatus.toString())));
         cells.add(DataCell(Text(item.notes.toString())));
-
         rows.add(DataRow(cells: cells));
       });
       return rows;

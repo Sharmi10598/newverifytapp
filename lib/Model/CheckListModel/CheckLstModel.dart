@@ -164,6 +164,8 @@ class CheckListLineData {
   String? checklistCode;
   String? checklistName;
   String? listValue;
+  String? fileattachname;
+
   bool? acceptAttach;
   bool? acceptMultiValue;
   bool? isMandaory;
@@ -176,6 +178,7 @@ class CheckListLineData {
       {required this.checklistName,
       this.isselectlistval,
       required this.acceptAttach,
+      this.fileattachname,
       required this.acceptMultiValue,
       required this.checklistCode,
       required this.createdBy,

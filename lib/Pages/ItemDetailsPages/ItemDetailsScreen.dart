@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -12,24 +14,21 @@ import '../QrScannerPage/QrPage.dart';
 import 'BinDetailTable.dart';
 
 class ItemDetails extends StatefulWidget {
-  ItemDetails({super.key, required this.title});
+  ItemDetails({super.key, required this.title, required this.theme});
   String title;
+  ThemeData theme;
   @override
   State<ItemDetails> createState() => ItemDetailsState();
 }
 
 class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
-  bool bincodeScan = false;
-  bool batchCodeScan = false;
-  bool itemCodeScan = false;
-  bool bincode = false;
-  bool disputeval = false;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    context.read<AuditCtrlProvider>().callTimeEnableMethod(context);
+    context
+        .read<AuditCtrlProvider>()
+        .callTimeEnableMethod(context, widget.theme);
     context.read<AuditCtrlProvider>().nextdisable = false;
     context.read<AuditCtrlProvider>().scandata = [];
     context.read<AuditCtrlProvider>().scantotaldeviceqty();
@@ -47,8 +46,6 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -88,8 +85,8 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                           // DBOperation.truncateCheckListT(db);
                         },
                         child: Text(
-                            'Total Items Audited - ${context.watch<AuditCtrlProvider>().fetchAuditForDetails.totalItems ?? 0}',
-                            style: theme.textTheme.bodyLarge?.copyWith(
+                            'Total Items Audited - ${context.watch<AuditCtrlProvider>().fetchAuditForDetails!.totalItems ?? 0}',
+                            style: widget.theme.textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold, fontSize: 15)),
                       ),
                       Container(
@@ -99,8 +96,8 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                             thickness: 1.5,
                           )),
                       Text(
-                          'Total Quantities Scanned - ${context.watch<AuditCtrlProvider>().fetchAuditForDetails.unitsScanned ?? 0}',
-                          style: theme.textTheme.bodyLarge?.copyWith(
+                          'Total Quantities Scanned - ${context.watch<AuditCtrlProvider>().fetchAuditForDetails!.unitsScanned ?? 0}',
+                          style: widget.theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold, fontSize: 15)),
                       Container(
                           padding: EdgeInsets.only(
@@ -110,7 +107,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                           )),
                       Text(
                           'Total Scanned Count / Qty - ${context.watch<AuditCtrlProvider>().totalscandevicecount ?? 0}/ ${context.watch<AuditCtrlProvider>().totalscandeviceQty ?? 0}',
-                          style: theme.textTheme.bodyLarge?.copyWith(
+                          style: widget.theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold, fontSize: 15))
                     ],
                   ),
@@ -133,7 +130,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                         // color: Colors.green,
                         width: Screens.padingHeight(context) * 0.3,
                         child: Text('Scan the Items',
-                            style: theme.textTheme.bodyLarge?.copyWith(
+                            style: widget.theme.textTheme.bodyLarge?.copyWith(
                                 color: Colors.grey,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 17)),
@@ -144,7 +141,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             foregroundColor: Colors.white,
-                            backgroundColor: theme.primaryColor),
+                            backgroundColor: widget.theme.primaryColor),
                         onPressed: () {
                           context.read<AuditCtrlProvider>().clearbtn();
                         },
@@ -155,20 +152,14 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                   height: Screens.padingHeight(context) * 0.015,
                 ),
                 Form(
-                  key: context.watch<AuditCtrlProvider>().formkey[2],
+                  key: context.watch<AuditCtrlProvider>().formkey2,
                   child: Column(
                     children: [
                       Container(
                         color: Colors.white,
                         alignment: Alignment.center,
                         child: TextFormField(
-                          onChanged: (value) {
-                            // setState(() {
-                            //   context
-                            //       .read<AuditCtrlProvider>()
-                            //       .checkCtrlFocus();
-                            // });
-                          },
+                          onChanged: (value) {},
                           controller: context
                               .watch<AuditCtrlProvider>()
                               .mycontroller[2],
@@ -185,7 +176,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                           onEditingComplete: () {
                             context.read<AuditCtrlProvider>().afterScanbinCode(
                                 context,
-                                theme,
+                                widget.theme,
                                 'BinCode',
                                 context
                                     .read<AuditCtrlProvider>()
@@ -207,10 +198,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                                   .read<AuditCtrlProvider>()
                                   .focus2
                                   .requestFocus();
-                            } else {
-                              // focus1.requestFocus();
-                              // focus2.unfocus();
-                            }
+                            } else {}
                           },
                           onTap: () {
                             context
@@ -275,7 +263,8 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                                       } else {
                                         context
                                             .read<AuditCtrlProvider>()
-                                            .callTimeEnableMethod(context);
+                                            .callTimeEnableMethod(
+                                                context, widget.theme);
                                       }
                                     },
                                     icon: const Icon(Icons.qr_code_2_sharp)),
@@ -283,7 +272,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                                 horizontal: Screens.width(context) * 0.03,
                                 vertical: Screens.fullHeight(context) * 0.01),
                             labelText: 'Scan Bin',
-                            labelStyle: theme.textTheme.bodyLarge
+                            labelStyle: widget.theme.textTheme.bodyLarge
                                 ?.copyWith(color: Colors.grey),
                             focusedBorder: const OutlineInputBorder(
                               // borderRadius: BorderRadius.circular(25),
@@ -333,6 +322,34 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                     controller:
                         context.watch<AuditCtrlProvider>().mycontroller[3],
                     onChanged: (value) {
+                      log(context
+                          .read<AuditCtrlProvider>()
+                          .mycontroller[3]
+                          .text);
+                      // if (context
+                      //     .read<AuditCtrlProvider>()
+                      //     .mycontroller[2]
+                      //     .text
+                      //     .isNotEmpty) {
+                      //   context.read<AuditCtrlProvider>().afterScanbinCode(
+                      //       context,
+                      //       widget.theme,
+                      //       'BinCode',
+                      //       context
+                      //           .read<AuditCtrlProvider>()
+                      //           .mycontroller[2]
+                      //           .text);
+
+                      // context.read<AuditCtrlProvider>().afterScanbinCode2(
+                      //     context,
+                      //     widget.theme,
+                      //     'BinCode',
+                      //     context
+                      //         .read<AuditCtrlProvider>()
+                      //         .mycontroller[2]
+                      //         .text);
+                      // }
+
                       if (context
                           .read<AuditCtrlProvider>()
                           .mycontroller[3]
@@ -346,10 +363,11 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                       context.read<AuditCtrlProvider>().isManualtype = true;
                     },
                     onEditingComplete: () async {
+                      context.read<AuditCtrlProvider>().filenamedet = [];
                       setState(() {
                         if (context
                             .read<AuditCtrlProvider>()
-                            .formkey[2]
+                            .formkey2
                             .currentState!
                             .validate()) {
                           if (context
@@ -363,16 +381,28 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
 
                             context.read<AuditCtrlProvider>().focus2.unfocus();
 
-                            context
-                                .read<AuditCtrlProvider>()
-                                .afterScanSerialBatch(
-                                  context,
-                                  theme,
-                                  context
-                                      .read<AuditCtrlProvider>()
-                                      .mycontroller[3]
-                                      .text,
-                                );
+                            context.read<AuditCtrlProvider>().checkAlreadyItem(
+                                context,
+                                widget.theme,
+                                context
+                                    .read<AuditCtrlProvider>()
+                                    .mycontroller[3]
+                                    .text,
+                                int.parse(context
+                                    .read<AuditCtrlProvider>()
+                                    .fetchAuditForDetails!
+                                    .docEntry
+                                    .toString()));
+                            // context
+                            //     .read<AuditCtrlProvider>()
+                            //     .afterScanSerialBatch(
+                            //       context,
+                            //       widget.theme,
+                            //       context
+                            //           .read<AuditCtrlProvider>()
+                            //           .mycontroller[3]
+                            //           .text,
+                            //     );
                           }
                         }
                       });
@@ -423,9 +453,30 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                                         .read<AuditCtrlProvider>()
                                         .networkTimeStatus ==
                                     'Enabled') {
+                                  // if (context
+                                  //     .read<AuditCtrlProvider>()
+                                  //     .mycontroller[2]
+                                  //     .text
+                                  //     .isNotEmpty) {
+                                  //   context
+                                  //       .read<AuditCtrlProvider>()
+                                  //       .afterScanbinCode(
+                                  //           context,
+                                  //           widget.theme,
+                                  //           'BinCode',
+                                  //           context
+                                  //               .read<AuditCtrlProvider>()
+                                  //               .mycontroller[2]
+                                  //               .text);
+                                  // }
+
+                                  // if (context
+                                  //         .read<AuditCtrlProvider>()
+                                  //         .invalidBin ==
+                                  //     false) {
                                   if (context
                                       .read<AuditCtrlProvider>()
-                                      .formkey[2]
+                                      .formkey2
                                       .currentState!
                                       .validate()) {
                                     ScannerPageState.batchCodeScan = true;
@@ -434,10 +485,12 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                                         MaterialPageRoute(
                                             builder: (_) => ScannerPage()));
                                   }
+                                  // }
                                 } else {
                                   context
                                       .read<AuditCtrlProvider>()
-                                      .callTimeEnableMethod(context);
+                                      .callTimeEnableMethod(
+                                          context, widget.theme);
                                 }
                               },
                               icon: const Icon(Icons.qr_code_2_sharp)),
@@ -445,7 +498,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                           horizontal: Screens.width(context) * 0.03,
                           vertical: Screens.fullHeight(context) * 0.01),
                       labelText: 'Scan Serial Batch',
-                      labelStyle: theme.textTheme.bodyLarge
+                      labelStyle: widget.theme.textTheme.bodyLarge
                           ?.copyWith(color: Colors.grey),
                       focusedBorder: const OutlineInputBorder(
                         // borderRadius: BorderRadius.circular(25),
@@ -518,7 +571,10 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                 label: 'Config',
               ),
               BottomNavigationBarItem(
-                icon: ImageIcon(AssetImage('assets/power-button.png')),
+                icon: ImageIcon(
+                  AssetImage('assets/power-button.png'),
+                  size: 20,
+                ),
                 label: 'Logout',
               ),
             ],
@@ -536,13 +592,3 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
         ));
   }
 }
-// linemaster limitresult::S00001-3:BUSON1::001@:: B011
-// [log] linemaster limitresult::S00002DRESSINGTABLE-3:BUSON2::002 DRESSING TABLE:: B04
-// [log] linemaster limitresult::S00006SILDUMMY-3:BUSON3::006 SIL dummy:: B015
-// [log] linemaster limitresult::S00006SILDUMMYITEM-3:BUSON4::006 SIL dummy item:: B02
-// [log] linemaster limitresult::S00006SILDUMMYITEM10-3:BUSON5::006 SIL dummy item10:: B09
-// [log] linemaster limitresult::S00006SILDUMMYITEM11-3:BUSON::006 SIL dummy item11:: B014
-// [log] linemaster limitresult::S00006SILDUMMYITEM12-3:::006 SIL dummy item12:: B013
-// [log] linemaster limitresult::S00006SILDUMMYITEM120-3:::006 SIL dummy item120:: B020
-// [log] linemaster limitresult::S00006SILDUMMYITEM13-3:::006 SIL dummy item13:: B019
-// [log] linemaster limitresult::S00006SILDUMMYITEM14-3:::006 SIL dummy item14:: B02

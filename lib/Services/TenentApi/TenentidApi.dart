@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
-import '../../Constant/ConstantSapValues.dart';
 import '../../Model/GetTenentIdmodel/TenentIdModel.dart';
 
 class TenantIdApi {
@@ -13,10 +12,10 @@ class TenantIdApi {
     int resCode = 500;
 
     try {
-      log('http://91.203.133.224:92/api/WareSmart/v1/GetCustomerUrl?TenantId=$tenentid');
+      // log('http://91.203.133.224:5451/api/Masters/v1/GetCustomerUrl?TenantId=$tenentid');
       final response = await http.get(
         Uri.parse(
-            "http://91.203.133.224:92/api/WareSmart/v1/GetCustomerUrl?TenantId=$tenentid"),
+            'http://dev.sellerkit.in:5461//api/Central/v1/GetClientURL/$tenentid'),
         headers: {
           'accept': '/',
         },

@@ -12,11 +12,11 @@ class GetAuditCancelApi {
     int resCode = 500;
 
     try {
-      // log('ConstantValues.token::${ConstantValues.token}');
-      log(Url.queryApi + 'WareSmart/v1/Pos6AuditCancel/$docEntry/$reason');
+      log('ConstantValues.token::${ConstantValues.token}');
+      log(Url.queryApi + 'Verifyt/v1/PoseAuditCancel/$docEntry/$reason');
       final response = await http.post(
-        Uri.parse(Url.queryApi +
-            'api/WareSmart/v1/PoseAuditCancel/$docEntry/$reason'),
+        Uri.parse(
+            Url.queryApi + 'Verifyt/v1/PoseAuditCancel/$docEntry/$reason'),
         headers: {
           "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,

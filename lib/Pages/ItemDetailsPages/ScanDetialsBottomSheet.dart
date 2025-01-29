@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../Constant/Screen.dart';
@@ -25,7 +26,7 @@ class _SerialBatchDetailsState extends State<SerialBatchDetails> {
           top: Screens.padingHeight(context) * 0.01,
         ),
         child: Form(
-          key: context.watch<AuditCtrlProvider>().formkey[3],
+          key: context.watch<AuditCtrlProvider>().formkey3,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -49,7 +50,7 @@ class _SerialBatchDetailsState extends State<SerialBatchDetails> {
                   onTap: () {
                     if (context
                         .read<AuditCtrlProvider>()
-                        .formkey[2]
+                        .formkey2
                         .currentState!
                         .validate()) {
                       context.read<AuditCtrlProvider>().mycontroller[4].text =
@@ -130,7 +131,7 @@ class _SerialBatchDetailsState extends State<SerialBatchDetails> {
                   onTap: () {
                     if (context
                         .read<AuditCtrlProvider>()
-                        .formkey[2]
+                        .formkey2
                         .currentState!
                         .validate()) {
                       context.read<AuditCtrlProvider>().mycontroller[5].text =
@@ -191,7 +192,8 @@ class _SerialBatchDetailsState extends State<SerialBatchDetails> {
               SizedBox(
                 height: Screens.padingHeight(context) * 0.01,
               ),
-              context.watch<AuditCtrlProvider>().dispvalList.isNotEmpty
+              context.watch<AuditCtrlProvider>().dispvalList != null ||
+                      context.watch<AuditCtrlProvider>().dispvalList.isNotEmpty
                   ? Container(
                       child: Wrap(
                           spacing: 5.0, // width
@@ -300,10 +302,16 @@ class _SerialBatchDetailsState extends State<SerialBatchDetails> {
                         focusNode: context.watch<AuditCtrlProvider>().noteFocus,
                         controller:
                             context.watch<AuditCtrlProvider>().mycontroller[6],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r"[a-zA-Z0-9]+|\s")),
+                          FilteringTextInputFormatter.deny(
+                              RegExp(r'[!@#$%^&*(),.?":{}|<>]'))
+                        ],
                         onTap: () {
                           if (context
                               .read<AuditCtrlProvider>()
-                              .formkey[2]
+                              .formkey2
                               .currentState!
                               .validate()) {
                             context
@@ -450,7 +458,7 @@ class _SerialBatchDetailsState extends State<SerialBatchDetails> {
                           true
                       ? null
                       : () {
-                          log('fetchAuditForDetails::${context.read<AuditCtrlProvider>().fetchAuditForDetails.docEntry}');
+                          log('fetchAuditForDetails::${context.read<AuditCtrlProvider>().fetchAuditForDetails!.docEntry}');
 
                           if (context
                                   .read<AuditCtrlProvider>()
@@ -458,12 +466,12 @@ class _SerialBatchDetailsState extends State<SerialBatchDetails> {
                               'Enabled') {
                             if (context
                                     .read<AuditCtrlProvider>()
-                                    .formkey[2]
+                                    .formkey2
                                     .currentState!
                                     .validate() &&
                                 context
                                     .read<AuditCtrlProvider>()
-                                    .formkey[3]
+                                    .formkey3
                                     .currentState!
                                     .validate()) {
                               context.read<AuditCtrlProvider>().nextdisable =
@@ -482,13 +490,18 @@ class _SerialBatchDetailsState extends State<SerialBatchDetails> {
                                     context
                                         .read<AuditCtrlProvider>()
                                         .mycontroller[4]
-                                        .text);
+                                        .text,
+                                    int.parse(context
+                                        .read<AuditCtrlProvider>()
+                                        .fetchAuditForDetails!
+                                        .docEntry
+                                        .toString()));
                               });
                             }
                           } else {
                             context
                                 .read<AuditCtrlProvider>()
-                                .callTimeEnableMethod(context);
+                                .callTimeEnableMethod(context, theme);
                           }
                         },
                   child: const Center(

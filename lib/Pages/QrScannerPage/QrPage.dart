@@ -1,8 +1,11 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:verifytapp/Controllers/AuditController/AuditControllers.dart';
+
+import '../../Controllers/SearchController/SerchControllers.dart';
 
 class ScannerPage extends StatefulWidget {
   @override
@@ -17,7 +20,7 @@ class ScannerPageState extends State<ScannerPage> {
   List<Barcode> barcodes = [];
   static bool bincodeScan = false;
   static bool batchCodeScan = false;
-  static bool itemCodeScan = false;
+  static bool searchScan = false;
   void dispose() {
     cameraController.dispose();
     super.dispose();
@@ -44,6 +47,9 @@ class ScannerPageState extends State<ScannerPage> {
                   } else if (batchCodeScan == true) {
                     log('Batch.rawValue::${barcode.rawValue}');
                     scanBatchCode(theme, barcode.rawValue!);
+                  } else if (searchScan == true) {
+                    log('search.rawValue::${barcode.rawValue}');
+                    scanSearchData(barcode.rawValue!);
                   }
                   // else if (itemCodeScan == true) {
                   //   log('itemcode.rawValue::${barcode.rawValue}');
@@ -80,31 +86,93 @@ class ScannerPageState extends State<ScannerPage> {
     Navigator.pop(context);
     // BinCode Result::[{BinCode: B011}, {BinCode: B04}, {BinCode: B015}, {BinCode: B02}, {BinCode: B09}, {BinCode: B014}, {BinCode: B013},
     //s {BinCode: B020}, {BinCode: B019}, {BinCode: B02}]
-    context
+    await context
         .read<AuditCtrlProvider>()
-        .afterScanbinCode(context, theme, 'BinCode', binValues);
+        .afterScanbinCode(context, theme, 'BinCode', binValues.trim());
+
+    if (context.read<AuditCtrlProvider>().mycontroller[2].text.isNotEmpty) {
+      await context.read<AuditCtrlProvider>().binTableDetails(
+          context.read<AuditCtrlProvider>().mycontroller[2].text.trim());
+
+      context.read<AuditCtrlProvider>().focus2.requestFocus();
+    } else {}
     bincodeScan = false;
     // context.read<AuditCtrlProvider>().disableKeyBoard(context);
   }
 
   scanBatchCode(ThemeData theme, String binValues) {
-    Navigator.pop(context);
-    if (context.read<AuditCtrlProvider>().formkey[2].currentState!.validate()) {
-      log('SerailBatchSerailBatchxx::$binValues');
-      context.read<AuditCtrlProvider>().mycontroller[3].text = binValues;
-      setState(() {
-        context.read<AuditCtrlProvider>().afterScanSerialBatch(
+    Get.back();
+    setState(() {
+      context.read<AuditCtrlProvider>().filenamedet = [];
+
+      if (context.read<AuditCtrlProvider>().formkey2.currentState!.validate()) {
+        context.read<AuditCtrlProvider>().mycontroller[3].text = binValues;
+
+        if (context.read<AuditCtrlProvider>().mycontroller[3].text.isNotEmpty) {
+          context.read<AuditCtrlProvider>().groupValueSelected = 0;
+
+          context.read<AuditCtrlProvider>().focus2.unfocus();
+
+          context.read<AuditCtrlProvider>().checkAlreadyItem(
               context,
               theme,
-              binValues,
-              // context.read<AuditCtrlProvider>().mycontroller[2].text
-            );
-        // context.read<AuditCtrlProvider>().bottomSheetafterscanserial(
-        //       context,
-        //       theme,
-        //     );
-      });
-      batchCodeScan = false;
-    }
+              context.read<AuditCtrlProvider>().mycontroller[3].text,
+              int.parse(context
+                  .read<AuditCtrlProvider>()
+                  .fetchAuditForDetails!
+                  .docEntry
+                  .toString()));
+          // context
+          //     .read<AuditCtrlProvider>()
+          //     .afterScanSerialBatch(
+          //       context,
+          //       widget.theme,
+          //       context
+          //           .read<AuditCtrlProvider>()
+          //           .mycontroller[3]
+          //           .text,
+          //     );
+        }
+      }
+    });
+
+    context.read<AuditCtrlProvider>().mycontroller[3].selection = TextSelection(
+      baseOffset: 0,
+      extentOffset:
+          context.read<AuditCtrlProvider>().mycontroller[3].text.length,
+    );
+
+    // if (context.read<AuditCtrlProvider>().formkey[2].currentState!.validate()) {
+    //   log('SerailBatchSerailBatchxx::$binValues');
+    //   context.read<AuditCtrlProvider>().mycontroller[3].text = binValues;
+    //   setState(() {
+    //     // context.read<AuditCtrlProvider>().afterScanSerialBatch(
+    //     //       context,
+    //     //       theme,
+    //     //       binValues,
+    //     //     );
+    //     if (context.read<AuditCtrlProvider>().mycontroller[3].text.isNotEmpty) {
+    //       context.read<AuditCtrlProvider>().groupValueSelected = 0;
+
+    //       context.read<AuditCtrlProvider>().focus2.unfocus();
+    //       context.read<AuditCtrlProvider>().checkAlreadyItem(
+    //           context,
+    //           theme,
+    //           context.read<AuditCtrlProvider>().mycontroller[3].text,
+    //           int.parse(context
+    //               .read<AuditCtrlProvider>()
+    //               .fetchAuditForDetails!
+    //               .docEntry
+    //               .toString()));
+    //     }
+    //   });
+    batchCodeScan = false;
+    // }
+  }
+
+  scanSearchData(String v) {
+    context.read<SearchCtrl>().SearchController.text = v;
+    Navigator.pop(context);
+    context.read<SearchCtrl>().filterSearchBoxList(v);
   }
 }

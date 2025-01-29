@@ -119,9 +119,9 @@ SELECT * from $auditDataModelTableDB
   }
 
   static Future<List<Map<String, Object?>>> getpushedscandataData(
-      Database db) async {
+      Database db, String auditid) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $pushedScanTabled
+SELECT * from $pushedScanTabled where Auditid ='$auditid'
 ''');
     // log("pushedScanTabled Result222::${result.length.toString()}");
     return result;
@@ -160,44 +160,44 @@ SELECT * from $errorScanTabled where Auditid=$auditid
   }
 
   static Future<List<Map<String, Object?>>> getErrorscandataData(
-      Database db) async {
+      Database db, String auditId) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $errorScanTabled
+SELECT * from $errorScanTabled where Auditid="$auditId"
 ''');
     log("errorScanTabled Result::${result.toString()}");
     return result;
   }
 
   static Future<List<Map<String, Object?>>> getAllErrorscandataData(
-      Database db) async {
+      Database db, String auditid) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $errorScanTabled 
+SELECT * from $errorScanTabled where Auditid =$auditid
 ''');
     log("errorScanTabled Result::${result.toString()}");
     return result;
   }
 
   static Future<List<Map<String, Object?>>> checkPushedAlreadyScandata(
-      Database db, String serialbatch, String itemCode) async {
+      Database db, String serialbatch, String itemCode, int auditId) async {
     log('''
 SELECT * from $pushedScanTabled where Serialbatch="$serialbatch" and ItemCode="$itemCode"
 ''');
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $pushedScanTabled where Serialbatch="$serialbatch" and ItemCode="$itemCode"
+SELECT * from $pushedScanTabled where Auditid =$auditId and Serialbatch="$serialbatch" and ItemCode="$itemCode"
 ''');
-    log("checkScandata Result::${result.length.toString()}");
+    log("checkPushedAlreadyScandata Result::${result.length.toString()}");
     return result;
   }
 
   static Future<List<Map<String, Object?>>> checkErrorAlreadyScandata(
-      Database db, String serialbatch, String itemCode) async {
+      Database db, int auditId, String serialbatch, String itemCode) async {
     log('''
 SELECT * from $errorScanTabled where Serialbatch="$serialbatch" and ItemCode="$itemCode"
 ''');
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $errorScanTabled where Serialbatch="$serialbatch" and ItemCode="$itemCode"
+SELECT * from $errorScanTabled where Auditid =$auditId and Serialbatch="$serialbatch" and ItemCode="$itemCode"
 ''');
-    log("checkScandata Result::${result.length.toString()}");
+    log("checkErrorAlreadyScandata Result::${result.length.toString()}");
     return result;
   }
 
@@ -218,27 +218,28 @@ Delete from $scanpostTabled
     return result;
   }
 
-  static Future<List<Map<String, Object?>>> getscandataData(Database db) async {
+  static Future<List<Map<String, Object?>>> getscandataData(
+      Database db, String auditId) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $scanpostTabled 
+SELECT * from $scanpostTabled  where Auditid="$auditId"
 ''');
     // log("scanpost1111 Result::${result.toString()}");
     return result;
   }
 
   static Future<List<Map<String, Object?>>> getscandataDataBin(
-      Database db, String binCode) async {
+      Database db, String binCode, String auditID) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $scanpostTabled  where Bincode='$binCode'
+SELECT * from $scanpostTabled  where Bincode='$binCode' and Auditid='$auditID'
 ''');
     // log("scanpost1111 Result::${result.toString()}");
     return result;
   }
 
   static Future<List<Map<String, Object?>>> getAllscandataDataLength(
-      Database db) async {
+      Database db, String auditid) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $scanpostTabled
+SELECT * from $scanpostTabled where  Auditid ='$auditid'
 ''');
     // log("scanpost555 Result::${result.toString()}");
     return result;
@@ -247,7 +248,7 @@ SELECT * from $scanpostTabled
   static Future<List<Map<String, Object?>>> getscandataDatabyId(
       Database db, int auditid) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $scanpostTabled where Auditid=$auditid
+SELECT * from $scanpostTabled where Auditid='$auditid'
 ''');
     log("scanpostbyId Result::${result.toString()}");
     return result;
@@ -255,14 +256,14 @@ SELECT * from $scanpostTabled where Auditid=$auditid
 
 // where Auditid=$auditid
   static Future<List<Map<String, Object?>>> checkScandata(
-      Database db, String serialbatch, String itemCode) async {
+      Database db, String serialbatch, String itemCode, int auditId) async {
     log('''
 SELECT * from $scanpostTabled where Serialbatch="$serialbatch" and ItemCode="$itemCode"
 ''');
     final List<Map<String, Object?>> result = await db.rawQuery('''
-SELECT * from $scanpostTabled where Serialbatch="$serialbatch" and ItemCode="$itemCode"
+SELECT * from $scanpostTabled where Auditid =$auditId and Serialbatch="$serialbatch" and ItemCode="$itemCode" 
 ''');
-    log("checkScandata Result::${result.length.toString()}");
+    log("checkScandataAlready Result::${result.length.toString()}");
     return result;
   }
 
@@ -298,14 +299,13 @@ SELECT * from $scanchecklisttdb where scanguid = '$scanguid'
   }
 
   static Future<List<Map<String, Object?>>> getSearchAllTables(
-    Database db,
-  ) async {
+      Database db, String auditid) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
-select Bincode , Serialbatch , ItemCode,Quantity, Notes,Stockstatus,Scandatetime,scanguid , ApiErrorMsg ,'Error' Status ,Whscode from ErrorScannedDataTable 
+select Bincode , Serialbatch , ItemCode,Quantity, Notes,Stockstatus,Scandatetime,scanguid , ApiErrorMsg ,'Error' Status ,Whscode from ErrorScannedDataTable where Auditid='$auditid'
 UNION All 
-select Bincode , Serialbatch , ItemCode,Quantity,Notes,Stockstatus,Scandatetime,scanguid ,'','Scanned' ,Whscode from ScanPostDataTTable 
+select Bincode , Serialbatch , ItemCode,Quantity,Notes,Stockstatus,Scandatetime,scanguid ,'','Scanned' ,Whscode from ScanPostDataTTable where Auditid='$auditid'
 UNION All 
-select Bincode , Serialbatch , ItemCode,Quantity,Notes,Stockstatus,Scandatetime ,scanguid ,'','Synced' ,Whscode from PushedScanPostDataTable
+select Bincode , Serialbatch , ItemCode,Quantity,Notes,Stockstatus,Scandatetime ,scanguid ,'','Synced' ,Whscode from PushedScanPostDataTable where Auditid='$auditid'
 ''');
     log("search Result::${result.toString()}");
     return result;

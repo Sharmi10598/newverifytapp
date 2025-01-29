@@ -17,8 +17,6 @@ import '../../Model/LoginModel/loginmodel.dart';
 import '../../Services/LoginAPI/loginApi.dart';
 
 class SplashScreenpage extends StatefulWidget {
-  const SplashScreenpage({super.key});
-
   @override
   State<SplashScreenpage> createState() => SplashScreenpageState();
 }
@@ -99,16 +97,42 @@ class SplashScreenpageState extends State<SplashScreenpage>
             context: context,
             builder: (context) {
               return AlertDialog(
-                content:
-                    const Text('Enable Network-Provided Time on Your Device '),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _openDateTimeSettings();
-                      },
-                      child: const Text('OK'))
-                ],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                insetPadding: EdgeInsets.all(10),
+                contentPadding: EdgeInsets.all(8),
+                content: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: Screens.padingHeight(context) * 0.02,
+                    ),
+                    const Text('Enable network-provided time on your device.'),
+                    SizedBox(
+                      height: Screens.padingHeight(context) * 0.02,
+                    ),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          textStyle: const TextStyle(),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                            // bottomLeft: Radius.circular(10),
+                            // bottomRight: Radius.circular(10),
+                          )),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            Navigator.pop(context);
+                            _openDateTimeSettings();
+                          });
+                        },
+                        child: const Text(' OK '))
+                  ],
+                ),
               );
             });
       }
@@ -126,23 +150,13 @@ class SplashScreenpageState extends State<SplashScreenpage>
 
   setURL() async {
     String? getCustUrl = await HelperFunctions.getHostDSP();
+    String? getMasterApiUrl = await HelperFunctions.getMasterHostDSP();
     String? getStockUrl = await HelperFunctions.getStockHostDSP();
-
     log('getStockUrlget44t:$getCustUrl');
-    // String hostip = '';
-    // if (getCustUrl != null) {
-    //   for (int i = 0; i < getCustUrl.length; i++) {
-    //     if (getCustUrl[i] == ":") {
-    //       break;
-    //     }
-    //     // log("for ${hostip}");
-    //     hostip = hostip + getCustUrl[i];
-    //   }
-    // }
-    // HelperFunctions.saveHostSP(hostip);
     Url.queryApi = "${getCustUrl.toString()}/api/";
-    Url.stockSnapApi = "${getStockUrl.toString()}/api/";
-    log('Url.queryApi Url.queryApi222::${Url.queryApi}:::stockSnapApi::${Url.stockSnapApi}');
+    Url.queryMasterApi = "${getMasterApiUrl.toString()}/api/";
+    // Url.stockSnapApi = "${getStockUrl.toString()}/api/";
+    log('Url.queryApi Url.queryApi222::${Url.queryApi}:::stockSnapApi::${Url.queryMasterApi}');
   }
 
   validateMethod(BuildContext context) async {
@@ -206,8 +220,8 @@ class SplashScreenpageState extends State<SplashScreenpage>
     userName = await HelperFunctions.getLogginUserCodeSharedPreference() ?? '';
     passWord = await HelperFunctions.getPasswordSharedPreference() ?? '';
     // ConstantValues.token = (await HelperFunctions.getTokenSharedPreference())!;
-    log("userName $userName");
-    log("passWord$passWord");
+    log("userName111:::$userName");
+    log("passWord111:::$passWord");
     Future.delayed(const Duration(seconds: 3), () async {
       isLoading = false;
       if (userName.isNotEmpty && passWord.isNotEmpty) {
@@ -236,17 +250,17 @@ class SplashScreenpageState extends State<SplashScreenpage>
     return Scaffold(
       body: Container(
         padding: EdgeInsets.only(
-            left: Screens.padingHeight(context) * 0.03,
+            left: Screens.padingHeight(context) * 0.05,
             right: Screens.padingHeight(context) * 0.03),
         decoration: const BoxDecoration(
-            shape: BoxShape.circle,
+            color: Colors.white,
             image:
                 DecorationImage(image: AssetImage('assets/appiconlaunch.png'))),
         height: Screens.fullHeight(context),
         width: Screens.width(context),
         child: SpinKitThreeBounce(
           size: Screens.padingHeight(context) * 0.04,
-          color: Colors.black,
+          color: theme.primaryColor,
         ),
         // child: const Image(image: AssetImage('assets/Designer.png')),
       ),
@@ -274,7 +288,6 @@ class SplashScreenpageState extends State<SplashScreenpage>
 
       log('versionNumber11::$plyStoreVersionNumber::AppVersionversion11::${ConstantValues.appversion}');
     } else {
-      final theme = Theme.of(context);
       log('versionNumber22::$plyStoreVersionNumber::AppVersionversion22::${ConstantValues.appversion}');
 
       await Future.delayed(
@@ -327,7 +340,7 @@ class SplashScreenpageState extends State<SplashScreenpage>
                       children: [
                         Container(
                           height: Screens.bodyheight(context) * 0.08,
-                          width: Screens.width(context) * 0.18,
+                          width: Screens.width(context) * 0.15,
                           padding: EdgeInsets.all(
                               Screens.bodyheight(context) * 0.008),
                           decoration: BoxDecoration(
@@ -335,7 +348,7 @@ class SplashScreenpageState extends State<SplashScreenpage>
                               color: Colors.grey[200]),
                           child: Image.asset(
                             'assets/appiconlaunch.png',
-                            fit: BoxFit.fill,
+                            // fit: BoxFit.fill,
                           ),
                         ),
                         Container(

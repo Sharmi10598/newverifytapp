@@ -15,6 +15,7 @@ import '../../Model/LoadItemsItemCodeModel/LoadItemCodeModel.dart';
 import '../../Model/ScanPostModel/ScanPostDataaModel.dart';
 import '../../Pages/AuditPages/Widgets/Imagepickerscree.dart';
 import '../../Pages/ItemDetailsPages/ScanDetialsBottomSheet.dart';
+import '../../Pages/QrScannerPage/QrPage.dart';
 import '../../Services/AttachmentApi/AttachmentFileLinkApi.dart';
 import '../../Services/GetAuditApi/loadCompleteApi.dart';
 import '../../Services/LoadMasterApi/LoadItemCodeApii.dart';
@@ -36,7 +37,6 @@ import '../../Model/BinDetailsModel/ScannLogModel.dart';
 import '../../Model/UserDetailsModel/UserDetailsModels.dart';
 import '../../Services/BinLockApi/BinLockedApi.dart';
 import '../../Services/BinLockApi/ScannlogAPI.dart';
-import '../../Services/GetAuditApi/AuditActionApi.dart';
 import '../../Services/GetAuditApi/AuditCancelApi.dart';
 import '../../Services/GetAuditApi/AuditRescheduleApi.dart';
 import '../../Services/GetAuditApi/GetAuditByDeviceAPI.dart';
@@ -55,11 +55,15 @@ class AuditCtrlProvider extends ChangeNotifier {
     Database db = (await DBHelper.getInstance())!;
     clearAllData();
     setURL();
-    await getAuditBydeviceData();
-    scantotaldeviceqty();
+    await callAuditapiwhilenetoff(context, theme);
     getCheckListForm();
-
     await DBOperation.getchecklistAllData(db);
+    deviceId = await HelperFunctions.getDeviceIDSharedPreference();
+
+    if (selectItemColor = true && fetchAuditForDetails != null) {
+      selectColor(
+          fetchAuditForDetails!.index!, fetchAuditForDetails!.docEntry!);
+    }
   }
 
   // DBOperation.DeletepushedScandata(db);
@@ -69,6 +73,8 @@ class AuditCtrlProvider extends ChangeNotifier {
 
   int? groupValueSelected = 0;
   int? get getgroupValueSelected => groupValueSelected;
+  int? groupScanlogValueSelected = 0;
+  int? get getgroupcanlogValueSelected => groupScanlogValueSelected;
   bool freezeqty = false;
   bool freezeItemCode = false;
   bool nextdisable = false;
@@ -86,7 +92,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   FilePickerResult? result;
   List<FilesData> filedata = [];
   String urlImage = '';
-  bool isLoading = true;
+  bool isLoading = false;
 
   List<GetAuditDataModel> getAuditList = [];
   List<GetAuditDataModel> getAuditList2 = [];
@@ -94,10 +100,16 @@ class AuditCtrlProvider extends ChangeNotifier {
   List<GetAuditDataModel> completedAuditList = [];
   List<GetAuditDataModel> upcomingtAuditList = [];
   bool isClickedStart = false;
-  FetchAuditDetais fetchAuditForDetails = FetchAuditDetais();
+  FetchAuditDetais? fetchAuditForDetails = FetchAuditDetais();
 
-  List<GlobalKey<FormState>> formkey =
-      List.generate(20, (i) => GlobalKey<FormState>());
+  GlobalKey<FormState> formkey1 = GlobalKey<FormState>();
+  GlobalKey<FormState> formkey2 = GlobalKey<FormState>();
+  GlobalKey<FormState> formkey3 = GlobalKey<FormState>();
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
+
+  final checkformkey = GlobalKey<FormState>();
+  // GlobalKey<FormState> checkformkey = GlobalKey<FormState>();
+  // List.generate(20, (i) => GlobalKey<FormState>());
 
   List<TextEditingController> mycontroller =
       List.generate(50, (i) => TextEditingController());
@@ -118,7 +130,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   String itemCode = '';
   String scanTime = '';
   String itemName = '';
-  int? dispCode;
+  String? dispCode;
   String serialBatch = '';
   String mangedBy = '';
 
@@ -151,8 +163,9 @@ class AuditCtrlProvider extends ChangeNotifier {
   binTableDetails(String binVal) async {
     Database db = (await DBHelper.getInstance())!;
     binDetails = [];
-    List<Map<String, Object?>> result2 =
-        await DBOperation.getscandataDataBin(db, binVal);
+    log('fetchAuditForDetails!.docEntry::${fetchAuditForDetails!.docEntry.toString()}');
+    List<Map<String, Object?>> result2 = await DBOperation.getscandataDataBin(
+        db, binVal, fetchAuditForDetails!.docEntry.toString());
     if (result2.isNotEmpty) {
       for (var i = 0; i < result2.length; i++) {
         binDetails.add(ScanDataPost(
@@ -190,6 +203,24 @@ class AuditCtrlProvider extends ChangeNotifier {
     }
   }
 
+  bool selectItemColor = false;
+  selectColor(int index, int docEntry) {
+    for (var i = 0; i < openAuditList.length; i++) {
+      openAuditList[i].selectListcolor = false;
+      selectItemColor = false;
+    }
+    log('message docEntry::${docEntry}::${openAuditList.length}');
+    if (docEntry == openAuditList[index].docEntry) {
+      openAuditList[index].selectListcolor = true;
+      notifyListeners();
+    } else {
+      openAuditList[index].selectListcolor = false;
+      notifyListeners();
+    }
+
+    notifyListeners();
+  }
+
   getTotalLengthItems(int docentry) async {
     final database = (await AppDatabase.initialize())!;
 
@@ -207,29 +238,28 @@ class AuditCtrlProvider extends ChangeNotifier {
   int? totalscandevicecount = 0;
   int? totalscandeviceQty = 0;
 
+  bool invalidBin = false;
   scantotaldeviceqty() async {
     totalscandevicecount = 0;
     totalscandeviceQty = 0;
-    int scanqtyy = 0;
+    int pendingScanqtyy = 0;
     int successqtyy = 0;
-    int errorrrtyy = 0;
+    int errorrrqtyy = 0;
     totalscandeviceQty = 0;
 
     Database db = (await DBHelper.getInstance())!;
 
     List<Map<String, Object?>> scannedPostData =
         await DBOperation.getAllscandataDataLength(
-      db,
-    );
+            db, fetchAuditForDetails!.docEntry.toString());
     for (var i = 0; i < scannedPostData.length; i++) {
-      scanqtyy =
-          scanqtyy + int.parse(scannedPostData[i]['Quantity'].toString());
+      pendingScanqtyy = pendingScanqtyy +
+          int.parse(scannedPostData[i]['Quantity'].toString());
       notifyListeners();
     }
     List<Map<String, Object?>> pushedScannedPostData =
         await DBOperation.getpushedscandataData(
-      db,
-    );
+            db, fetchAuditForDetails!.docEntry.toString());
 
     for (var i = 0; i < pushedScannedPostData.length; i++) {
       successqtyy = successqtyy +
@@ -237,10 +267,11 @@ class AuditCtrlProvider extends ChangeNotifier {
       notifyListeners();
     }
     List<Map<String, Object?>> errorScannedPostData =
-        await DBOperation.getAllErrorscandataData(db);
+        await DBOperation.getAllErrorscandataData(
+            db, fetchAuditForDetails!.docEntry.toString());
 
     for (var i = 0; i < errorScannedPostData.length; i++) {
-      errorrrtyy = errorrrtyy +
+      errorrrqtyy = errorrrqtyy +
           int.parse(errorScannedPostData[i]['Quantity'].toString());
       notifyListeners();
     }
@@ -248,9 +279,822 @@ class AuditCtrlProvider extends ChangeNotifier {
     totalscandevicecount = int.parse(scannedPostData.length.toString()) +
         int.parse(pushedScannedPostData.length.toString()) +
         int.parse(errorScannedPostData.length.toString());
-    totalscandeviceQty = scanqtyy + successqtyy + errorrrtyy;
+    totalscandeviceQty = pendingScanqtyy + successqtyy + errorrrqtyy;
     log('totalscandeviceQtytotalscandeviceQty::${totalscandeviceQty}');
     notifyListeners();
+  }
+
+  showRescheduleDialog(BuildContext context, ThemeData theme, int docEntry) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, st) {
+            return AlertDialog(
+                insetPadding: EdgeInsets.zero,
+                contentPadding: EdgeInsets.zero,
+                content: rescheduleDatePopUp(context, theme, docEntry));
+          });
+        });
+  }
+
+  Container rescheduleDatePopUp(
+      BuildContext context, ThemeData theme, int docEntry) {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      // height: Screens.padingHeight(context) * 0.2,
+      width: Screens.width(context) * 0.9,
+      child: Form(
+        key: formkey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  color: theme.primaryColor,
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8))),
+              height: Screens.bodyheight(context) * 0.06,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding:
+                        EdgeInsets.only(left: Screens.width(context) * 0.2),
+                    width: Screens.width(context) * 0.7,
+                    child: Center(
+                        child: Text("Reschedule",
+                            style: theme.textTheme.bodyLarge!
+                                .copyWith(color: Colors.white))),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      icon: const Icon(Icons.close, color: Colors.white))
+                ],
+              ),
+            ),
+            SizedBox(
+              height: Screens.padingHeight(context) * 0.02,
+            ),
+            Container(
+              padding: EdgeInsets.only(
+                  left: Screens.padingHeight(context) * 0.01,
+                  right: Screens.padingHeight(context) * 0.01),
+              color: Colors.white,
+              alignment: Alignment.center,
+              child: TextFormField(
+                onTap: () {
+                  showDatexxxxx(context, theme);
+                  // showDate(context);
+                },
+                controller: mycontroller[0],
+                readOnly: true,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return '*Schedule date is mandatory';
+                  }
+                  //  else if (value.isNotEmpty) {
+                  //   if (value == DateTime.now().toString()) {
+                  //     return "Please Enter the Future Date";
+                  //   }
+                  // }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(
+                      horizontal: Screens.width(context) * 0.03,
+                      vertical: Screens.fullHeight(context) * 0.01),
+                  labelText: 'Enter schedule date',
+                  suffixIcon: Icon(
+                    Icons.calendar_month,
+                    color: theme.primaryColor,
+                  ),
+                  labelStyle:
+                      theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                  focusedBorder: const OutlineInputBorder(
+                    // borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    // borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(width: 1, color: Colors.grey),
+                  ),
+                  focusedErrorBorder: const OutlineInputBorder(
+                    // borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  errorBorder: const OutlineInputBorder(
+                    // borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                ),
+              ),
+            ),
+            validteText.isNotEmpty
+                ? Container(
+                    padding:
+                        EdgeInsets.only(left: Screens.width(context) * 0.03),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      validteText,
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: Colors.red),
+                    ))
+                : Container(),
+            SizedBox(
+              height: Screens.padingHeight(context) * 0.02,
+            ),
+            Container(
+              width: Screens.width(context) * 0.9,
+              height: Screens.bodyheight(context) * 0.06,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    // context
+                    //     .read<AuditCtrlProvider>()
+                    //     .apiResponseDialog(context, theme, 'Success');
+                    validateReschedule(context, theme, docEntry);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.primaryColor,
+                    foregroundColor: Colors.white,
+                    textStyle: const TextStyle(),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    )),
+                  ),
+                  child: const Text("OK")),
+            ),
+            // Container(
+            //     width: Screens.width(context) * 0.5,
+            //     child: ElevatedButton(
+            //         onPressed: () async {
+            //           // await GetAuditRescheduleApi.getData();
+            //           notifyListeners();
+            //         },
+            //         child: Text('OK')))
+          ],
+        ),
+      ),
+    );
+  }
+
+  RescheduleAbortAlertBox(BuildContext context, ThemeData theme, String msg) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, st) {
+            return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                insetPadding: const EdgeInsets.all(20),
+                contentPadding: EdgeInsets.zero,
+                content: Container(
+                    padding: EdgeInsets.zero,
+                    width: Screens.width(context),
+                    //  height: Screens.bodyheight(context)*0.5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: theme.primaryColor,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8))),
+                        width: Screens.width(context),
+                        height: Screens.bodyheight(context) * 0.06,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(
+                                  left: Screens.width(context) * 0.2),
+                              alignment: Alignment.center,
+                              width: Screens.width(context) * 0.7,
+                              child: Center(
+                                  child: Text("Alert",
+                                      style: theme.textTheme.bodyLarge!
+                                          .copyWith(color: Colors.white))),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                icon: Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                ))
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.03,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Text('$msg'),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.02,
+                      ),
+                      SizedBox(
+                        width: Screens.width(context) * 0.25,
+                        height: Screens.bodyheight(context) * 0.055,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+
+                              // primary: theme.primaryColor,
+                              textStyle: const TextStyle(color: Colors.white),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              )),
+                            ),
+                            onPressed: () {
+                              Get.back();
+                            },
+                            child: const Text(
+                              "OK",
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.01,
+                      ),
+                    ])));
+          });
+        });
+  }
+
+  showAbortDialog(BuildContext context, ThemeData theme, int docEntry) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, st) {
+            return AlertDialog(
+                insetPadding: EdgeInsets.zero,
+                contentPadding: EdgeInsets.zero,
+                content: abortPopUp(context, theme, docEntry));
+          });
+        });
+  }
+
+  Container abortPopUp(BuildContext context, ThemeData theme, int docEntry) {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      // height: Screens.padingHeight(context) * 0.2,
+      width: Screens.width(context) * 0.9,
+      child: Form(
+        key: formkey1,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  color: theme.primaryColor,
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8))),
+              height: Screens.bodyheight(context) * 0.06,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding:
+                        EdgeInsets.only(left: Screens.width(context) * 0.18),
+                    width: Screens.width(context) * 0.7,
+                    child: Center(
+                        child: Text("Abort",
+                            style: theme.textTheme.bodyLarge!
+                                .copyWith(color: Colors.white))),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      icon: const Icon(Icons.close, color: Colors.white))
+                ],
+              ),
+            ),
+            SizedBox(
+              height: Screens.padingHeight(context) * 0.02,
+            ),
+            Container(
+              padding: EdgeInsets.only(
+                  left: Screens.padingHeight(context) * 0.01,
+                  right: Screens.padingHeight(context) * 0.01),
+              color: Colors.white,
+              alignment: Alignment.center,
+              child: TextFormField(
+                controller: mycontroller[1],
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter reason';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(
+                      horizontal: Screens.width(context) * 0.03,
+                      vertical: Screens.fullHeight(context) * 0.01),
+                  labelText: 'Enter reason',
+                  // suffixIcon: Icon(
+                  //   Icons.calendar_month,
+                  //   color: theme.primaryColor,
+                  // ),
+                  labelStyle:
+                      theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                  focusedBorder: const OutlineInputBorder(
+                    // borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    // borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(width: 1, color: Colors.grey),
+                  ),
+                  focusedErrorBorder: const OutlineInputBorder(
+                    // borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  errorBorder: const OutlineInputBorder(
+                    // borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: Screens.padingHeight(context) * 0.02,
+            ),
+            Container(
+              width: Screens.width(context) * 0.9,
+              height: Screens.bodyheight(context) * 0.06,
+              child: ElevatedButton(
+                  onPressed: () {
+                    validateAbort(docEntry, context, theme);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.primaryColor,
+                    foregroundColor: Colors.white,
+                    textStyle: const TextStyle(),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    )),
+                  ),
+                  child: const Text("OK")),
+            ),
+            // Container(
+            //     width: Screens.width(context) * 0.5,
+            //     child: ElevatedButton(
+            //         onPressed: () async {
+            //           // await GetAuditRescheduleApi.getData();
+            //           notifyListeners();
+            //         },
+            //         child: Text('OK')))
+          ],
+        ),
+      ),
+    );
+  }
+
+  openStatusAlertBox(ThemeData theme, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, st) {
+            return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                insetPadding: const EdgeInsets.all(20),
+                contentPadding: EdgeInsets.zero,
+                content: Container(
+                    padding: EdgeInsets.zero,
+                    width: Screens.width(context),
+                    //  height: Screens.bodyheight(context)*0.5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: theme.primaryColor,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8))),
+                        width: Screens.width(context),
+                        height: Screens.bodyheight(context) * 0.06,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(
+                                  left: Screens.width(context) * 0.2),
+                              alignment: Alignment.center,
+                              width: Screens.width(context) * 0.7,
+                              child: Center(
+                                  child: Text("Alert",
+                                      style: theme.textTheme.bodyLarge!
+                                          .copyWith(color: Colors.white))),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                icon: Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                ))
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.03,
+                      ),
+                      // Container(
+                      //   padding: const EdgeInsets.all(8),
+                      //   child:
+                      //       Text('Please start the audit to proceed further'),
+                      // ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            child: Text(
+                                'Please start the audit job to proceed scanning activity'),
+                          ),
+                          Container(
+                            child: Text('Note :',
+                                style: theme.textTheme.bodyLarge!
+                                    .copyWith(fontWeight: FontWeight.bold)),
+                          ),
+                          Container(
+                            child: Text(
+                                '1. Audit job can be started only in portal'),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.02,
+                      ),
+                      SizedBox(
+                        width: Screens.width(context) * 0.25,
+                        height: Screens.bodyheight(context) * 0.055,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+
+                              // primary: theme.primaryColor,
+                              textStyle: const TextStyle(color: Colors.white),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              )),
+                            ),
+                            onPressed: () {
+                              Get.back();
+                            },
+                            child: const Text(
+                              "OK",
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.01,
+                      ),
+                    ])));
+          });
+        });
+  }
+
+  showViewDetailsDialog(BuildContext context, ThemeData theme) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, st) {
+            return AlertDialog(
+                insetPadding: EdgeInsets.zero,
+                contentPadding: EdgeInsets.zero,
+                content: auditDetailsDialog(context, theme));
+          });
+        });
+  }
+
+  Container auditDetailsDialog(BuildContext context, ThemeData theme) {
+    return Container(
+      width: Screens.width(context),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            padding: EdgeInsets.only(
+                left: Screens.width(context) * 0.1,
+                right: Screens.width(context) * 0.03),
+            color: theme.primaryColor,
+            // width: Screens.width(context),
+            height: Screens.bodyheight(context) * 0.06,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: Screens.width(context) * 0.7,
+                  alignment: Alignment.center,
+                  child: Text("Audit Details",
+                      style: theme.textTheme.bodyLarge
+                          ?.copyWith(color: Colors.white)),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                      alignment: Alignment.centerRight,
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      )),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: Screens.width(context),
+            height: Screens.bodyheight(context) * 0.77,
+            padding: EdgeInsets.only(
+              top: Screens.bodyheight(context) * 0.01,
+              bottom: Screens.bodyheight(context) * 0.01,
+              left: Screens.width(context) * 0.03,
+              right: Screens.width(context) * 0.03,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: Screens.padingHeight(context) * 0.01,
+                  ),
+                  Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: Screens.width(context) * 0.45,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${fetchAuditForDetails!.scheduleName}',
+                                style: theme.textTheme.bodyLarge
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: Screens.padingHeight(context) * 0.01,
+                              ),
+                              Text(
+                                  'Audit From : ${config.alignDate(fetchAuditForDetails!.auditFrom.toString())}'),
+                              Text(
+                                  'Audit To      : ${config.alignDate(fetchAuditForDetails!.auditTo.toString())}'),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: Screens.width(context) * 0.4,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Doc Num    : ${fetchAuditForDetails!.docNum}',
+                              ),
+                              Text(
+                                  'Status         : ${fetchAuditForDetails!.status}'),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: Screens.padingHeight(context) * 0.04,
+                  ),
+                  createTable(theme),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            width: Screens.width(context),
+            height: Screens.bodyheight(context) * 0.06,
+            child: ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                  // context.read<OrderTabController>().viweDetailsClicked();
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: theme.primaryColor,
+                  textStyle: const TextStyle(
+                      // fontSize: 12,
+                      ),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  )), //Radius.circular(6)
+                ),
+                child: const Text("Close")),
+          ),
+        ],
+      ),
+    );
+  }
+
+  downloadDataAlertBox(ThemeData theme, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, st) {
+            return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                insetPadding: const EdgeInsets.all(20),
+                contentPadding: EdgeInsets.zero,
+                content: Container(
+                    padding: EdgeInsets.zero,
+                    width: Screens.width(context),
+                    //  height: Screens.bodyheight(context)*0.5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: theme.primaryColor,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8))),
+                        width: Screens.width(context),
+                        height: Screens.bodyheight(context) * 0.06,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(
+                                  left: Screens.width(context) * 0.2),
+                              alignment: Alignment.center,
+                              width: Screens.width(context) * 0.7,
+                              child: Center(
+                                  child: Text("Alert",
+                                      style: theme.textTheme.bodyLarge!
+                                          .copyWith(color: Colors.white))),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                icon: Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                ))
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.02,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        child:
+                            Text('Please download stock data to start audit'),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.03,
+                      ),
+                      SizedBox(
+                        width: Screens.width(context) * 0.25,
+                        height: Screens.bodyheight(context) * 0.055,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+
+                              // primary: theme.primaryColor,
+                              textStyle: const TextStyle(color: Colors.white),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              )),
+                            ),
+                            onPressed: () {
+                              Get.back();
+                            },
+                            child: const Text(
+                              "OK",
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.01,
+                      ),
+                    ])));
+          });
+        });
+  }
+
+  Widget createTable(ThemeData theme) {
+    List<TableRow> rows = [];
+    rows.add(TableRow(children: [
+      Container(
+        color: theme.primaryColor,
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        child: Text(
+          "User Code",
+          style: theme.textTheme.bodyLarge
+              ?.copyWith(fontWeight: FontWeight.normal, color: Colors.white),
+          textAlign: TextAlign.left,
+        ),
+      ),
+      Container(
+        color: theme.primaryColor,
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        child: Text(
+          "User Name",
+          style: theme.textTheme.bodyLarge
+              ?.copyWith(fontWeight: FontWeight.normal, color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
+      ),
+      Container(
+        color: theme.primaryColor,
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        child: Text(
+          "Audit Role",
+          style: theme.textTheme.bodyLarge
+              ?.copyWith(fontWeight: FontWeight.normal, color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    ]));
+    for (int i = 0; i < usetDetailData.length; ++i) {
+      rows.add(TableRow(children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+          child: Text(
+            '${usetDetailData[i].userCode}',
+            textAlign: TextAlign.left,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.primaryColor,
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+          child: Text(
+            usetDetailData[i].username,
+
+            // '${context.watch<QuotestabController>().getleadDeatilsQTLData[i].Price!.toStringAsFixed(2)}',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.primaryColor,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+          child: Text(
+            usetDetailData[i].auditRole,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.primaryColor,
+            ),
+          ),
+        ),
+      ]));
+    }
+
+    return Table(columnWidths: {
+      0: const FlexColumnWidth(1.8),
+      1: const FlexColumnWidth(2.8),
+      2: const FlexColumnWidth(2),
+    }, children: rows);
   }
 
   getScannedInformation(int docentry) async {
@@ -354,7 +1198,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   callAuditapiwhilenetoff(BuildContext context, ThemeData theme) async {
     bool? noNetbool = await config.haveNoInterNet();
     if (noNetbool == false) {
-      callGetAuditApi(context, theme);
+      await callGetAuditApi(context, theme);
       notifyListeners();
     } else {
       await getAuditBydeviceData();
@@ -372,6 +1216,17 @@ class AuditCtrlProvider extends ChangeNotifier {
     } else {
       noteFocus.requestFocus();
     }
+    notifyListeners();
+  }
+
+  groupScanLogSelectvalue(int i) {
+    groupScanlogValueSelected = i;
+    // if (i == 0) {
+    //   mycontroller[6].text = '';
+    //   notifyListeners();
+    // } else {
+    //   noteFocus.requestFocus();
+    // }
     notifyListeners();
   }
 
@@ -397,6 +1252,7 @@ class AuditCtrlProvider extends ChangeNotifier {
       isLoading == false;
       for (var i = 0; i < result2.length; i++) {
         getAuditList.add(GetAuditDataModel(
+            selectListcolor: false,
             auditFrom: result2[i]['AuditFrom'].toString() ?? '',
             user: result2[i]['User'].toString(),
             percent: result2[i]['Percent'] != null
@@ -448,9 +1304,16 @@ class AuditCtrlProvider extends ChangeNotifier {
   }
 
   clearAllData() async {
+    invalidBin = false;
     groupValueSelected = 0;
+    groupScanlogValueSelected = 0;
+    getItemCodedocentryResult = [];
     totalScan = 0;
     totalScanPost = 0;
+    filenamedet = [];
+    getItemCodeResult = [];
+    uuiDeviceId = '';
+
     viewSuccessDetails = [];
     viewScanMainDetails = [];
     pushedexcelvaluers = [];
@@ -459,6 +1322,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     viewsucess = false;
     viewmain = false;
     syncdatafreeze = false;
+    selectItemColor = false;
     totalSuccess = 0;
     totalError = 0;
     stockRecord = 0;
@@ -475,7 +1339,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     getAuditList = [];
     assignvalue = '';
     checklistdata = [];
-    isLoading = true;
+    isLoading = false;
     seriesfocus = true;
     nextdisable = false;
     freezeItemCode = false;
@@ -493,11 +1357,13 @@ class AuditCtrlProvider extends ChangeNotifier {
     auditList = [];
     scanTime = '';
     dispvalList = [];
-
     notifyListeners();
   }
 
-  Future imagetoBinary2(ImageSource source, BuildContext context) async {
+  List<FileNameDet> filenamedet = [];
+
+  Future imagetoBinary2(
+      ImageSource source, BuildContext context, int index) async {
     List<File> filesz = [];
     urlImage = '';
     // await LocationTrack.checkcamlocation();
@@ -505,11 +1371,10 @@ class AuditCtrlProvider extends ChangeNotifier {
     if (image == null) return;
     log("image::$image");
     log("image22::${image.name}");
-    // files.add(File());
-    // if(filedata.isEmpty){
+
     filedata.clear();
     filesz.clear();
-    // }
+
     filesz.add(File(image.path));
 
     log("filesz lenghthhhhh::::::${filedata.length}");
@@ -523,6 +1388,18 @@ class AuditCtrlProvider extends ChangeNotifier {
         String tempPath = tempDir.path;
         String fullPath = '${tempDir.path}/$fileName';
         if (Platform.isAndroid) {
+          // getckeckDataListForm55[index].fileattachname = filesz[i].path;
+          if (filenamedet.isNotEmpty) {
+            for (var ix = 0; ix < filenamedet.length; ix++) {
+              log('filenamedet index::${filenamedet[ix].indexId.toString()}');
+              if (ix == index) {
+                filenamedet[ix].name = filesz[i].path;
+              }
+            }
+          }
+
+          GlobalKey<FormState> formkey = GlobalKey<FormState>();
+          log('indexxxxxx::${index}');
           filedata.add(
               FilesData(fileBytes: base64Encode(intdata), fileName: fullPath
                   // files[i].path.split('/').last
@@ -559,7 +1436,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     // showtoast();
   }
 
-  imageBottomSheet(BuildContext context) {
+  imageBottomSheet(BuildContext context, int index) {
     final width = MediaQuery.of(context).size.width;
     final theme = Theme.of(context);
     {
@@ -574,7 +1451,7 @@ class AuditCtrlProvider extends ChangeNotifier {
                   child: IconButton(
                     color: theme.primaryColor,
                     onPressed: () {
-                      selectattachment(context);
+                      selectattachment(context, index);
                       Navigator.pop(context);
                     },
                     icon: const Icon(
@@ -588,7 +1465,7 @@ class AuditCtrlProvider extends ChangeNotifier {
                   child: IconButton(
                     color: theme.primaryColor,
                     onPressed: () {
-                      imagetoBinary2(ImageSource.camera, context);
+                      imagetoBinary2(ImageSource.camera, context, index);
                       Navigator.pop(context);
                     },
                     icon: const Icon(
@@ -609,10 +1486,12 @@ class AuditCtrlProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  selectattachment(BuildContext context) async {
+  List<String> attachfilename = [];
+  List<String> allattachfilename = [];
+
+  selectattachment(BuildContext context, int index) async {
     List<File> filesz = [];
     urlImage = '';
-    log(files.length.toString());
     log('filessssssssssssssssssssss');
     // result = await FilePicker.platform.pickFiles(allowMultiple: false);
     FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -640,8 +1519,24 @@ class AuditCtrlProvider extends ChangeNotifier {
 
           // showtoast();
           files.add(filesz[i]);
-          log("Files Lenght :::::${filesz[i].path}");
+
+          log('filesssssssssssssss1::' + files.length.toString());
+
+          log("Files index :::::${index}");
           List<int> intdata = filesz[i].readAsBytesSync();
+          // getckeckDataListForm55[index].fileattachname = filesz[i].path;
+
+          // attachfilename[index] = filesz[i].path;
+          // allattachfilename.addAll(attachfilename);
+          if (filenamedet.isNotEmpty) {
+            for (var ix = 0; ix < filenamedet.length; ix++) {
+              log('filenamedet index::${filenamedet[ix].indexId.toString()}');
+              if (ix == index) {
+                filenamedet[ix].name = filesz[i].path;
+              }
+            }
+          }
+
           filedata.add(FilesData(
               fileBytes: base64Encode(intdata), fileName: filesz[i].path));
           notifyListeners();
@@ -650,6 +1545,8 @@ class AuditCtrlProvider extends ChangeNotifier {
             urlImage = value;
             notifyListeners();
           });
+          notifyListeners();
+
           //New
           // XFile? photoCompressedFile =await testCompressAndGetFile(filesz[i],filesz[i].path);
           // await FileStorage.writeCounter('${photoCompressedFile!.name}_1', photoCompressedFile);
@@ -712,8 +1609,9 @@ class AuditCtrlProvider extends ChangeNotifier {
             ));
   }
 
-  fetchOpenDetails(GetAuditDataModel fetchAuditDetais2) {
+  fetchOpenDetails(GetAuditDataModel fetchAuditDetais2, int indexx) {
     fetchAuditForDetails = FetchAuditDetais(
+        index: indexx,
         totalItems: fetchAuditDetais2.totalItems,
         unitsScanned: fetchAuditDetais2.unitsScanned,
         auditFrom: fetchAuditDetais2.auditFrom,
@@ -739,15 +1637,14 @@ class AuditCtrlProvider extends ChangeNotifier {
         updatedBy: fetchAuditDetais2.updatedBy,
         updatedDatetime: fetchAuditDetais2.updatedDatetime,
         whsCode: fetchAuditDetais2.whsCode);
-    log('XXXXX:::${fetchAuditForDetails.docEntry}');
+    log('XXXXX:::${fetchAuditForDetails!.docEntry}');
   }
 
   String errorMsg = '';
-  String NoDataMsg = 'No Data Found..!!';
+  String NoDataMsg = 'No Data Found.';
 
   String? deviceId = '';
   callGetAuditApi(BuildContext context, ThemeData theme) async {
-    // final theme = Theme.of(context);
     Database db = (await DBHelper.getInstance())!;
     getAuditList2 = [];
     openAuditList = [];
@@ -755,80 +1652,33 @@ class AuditCtrlProvider extends ChangeNotifier {
     upcomingtAuditList = [];
     errorMsg = '';
     isLoading = true;
-
     deviceId = await HelperFunctions.getDeviceIDSharedPreference();
     await GetAuditByDeviceApi.getData(deviceId!).then((value) async {
       if (value.stsCode >= 200 && value.stsCode <= 210) {
-        // log('value.auditData lengyth::${value.auditData.length}');
         getAuditList = [];
-        DBOperation.truncateAuditByDevice(db);
-        getAuditList2 = value.auditData;
-        DBOperation.insertAuditByDervice(db, getAuditList2);
-        List<Map<String, Object?>> result2 =
-            await DBOperation.getAuditByDervice(db);
-        if (result2.isNotEmpty) {
-          for (var i = 0; i < result2.length; i++) {
-            getAuditList.add(GetAuditDataModel(
-                auditFrom: result2[i]['AuditFrom'].toString(),
-                user: result2[i]['User'].toString(),
-                percent: result2[i]['Percent'] != null
-                    ? double.parse(result2[i]['Percent'].toString())
-                    : 0,
-                unitsScanned: result2[i]['UnitsScanned'] != null
-                    ? int.parse(result2[i]['UnitsScanned'].toString())
-                    : 0,
-                totalItems: result2[i]['TotalItems'] != null
-                    ? int.parse(result2[i]['TotalItems'].toString())
-                    : 0,
-                auditTo: result2[i]['AuditTo'].toString(),
-                // blockTrans: bool.parse(result2[i][' blockTrans'].toString()),
-                createdBy: result2[i]['CreatedBy'] != null
-                    ? int.parse(result2[i]['CreatedBy'].toString())
-                    : 0,
-                createdDatetime: result2[i]['CreatedDatetime'].toString(),
-                docDate: result2[i]['DocDate'].toString(),
-                docEntry: result2[i]['DocEntry'] != null
-                    ? int.parse(result2[i]['DocEntry'].toString())
-                    : 0,
-                docNum: result2[i]['DocNum'] != null
-                    ? int.parse(result2[i]['DocNum'].toString())
-                    : 0,
-                endDate: result2[i]['EndDate'].toString(),
-                remarks: result2[i]['Remarks'].toString(),
-                // repeat: result2[i]['repeat'] != null
-                //     ? bool.parse(result2[i]['repeat'].toString())
-                //     : false,
-                repeatDay: result2[i]['RepeatDay'] != null
-                    ? int.parse(result2[i]['RepeatDay'].toString())
-                    : 0,
-                repeatFrequency: result2[i]['RepeatFrequency'].toString(),
-                scheduleName: result2[i]['ScheduleName'].toString(),
-                startDate: result2[i]['StartDate'].toString(),
-                status: result2[i]['Status'].toString(),
-                traceid: result2[i]['Traceid'].toString(),
-                updatedBy: result2[i]['UpdatedBy'] != null
-                    ? int.parse(result2[i]['UpdatedBy'].toString())
-                    : 0,
-                updatedDatetime: result2[i]['UpdatedDatetime'].toString(),
-                whsCode: result2[i]['WhsCode'] != null
-                    ? result2[i]['WhsCode'].toString()
-                    : '',
-                deviceCode: ''));
-          }
-        }
+        getAuditList2 = [];
+
         isLoading = false;
-        // log('getAuditList::${getAuditList.length}');
-        splitAuditJob();
-        notifyListeners();
+        await DBOperation.truncateAuditByDevice(db);
+        getAuditList2 = value.auditData;
+
+        if (getAuditList2.isNotEmpty) {
+          await DBOperation.insertAuditByDervice(db, getAuditList2);
+          await getAuditBydeviceData();
+
+          notifyListeners();
+        } else {
+          errorMsg = 'No data';
+        }
       } else if (value.stsCode >= 400 && value.stsCode <= 410) {
         errorMsg = value.exception;
         isLoading = false;
-        apiResponseDialog(context, theme, errorMsg);
+        await apiResponseDialog(context, theme, errorMsg);
         notifyListeners();
       } else {
         isLoading = false;
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Check Your Internet..!!'),
+          content: Text('Check Your Internet.'),
           backgroundColor: Colors.red,
           elevation: 10,
           behavior: SnackBarBehavior.floating,
@@ -861,12 +1711,13 @@ class AuditCtrlProvider extends ChangeNotifier {
     List<String> listval = [];
     files = [];
 
-    if (getckeckDataListForm.isNotEmpty) {
+    if (getckeckDataListForm.isNotEmpty || getckeckDataListForm != null) {
       getckeckDataListForm55 = [];
       checklistdata = [];
 
       for (var i = 0; i < getckeckDataListForm.length; i++) {
         if (getckeckDataListForm[i].docEntry == dispnum) {
+          log('getckeckDataListForm[i].checklistName:::${getckeckDataListForm[i].listValue}');
           getckeckDataListForm55.add(CheckListLineData(
               checklistName: getckeckDataListForm[i].checklistName,
               acceptAttach: getckeckDataListForm[i].acceptAttach,
@@ -886,6 +1737,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         }
         notifyListeners();
       }
+      filedata = [];
       showingChecklistBottomSheet(context, theme);
     }
     notifyListeners();
@@ -935,7 +1787,7 @@ class AuditCtrlProvider extends ChangeNotifier {
       checklistdata.add(DispListData(
           scanguid: '',
           attachurl: '',
-          auditid: fetchAuditForDetails.docEntry,
+          auditid: fetchAuditForDetails!.docEntry,
           checklistcode: getckeckDataListForm55[ij].checklistCode,
           checklistvalue: selectedchecklistval));
       notifyListeners();
@@ -952,7 +1804,7 @@ class AuditCtrlProvider extends ChangeNotifier {
           checklistdata.add(DispListData(
               scanguid: '',
               attachurl: '',
-              auditid: fetchAuditForDetails.docEntry,
+              auditid: fetchAuditForDetails!.docEntry,
               //  getckeckDataListForm55[ij].docEntry,
               checklistcode: getckeckDataListForm55[ij].checklistCode,
               checklistvalue: selectedchecklistval));
@@ -988,8 +1840,9 @@ class AuditCtrlProvider extends ChangeNotifier {
     int? i;
     selectAnsx = '';
     selectedassignto = [];
-    log('assignvalueassignvaluezzz::$assignvalue');
+    attachfilename = [];
     showModalBottomSheet(
+        isDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return StatefulBuilder(builder: (BuildContext context, setSt) {
@@ -1005,14 +1858,15 @@ class AuditCtrlProvider extends ChangeNotifier {
 
   static const platform = MethodChannel('com.buson.verifytapp/time');
   String networkTimeStatus = '';
-  Future<void> _openDateTimeSettings(BuildContext context) async {
+  Future<void> _openDateTimeSettings(
+      BuildContext context, ThemeData theme) async {
     Get.back();
     try {
       await platform.invokeMethod('openDateTimeSettings');
       // Wait for a short time to allow settings to be applied.
       await Future.delayed(const Duration(seconds: 1));
       // Recheck the status after navigating to settings.
-      _checkAutomaticTimeZoneSetting(context);
+      _checkAutomaticTimeZoneSetting(context, theme);
     } on PlatformException catch (e) {
       log('$e');
       // Handle error if needed
@@ -1020,13 +1874,14 @@ class AuditCtrlProvider extends ChangeNotifier {
   }
 
   void didChangeAppLifecycleState(
-      AppLifecycleState state, BuildContext context) {
+      AppLifecycleState state, BuildContext context, ThemeData theme) {
     if (state == AppLifecycleState.resumed) {
-      _checkAutomaticTimeZoneSetting(context);
+      _checkAutomaticTimeZoneSetting(context, theme);
     }
   }
 
-  Future<void> _checkAutomaticTimeZoneSetting(BuildContext context) async {
+  Future<void> _checkAutomaticTimeZoneSetting(
+      BuildContext context, ThemeData theme) async {
     bool isAutomatic;
     String networkTimeStatuss = '';
     networkTimeStatus = '';
@@ -1048,16 +1903,40 @@ class AuditCtrlProvider extends ChangeNotifier {
             context: context,
             builder: (context) {
               return AlertDialog(
-                content:
-                    const Text('Enable Network-Provided Time on Your Device '),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _openDateTimeSettings(context);
-                      },
-                      child: const Text('OK'))
-                ],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                insetPadding: EdgeInsets.all(10),
+                contentPadding: EdgeInsets.all(8),
+                content: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: Screens.padingHeight(context) * 0.02,
+                    ),
+                    const Text('Enable network-provided time on your device.'),
+                    SizedBox(
+                      height: Screens.padingHeight(context) * 0.02,
+                    ),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          textStyle: const TextStyle(),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          )),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _openDateTimeSettings(context, theme);
+                          notifyListeners();
+                        },
+                        child: const Text('OK'))
+                  ],
+                ),
               );
             });
       }
@@ -1067,10 +1946,10 @@ class AuditCtrlProvider extends ChangeNotifier {
     }
   }
 
-  callTimeEnableMethod(BuildContext context) {
+  callTimeEnableMethod(BuildContext context, ThemeData theme) {
     // WidgetsBinding.instance.addObserver(this);
     networkTimeStatus = '';
-    _checkAutomaticTimeZoneSetting(context);
+    _checkAutomaticTimeZoneSetting(context, theme);
   }
 
   bottomSheetafterscanserial(
@@ -1081,7 +1960,30 @@ class AuditCtrlProvider extends ChangeNotifier {
 
     focus1.unfocus();
     focus2.unfocus();
+    int offline = whileOffline == true ? 1 : 0;
+    dispCode = dispCode ?? '';
 
+    List<Checklisttemplate> checklistvalx = await driftoperation.checkListPopup(
+        database, mycontroller[3].text, dispCode.toString(), 1, 0);
+    if (checklistvalx.isNotEmpty || checklistvalx != null) {
+      for (var i = 0; i < checklistvalx.length; i++) {
+        if (checklistvalx[i].templateid != null) {
+          log('messagevvvvvv11');
+
+          await checkListformCreation(context, theme,
+              int.parse(checklistvalx[i].templateid.toString()));
+          notifyListeners();
+        }
+      }
+    }
+    log('messagevvvvvv');
+    callSerialbatchDet(context);
+    notifyListeners();
+  }
+
+  callSerialbatchDet(
+    BuildContext context,
+  ) {
     showModalBottomSheet(
         isDismissible: false,
         isScrollControlled: true,
@@ -1091,22 +1993,7 @@ class AuditCtrlProvider extends ChangeNotifier {
             return SerialBatchDetails();
           });
         });
-    int offline = whileOffline == true ? 1 : 0;
-    log('dispCode.toString()dispCode.toString()::${dispCode.toString()}');
-    List<Checklisttemplate> checklistvalx = await driftoperation.checkListPopup(
-        database, mycontroller[3].text, dispCode.toString(), 1, 0);
-
-    if (checklistvalx.isNotEmpty) {
-      for (var i = 0; i < checklistvalx.length; i++) {
-        if (checklistvalx[i].templateid != null) {
-          checkListformCreation(context, theme,
-              int.parse(checklistvalx[i].templateid.toString()));
-          notifyListeners();
-        }
-      }
-
-      notifyListeners();
-    }
+    notifyListeners();
   }
 
   checkTableEmpty(
@@ -1139,20 +2026,33 @@ class AuditCtrlProvider extends ChangeNotifier {
       //     await driftoperation.getallLineproduct(database);
       // log('getlineresult222 length::${getlineresult22.length}');
     } else {
+      String mssgg = "Downloading item data takes some time.";
       String mssgg2 =
-          'This Operation may take few minutes. Closing the application may interrupt the process. \nDo you want to continue ?';
-      actionwarningDialog(context, theme, mssgg2, 'Start', docEntry, indx);
+          'This operation may take few minutes. Closing the application may interrupt the process. \n\nDo you want to continue ?';
+
+      actionwarningDialog(
+        context,
+        theme,
+        mssgg2,
+        mssgg,
+        'Start',
+        docEntry,
+        indx,
+      );
     }
     notifyListeners();
   }
+
+  List<LoadItemCodeLists> getItemCodeResult = [];
+  List<LoadItemCodeLists> getItemCodedocentryResult = [];
 
   void callGetItemCodeApi(
       BuildContext context, ThemeData theme, int docEntry, int indx) async {
     Get.back();
     Database db = (await DBHelper.getInstance())!;
     final database = (await AppDatabase.initialize())!;
-    auditActionHeaderList = [];
-    auditActionLineList = [];
+
+    getItemCodeResult = [];
     errorMsg = '';
 
     await GetItemCodeMasterApi.getData(docEntry).then((value) async {
@@ -1163,7 +2063,7 @@ class AuditCtrlProvider extends ChangeNotifier {
           await driftoperation.insertdriftitemcodedb(itemCodeList, database);
         }
         notifyListeners();
-        List<LoadItemCodeLists> getItemCodeResult =
+        getItemCodeResult =
             await driftoperation.getItemCodeMasterAlldata(database);
         if (getItemCodeResult.isNotEmpty) {
           String lastdowntime = config.firstDate();
@@ -1200,7 +2100,7 @@ class AuditCtrlProvider extends ChangeNotifier {
                   title: 'Message',
                   content: Column(
                     children: [
-                      Text('${valuex.respCode}..!! ${valuex.respDesc}'),
+                      Text('${valuex.respCode}. ${valuex.respDesc}'),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -1226,168 +2126,175 @@ class AuditCtrlProvider extends ChangeNotifier {
       } else if (value.stsCode >= 400 && value.stsCode <= 410) {
         openAuditList[indx].isStarting = false;
         errorMsg = value.exception;
-        apiResponseDialog(context, theme, value.exception);
-        await Get.defaultDialog(
-            title: 'Alert',
-            content: Column(
-              children: [
-                Text('${value.exception}'),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        foregroundColor: Colors.white,
-                        backgroundColor: theme.primaryColor),
-                    onPressed: () {
-                      Get.back();
-                      // context.read<DashBoardCtrlProvider>().selectedIndex =
-                      //     1;
-                      // Get.offAllNamed(ConstantRoutes.dashboard);
-                    },
-                    child: const Text(' Ok '))
-              ],
-            ));
+        await apiResponseDialog(context, theme, value.exception);
+        // await Get.defaultDialog(
+        //     title: 'Alert',
+        //     content: Column(
+        //       children: [
+        //         Text('${value.exception}'),
+        //         ElevatedButton(
+        //             style: ElevatedButton.styleFrom(
+        //                 shape: RoundedRectangleBorder(
+        //                     borderRadius: BorderRadius.circular(8)),
+        //                 foregroundColor: Colors.white,
+        //                 backgroundColor: theme.primaryColor),
+        //             onPressed: () {
+        //               Get.back();
+        //               // context.read<DashBoardCtrlProvider>().selectedIndex =
+        //               //     1;
+        //               // Get.offAllNamed(ConstantRoutes.dashboard);
+        //             },
+        //             child: const Text(' Ok '))
+        //       ],
+        //     ));
 
         isLoading = false;
         notifyListeners();
       } else {
+        bool? noNetbool = await config.haveNoInterNet();
+
         openAuditList[indx].isStarting = false;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Check Your Internet..!!'),
-          backgroundColor: Colors.red,
-          elevation: 10,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.all(5),
-          dismissDirection: DismissDirection.up,
-        ));
+        if (noNetbool == true) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Check Your Internet.'),
+            backgroundColor: Colors.red,
+            elevation: 10,
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.all(5),
+            dismissDirection: DismissDirection.up,
+          ));
+        } else {
+          await apiResponseDialog(
+              context, theme, 'Something went wrong.\n Try again.');
+        }
       }
     });
     notifyListeners();
   }
 
-  void callGetAuditActionApi(BuildContext context, ThemeData theme,
-      String actionName, int docEntry, int indx) async {
-    Get.back();
-    Database db = (await DBHelper.getInstance())!;
-    final database = (await AppDatabase.initialize())!;
-    auditActionHeaderList = [];
-    auditActionLineList = [];
-    errorMsg = '';
+  // void callGetAuditActionApi(BuildContext context, ThemeData theme,
+  //     String actionName, int docEntry, int indx) async {
+  //   Get.back();
+  //   Database db = (await DBHelper.getInstance())!;
+  //   final database = (await AppDatabase.initialize())!;
+  //   auditActionHeaderList = [];
+  //   auditActionLineList = [];
+  //   errorMsg = '';
 
-    await GetAuditActionApi.getData(actionName, docEntry).then((value) async {
-      if (value.stsCode >= 200 && value.stsCode <= 210) {
-        auditActionHeaderList = value.auditData!.auditHeaderData;
-        auditActionLineList = value.auditData!.auditLineData;
-        auditActionBinMasterList = value.auditData!.binMassterList;
+  //   await GetAuditActionApi.getData(actionName, docEntry).then((value) async {
+  //     if (value.stsCode >= 200 && value.stsCode <= 210) {
+  //       auditActionHeaderList = value.auditData!.auditHeaderData;
+  //       auditActionLineList = value.auditData!.auditLineData;
+  //       auditActionBinMasterList = value.auditData!.binMassterList;
 
-        if (auditActionHeaderList.isNotEmpty) {
-          await driftoperation.insertdriftdatabase(
-              auditActionHeaderList, database);
-        }
-        if (auditActionLineList.isNotEmpty) {
-          await driftoperation.insertdriftLinedatabase(
-              auditActionLineList, database);
-        }
-        if (auditActionBinMasterList.isNotEmpty) {
-          await driftoperation.insertBinMasterdatabase(
-              auditActionBinMasterList, database);
-        }
-        notifyListeners();
+  //       if (auditActionHeaderList.isNotEmpty) {
+  //         await driftoperation.insertdriftdatabase(
+  //             auditActionHeaderList, database);
+  //       }
+  //       if (auditActionLineList.isNotEmpty) {
+  //         await driftoperation.insertdriftLinedatabase(
+  //             auditActionLineList, database);
+  //       }
+  //       if (auditActionBinMasterList.isNotEmpty) {
+  //         await driftoperation.insertBinMasterdatabase(
+  //             auditActionBinMasterList, database);
+  //       }
+  //       notifyListeners();
 
-        List<LineData> getlineresult =
-            await driftoperation.getallLineproduct(database);
-        List<HeaderData> getheaderresult =
-            await driftoperation.getallproduct(database);
-        List<BinMasterData> getbinresult =
-            await driftoperation.getBinMasterdata(database);
-        log('headerresult::${getheaderresult.length}::lineresult::${getlineresult.length}:::BinResult::${getbinresult.length}');
-        if (getheaderresult.isNotEmpty ||
-            getlineresult.isNotEmpty ||
-            getbinresult.isNotEmpty) {
-          String lastdowntime = config.firstDate();
-          lastdowntimeStamp = config.aligndateforTimeStampt(lastdowntime);
-          // viewLoadDetails.add(ViewDetailsData(
-          //     binlength: getbinresult.length,
-          //     itemlength: getlineresult.length,
-          //     docEntry: docEntry,
-          //     lasttimestamp: lastdowntimeStamp.toString(),
-          //     stocklength: getheaderresult.length));
-          await LoadCompleteDataApi.getData(docEntry).then((valuex) async {
-            if (valuex.stsCode == 200) {
-              await callGetAuditApi(context, theme);
+  //       List<LineData> getlineresult =
+  //           await driftoperation.getallLineproduct(database);
+  //       List<HeaderData> getheaderresult =
+  //           await driftoperation.getallproduct(database);
+  //       List<BinMasterData> getbinresult =
+  //           await driftoperation.getBinMasterdata(database);
+  //       log('headerresult::${getheaderresult.length}::lineresult::${getlineresult.length}:::BinResult::${getbinresult.length}');
+  //       if (getheaderresult.isNotEmpty ||
+  //           getlineresult.isNotEmpty ||
+  //           getbinresult.isNotEmpty) {
+  //         String lastdowntime = config.firstDate();
+  //         lastdowntimeStamp = config.aligndateforTimeStampt(lastdowntime);
+  //         // viewLoadDetails.add(ViewDetailsData(
+  //         //     binlength: getbinresult.length,
+  //         //     itemlength: getlineresult.length,
+  //         //     docEntry: docEntry,
+  //         //     lasttimestamp: lastdowntimeStamp.toString(),
+  //         //     stocklength: getheaderresult.length));
+  //         await LoadCompleteDataApi.getData(docEntry).then((valuex) async {
+  //           if (valuex.stsCode == 200) {
+  //             await callGetAuditApi(context, theme);
 
-              log('Successsssss1111');
-              await Get.defaultDialog(
-                  title: 'Success',
-                  content: Column(
-                    children: [
-                      Text('Data downloaded successfully'),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              foregroundColor: Colors.white,
-                              backgroundColor: theme.primaryColor),
-                          onPressed: () async {
-                            openAuditList[indx].isStarting = false;
-                            Get.back();
-                          },
-                          child: const Text(' Ok '))
-                    ],
-                  ));
-              notifyListeners();
-            } else {
-              log('Successsssss222222');
-              openAuditList[indx].isStarting = false;
-              apiResponseDialog(context, theme, valuex.respDesc);
-              log('Successsssss55555');
-              notifyListeners();
-            }
-          });
-          notifyListeners();
-        }
-        notifyListeners();
-      } else if (value.stsCode >= 400 && value.stsCode <= 410) {
-        openAuditList[indx].isStarting = false;
-        errorMsg = value.exception;
-        // apiResponseDialog(context, theme, value.exception);
-        await Get.defaultDialog(
-            title: 'Alert',
-            content: Column(
-              children: [
-                Text('${value.exception}'),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        foregroundColor: Colors.white,
-                        backgroundColor: theme.primaryColor),
-                    onPressed: () {
-                      Get.back();
-                      // context.read<DashBoardCtrlProvider>().selectedIndex =
-                      //     1;
-                      // Get.offAllNamed(ConstantRoutes.dashboard);
-                    },
-                    child: const Text(' Ok '))
-              ],
-            ));
+  //             log('Successsssss1111');
+  //             await Get.defaultDialog(
+  //                 title: 'Success',
+  //                 content: Column(
+  //                   children: [
+  //                     Text('Data downloaded successfully'),
+  //                     ElevatedButton(
+  //                         style: ElevatedButton.styleFrom(
+  //                             shape: RoundedRectangleBorder(
+  //                                 borderRadius: BorderRadius.circular(8)),
+  //                             foregroundColor: Colors.white,
+  //                             backgroundColor: theme.primaryColor),
+  //                         onPressed: () async {
+  //                           openAuditList[indx].isStarting = false;
+  //                           Get.back();
+  //                         },
+  //                         child: const Text(' Ok '))
+  //                   ],
+  //                 ));
+  //             notifyListeners();
+  //           } else {
+  //             log('Successsssss222222');
+  //             openAuditList[indx].isStarting = false;
+  //             apiResponseDialog(context, theme, valuex.respDesc);
+  //             log('Successsssss55555');
+  //             notifyListeners();
+  //           }
+  //         });
+  //         notifyListeners();
+  //       }
+  //       notifyListeners();
+  //     } else if (value.stsCode >= 400 && value.stsCode <= 410) {
+  //       openAuditList[indx].isStarting = false;
+  //       errorMsg = value.exception;
+  //       // apiResponseDialog(context, theme, value.exception);
+  //       await Get.defaultDialog(
+  //           title: 'Alert',
+  //           content: Column(
+  //             children: [
+  //               Text('${value.exception}'),
+  //               ElevatedButton(
+  //                   style: ElevatedButton.styleFrom(
+  //                       shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(8)),
+  //                       foregroundColor: Colors.white,
+  //                       backgroundColor: theme.primaryColor),
+  //                   onPressed: () {
+  //                     Get.back();
+  //                     // context.read<DashBoardCtrlProvider>().selectedIndex =
+  //                     //     1;
+  //                     // Get.offAllNamed(ConstantRoutes.dashboard);
+  //                   },
+  //                   child: const Text(' Ok '))
+  //             ],
+  //           ));
 
-        isLoading = false;
-        notifyListeners();
-      } else {
-        openAuditList[indx].isStarting = false;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Check Your Internet..!!'),
-          backgroundColor: Colors.red,
-          elevation: 10,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.all(5),
-          dismissDirection: DismissDirection.up,
-        ));
-      }
-    });
-    notifyListeners();
-  }
+  //       isLoading = false;
+  //       notifyListeners();
+  //     } else {
+  //       openAuditList[indx].isStarting = false;
+  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //         content: Text('Check Your Internet.'),
+  //         backgroundColor: Colors.red,
+  //         elevation: 10,
+  //         behavior: SnackBarBehavior.floating,
+  //         margin: EdgeInsets.all(5),
+  //         dismissDirection: DismissDirection.up,
+  //       ));
+  //     }
+  //   });
+  //   notifyListeners();
+  // }
 
   AudioPlayer? audioPlayer;
 
@@ -1398,6 +2305,7 @@ class AuditCtrlProvider extends ChangeNotifier {
 
   afterScanbinCode(BuildContext context, ThemeData theme, String columnName,
       String binValues) async {
+    invalidBin = false;
     final database = (await AppDatabase.initialize())!;
     // Database db = (await DBHelper.getInstance())!;
     listScanBatch = await driftoperation.getdriftallLineColumn(
@@ -1420,6 +2328,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     }
     notifyListeners();
     if (listScanBatch.isEmpty && checkBin.isEmpty) {
+      invalidBin = true;
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -1471,9 +2380,232 @@ class AuditCtrlProvider extends ChangeNotifier {
                   height: Screens.padingHeight(context) * 0.06,
                   child: ElevatedButton(
                       onPressed: () async {
-                        mycontroller[2].text = '';
+                        // mycontroller[2].text = '';
                         Get.back();
+                        callBinBlockApi(context, theme, binValues);
+
+                        focus2.requestFocus();
+                        notifyListeners();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.primaryColor,
+                        foregroundColor: Colors.white,
+                        textStyle: const TextStyle(),
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
+                        )),
+                      ),
+                      child: const Text("Ok")),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+    notifyListeners();
+  }
+
+  afterScanbinCode2(BuildContext context, ThemeData theme, String columnName,
+      String binValues) async {
+    invalidBin = false;
+    final database = (await AppDatabase.initialize())!;
+    // Database db = (await DBHelper.getInstance())!;
+    listScanBatch = await driftoperation.getdriftallLineColumn(
+        database, columnName, binValues);
+    List<BinMasterData> checkBin =
+        await driftoperation.checkBinMasterdata(database, binValues);
+    mycontroller[2].text = binValues;
+
+    // List<Map<String, Object?>> result2 =
+    //     await DBOperation.checkBinInAuditLineData(db, columnName, binValues);
+    if (listScanBatch.isNotEmpty || checkBin.isNotEmpty) {
+      // callBinBlockApi(context, theme, binValues);
+      seriesfocus = false;
+      focus2.requestFocus();
+      // disableKeyBoard(context);
+      log('AudioPlayAudioPlay');
+      // /D/Sharmila/verifytapp/asset/sounds/bin_selection.mp3
+      // play
+      // Audio('sounds/bin_selection.mp3');
+    }
+    notifyListeners();
+    if (listScanBatch.isEmpty && checkBin.isEmpty) {
+      invalidBin = true;
+      mycontroller[3].text = '';
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            insetPadding: EdgeInsets.zero,
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      color: theme.primaryColor,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8))),
+                  width: Screens.width(context) * 0.8,
+                  height: Screens.padingHeight(context) * 0.06,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: Screens.width(context) * 0.8,
+                        alignment: Alignment.center,
+                        child: Center(
+                            child: Text("Alert",
+                                style: theme.textTheme.bodyLarge!
+                                    .copyWith(color: Colors.white))),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: Screens.padingHeight(context) * 0.02,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  width: Screens.width(context) * 0.8,
+                  child: const Text(
+                      'Scanned bin is not in the stock table and item master table'),
+                ),
+                SizedBox(
+                  height: Screens.padingHeight(context) * 0.02,
+                ),
+                SizedBox(
+                  width: Screens.width(context) * 0.8,
+                  height: Screens.padingHeight(context) * 0.06,
+                  child: ElevatedButton(
+                      onPressed: () async {
+                        Get.back();
+                        callBinBlockApi(context, theme, mycontroller[2].text);
                         focus1.requestFocus();
+
+                        notifyListeners();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.primaryColor,
+                        foregroundColor: Colors.white,
+                        textStyle: const TextStyle(),
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
+                        )),
+                      ),
+                      child: const Text("Ok")),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+    notifyListeners();
+  }
+
+  afterScanbinCode3(BuildContext context, ThemeData theme, String columnName,
+      String binValues) async {
+    invalidBin = false;
+    final database = (await AppDatabase.initialize())!;
+    // Database db = (await DBHelper.getInstance())!;
+    listScanBatch = await driftoperation.getdriftallLineColumn(
+        database, columnName, binValues);
+    List<BinMasterData> checkBin =
+        await driftoperation.checkBinMasterdata(database, binValues);
+    mycontroller[2].text = binValues;
+
+    // List<Map<String, Object?>> result2 =
+    //     await DBOperation.checkBinInAuditLineData(db, columnName, binValues);
+    if (listScanBatch.isNotEmpty || checkBin.isNotEmpty) {
+      // callBinBlockApi(context, theme, binValues);
+      seriesfocus = false;
+      focus2.requestFocus();
+      // disableKeyBoard(context);
+      log('AudioPlayAudioPlay');
+      // /D/Sharmila/verifytapp/asset/sounds/bin_selection.mp3
+      // play
+      // Audio('sounds/bin_selection.mp3');
+    }
+    notifyListeners();
+    if (listScanBatch.isEmpty && checkBin.isEmpty) {
+      invalidBin = true;
+      mycontroller[3].text = '';
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            insetPadding: EdgeInsets.zero,
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      color: theme.primaryColor,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8))),
+                  width: Screens.width(context) * 0.8,
+                  height: Screens.padingHeight(context) * 0.06,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: Screens.width(context) * 0.8,
+                        alignment: Alignment.center,
+                        child: Center(
+                            child: Text("Alert",
+                                style: theme.textTheme.bodyLarge!
+                                    .copyWith(color: Colors.white))),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: Screens.padingHeight(context) * 0.02,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  width: Screens.width(context) * 0.8,
+                  child: const Text(
+                      'Scanned bin is not in the stock table and item master table'),
+                ),
+                SizedBox(
+                  height: Screens.padingHeight(context) * 0.02,
+                ),
+                SizedBox(
+                  width: Screens.width(context) * 0.8,
+                  height: Screens.padingHeight(context) * 0.06,
+                  child: ElevatedButton(
+                      onPressed: () async {
+                        invalidBin = false;
+                        Get.back();
+                        callBinBlockApi(context, theme, mycontroller[2].text);
+                        // focus2.requestFocus();
+                        if (invalidBin == false) {
+                          if (formkey2.currentState!.validate()) {
+                            log('kkkkkkkkkkk');
+                            ScannerPageState.batchCodeScan = true;
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => ScannerPage()));
+                            notifyListeners();
+                          }
+                        }
                         notifyListeners();
                       },
                       style: ElevatedButton.styleFrom(
@@ -1513,6 +2645,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     itemName = '';
     dispCode = null;
     groupValueSelected = 0;
+    groupScanlogValueSelected = 0;
     serialBatch = '';
     mycontroller[3].text = '';
     mycontroller[4].text = '';
@@ -1590,6 +2723,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     String scanbatchval,
   ) async {
     nextdisable = false;
+    filenamedet = [];
     final database = (await AppDatabase.initialize())!;
     Database db = (await DBHelper.getInstance())!;
     List<LineData> getLineItemResult = await driftoperation
@@ -1599,136 +2733,185 @@ class AuditCtrlProvider extends ChangeNotifier {
 
     if (getLineItemResult.isNotEmpty) {
       if (getLineItemResult.length > 1) {
+        log('message222');
+
         log('lineItemResultlineItemResult::${getLineItemResult.length}');
         await afterScanMultiSerialBatch(getLineItemResult, context, theme);
+        await getSingleItemDetails(getLineItemResult, scanbatchval);
+        // List<Checklisttemplate> checklistvalx =
+        //     await driftoperation.checkListPopup(
+        //         database, mycontroller[3].text, dispCode.toString(), 1, 0);
+        // if (checklistvalx.isNotEmpty || checklistvalx != null) {
+        //   for (var i = 0; i < checklistvalx.length; i++) {
+        //     if (checklistvalx[i].templateid != null) {
+        //       checkListformCreation(context, theme,
+        //           int.parse(checklistvalx[i].templateid.toString()));
+        //       notifyListeners();
+        //     }
+        //   }
+
+        //   notifyListeners();
+        // }
         notifyListeners();
       } else {
+        log('message1111');
         await afterScanSingleSerialBatch(
             context, theme, scanbatchval, getLineItemResult);
-        await bottomSheetafterscanserial(context, theme);
+
         notifyListeners();
       }
     }
+
     if (getLineItemResult.isEmpty && alterlineItemResult.isEmpty) {
+      log('message3334');
       mycontroller[4].text = '';
       freezeItemCode = false;
       itemFocus.requestFocus();
       mycontroller[3].text = scanbatchval;
       mycontroller[5].text = 1.toString();
       await bottomSheetafterscanserial(context, theme);
+      await Get.defaultDialog(
+          title: 'Alert',
+          middleText: 'Scanned number is not in the stock snap table.',
+          actions: [
+            ElevatedButton(
+                onPressed: () async {
+                  scandata = [];
+                  itemFocus.requestFocus();
+                  freezeqty = false;
+                  mycontroller[3].selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: mycontroller[3].text.length,
+                  );
+                  Get.back();
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, st) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              insetPadding: EdgeInsets.zero,
-              contentPadding: EdgeInsets.zero,
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        color: theme.primaryColor,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8))),
-                    width: Screens.width(context) * 0.8,
-                    height: Screens.padingHeight(context) * 0.06,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: Screens.width(context) * 0.8,
-                          child: Center(
-                              child: Text("Alert",
-                                  style: theme.textTheme.bodyLarge!
-                                      .copyWith(color: Colors.white))),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: Screens.padingHeight(context) * 0.02,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    width: Screens.width(context) * 0.8,
-                    child: const Text(
-                        'Scanned number is not in the stock snap table..!!'),
-                  ),
-                  SizedBox(
-                    height: Screens.padingHeight(context) * 0.02,
-                  ),
-                  SizedBox(
-                    width: Screens.width(context) * 0.8,
-                    height: Screens.padingHeight(context) * 0.06,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          st(
-                            () {
-                              scandata = [];
-                              itemFocus.requestFocus();
-                              freezeqty = false;
-                              mycontroller[3].selection = TextSelection(
-                                baseOffset: 0,
-                                extentOffset: mycontroller[3].text.length,
-                              );
-                            },
-                          );
-                          Get.back();
+                  notifyListeners();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.primaryColor,
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  )),
+                ),
+                child: const Text("Ok")),
+          ]);
 
-                          notifyListeners();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.primaryColor,
-                          foregroundColor: Colors.white,
-                          textStyle: const TextStyle(),
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
-                          )),
-                        ),
-                        child: const Text("Ok")),
-                  ),
-                ],
-              ),
-            );
-          });
-        },
-      );
+      // await showDialog(
+      //   context: context,
+      //   builder: (BuildContext context) {
+      //     return StatefulBuilder(builder: (context, st) {
+      //       return AlertDialog(
+      //         shape: RoundedRectangleBorder(
+      //             borderRadius: BorderRadius.circular(8)),
+      //         insetPadding: EdgeInsets.zero,
+      //         contentPadding: EdgeInsets.zero,
+      //         content: Column(
+      //           mainAxisSize: MainAxisSize.min,
+      //           children: [
+      //             Container(
+      //               decoration: BoxDecoration(
+      //                   color: theme.primaryColor,
+      //                   borderRadius: const BorderRadius.only(
+      //                       topLeft: Radius.circular(8),
+      //                       topRight: Radius.circular(8))),
+      //               width: Screens.width(context) * 0.8,
+      //               height: Screens.padingHeight(context) * 0.06,
+      //               child: Row(
+      //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                 children: [
+      //                   Container(
+      //                     width: Screens.width(context) * 0.8,
+      //                     child: Center(
+      //                         child: Text("Alert",
+      //                             style: theme.textTheme.bodyLarge!
+      //                                 .copyWith(color: Colors.white))),
+      //                   ),
+      //                 ],
+      //               ),
+      //             ),
+      //             SizedBox(
+      //               height: Screens.padingHeight(context) * 0.02,
+      //             ),
+      //             Container(
+      //               padding: const EdgeInsets.all(10),
+      //               width: Screens.width(context) * 0.8,
+      //               child: const Text(
+      //                   'Scanned number is not in the stock snap table.'),
+      //             ),
+      //             SizedBox(
+      //               height: Screens.padingHeight(context) * 0.02,
+      //             ),
+      //             SizedBox(
+      //               width: Screens.width(context) * 0.8,
+      //               height: Screens.padingHeight(context) * 0.06,
+      //   child: ElevatedButton(
+      //       onPressed: () async {
+      //         st(
+      //           () {
+      //             scandata = [];
+      //             itemFocus.requestFocus();
+      //             freezeqty = false;
+      //             mycontroller[3].selection = TextSelection(
+      //               baseOffset: 0,
+      //               extentOffset: mycontroller[3].text.length,
+      //             );
+      //           },
+      //         );
+      //         Get.back();
+
+      //         notifyListeners();
+      //       },
+      //       style: ElevatedButton.styleFrom(
+      //         backgroundColor: theme.primaryColor,
+      //         foregroundColor: Colors.white,
+      //         textStyle: const TextStyle(),
+      //         shape: const RoundedRectangleBorder(
+      //             borderRadius: BorderRadius.only(
+      //           bottomLeft: Radius.circular(8),
+      //           bottomRight: Radius.circular(8),
+      //         )),
+      //       ),
+      //       child: const Text("Ok")),
+      // ),
+      //           ],
+      //         ),
+      //       );
+      //     });
+      //   },
+      // );
     }
 
-    if (alterlineItemResult.isNotEmpty) {
-      freezeItemCode = true;
-      if (alterlineItemResult.length > 1) {
-        await afterScanMultiSerialBatch(alterlineItemResult, context, theme);
-      } else {
-        scanbatchval = alterlineItemResult[0].serailBatch!;
-        await afterScanSingleSerialBatch(
-            context, theme, scanbatchval, alterlineItemResult);
-        await bottomSheetafterscanserial(context, theme);
-      }
+    //   if (alterlineItemResult.isNotEmpty) {
+    //     freezeItemCode = true;
+    //     if (alterlineItemResult.length > 1) {
+    //       await afterScanMultiSerialBatch(alterlineItemResult, context, theme);
+    //     } else {
+    //       scanbatchval = alterlineItemResult[0].serailBatch!;
+    //       await afterScanSingleSerialBatch(
+    //           context, theme, scanbatchval, alterlineItemResult);
+    //       // await bottomSheetafterscanserial(context, theme);
+    //     }
 
-      // for (var i = 0; i < alterlineItemResult.length; i++) {
-      // itemCode = alterlineItemResult[0].itemCode!;
-      // dispCode = alterlineItemResult[0].itemDisposition;
-      // mycontroller[3].text = alterlineItemResult[0].serailBatch!;
-      // mycontroller[4].text = alterlineItemResult[0].itemCode!;
-      //   for (var ik = 0; ik < dispAllvalList.length; ik++) {
-      //     if (alterlineItemResult[i].itemDisposition ==
-      //         dispAllvalList[ik].dispID) {}
-      //   }
-      // }
-    }
+    //   // for (var i = 0; i < alterlineItemResult.length; i++) {
+    //   // itemCode = alterlineItemResult[0].itemCode!;
+    //   // dispCode = alterlineItemResult[0].itemDisposition;
+    //   // mycontroller[3].text = alterlineItemResult[0].serailBatch!;
+    //   // mycontroller[4].text = alterlineItemResult[0].itemCode!;
+    //   //   for (var ik = 0; ik < dispAllvalList.length; ik++) {
+    //   //     if (alterlineItemResult[i].itemDisposition ==
+    //   //         dispAllvalList[ik].dispID) {}
+    //   //   }
+    //   // }
+    // }
     mycontroller[3].selection = TextSelection(
       baseOffset: 0,
       extentOffset: mycontroller[3].text.length,
     );
-    notifyListeners();
+    //   notifyListeners();
   }
 
   getSingleItemDetails(
@@ -1753,7 +2936,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     if (lineItemResult[0].serailBatch!.toLowerCase() ==
         scanbatchval.toLowerCase()) {
       itemCode = lineItemResult[0].itemCode!;
-      dispCode = lineItemResult[0].itemDisposition;
+      dispCode = lineItemResult[0].itemDisposition.toString();
       mycontroller[3].text = lineItemResult[0].serailBatch!;
       mycontroller[4].text = lineItemResult[0].itemCode!;
       for (var ik = 0; ik < dispAllvalList.length; ik++) {
@@ -1778,7 +2961,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         log('manageby:${headeItemResult[0].manageBy}');
         skuCosde = headeItemResult[0].sKUCode.toString();
         itemName = headeItemResult[0].itemName.toString();
-        dispCode = headeItemResult[0].itemDisposition;
+        dispCode = headeItemResult[0].itemDisposition.toString();
         mycontroller[4].text = headeItemResult[0].itemCode.toString();
         mangedBy = headeItemResult[0].manageBy;
         log('headeItemResult[0].dispID::${headeItemResult[0].itemDisposition}');
@@ -1849,7 +3032,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         log('manageby:${headeItemResult[0].manageBy}');
         skuCosde = headeItemResult[0].sKUCode.toString();
         itemName = headeItemResult[0].itemName.toString();
-        dispCode = headeItemResult[0].itemDisposition;
+        dispCode = headeItemResult[0].itemDisposition.toString();
         mycontroller[4].text = headeItemResult[0].itemCode.toString();
         mangedBy = headeItemResult[0].manageBy;
         log('headeItemResult[0].dispID::${headeItemResult[0].itemDisposition}');
@@ -1882,45 +3065,50 @@ class AuditCtrlProvider extends ChangeNotifier {
   afterScanSingleSerialBatch(BuildContext context, ThemeData theme,
       String scanbatchval, List<LineData> lineItemResult) async {
     await getSingleItemDetails(lineItemResult, scanbatchval);
+    await bottomSheetafterscanserial(context, theme);
+
     notifyListeners();
   }
 
   setURL() async {
     String? getCustUrl = await HelperFunctions.getHostDSP();
+    String? getMasterApiUrl = await HelperFunctions.getMasterHostDSP();
     String? getStockUrl = await HelperFunctions.getStockHostDSP();
-
-    log('getStockUrlget11:$getStockUrl');
+    log('getStockUrlget44t:$getCustUrl');
     Url.queryApi = "${getCustUrl.toString()}/api/";
-    Url.stockSnapApi = "${getStockUrl.toString()}/api/";
-    log('  Url.queryApi Url.queryApi333::${Url.queryApi}:::stockSnapApi::${Url.stockSnapApi}');
-    notifyListeners();
+    Url.queryMasterApi = "${getMasterApiUrl.toString()}/api/";
+    // Url.stockSnapApi = "${getStockUrl.toString()}/api/";
+    log('Url.queryApi Url.queryApi222::${Url.queryApi}:::stockSnapApi::${Url.queryMasterApi}');
   }
 
+  String uuiDeviceId = '';
   checknextbtn(BuildContext context, ThemeData theme, String serialbtch,
-      String itemcode) async {
+      String itemcode, int auditId) async {
     Database db = (await DBHelper.getInstance())!;
     notifyListeners();
+    uuiDeviceId = '';
     log('scandatascandatanext::${scandata.length}');
     log('isManualtype::${isManualtype}');
     if (scandata.isNotEmpty) {
       if (mangedBy == 'S') {
-        callNextBtnMethod(context, theme, serialbtch, itemcode);
+        callNextBtnMethod(context, theme, serialbtch, itemcode, auditId);
         notifyListeners();
       } else {
-        String uuiDeviceId = uuid.v1();
+        log('messageLL${mangedBy}');
+        uuiDeviceId = uuid.v1();
         scandata[0].scanguid = uuiDeviceId;
 
-        if (checklistdata.isNotEmpty) {
-          for (var i = 0; i < checklistdata.length; i++) {
-            checklistdata[i].scanguid = uuiDeviceId;
-          }
-          await DBOperation.insertchecklistData(db, checklistdata).then(
-            (value) {
-              checklistdata = [];
-            },
-          );
-          notifyListeners();
-        }
+        // if (checklistdata.isNotEmpty) {
+        //   for (var i = 0; i < checklistdata.length; i++) {
+        //     checklistdata[i].scanguid = uuiDeviceId;
+        //   }
+        //   await DBOperation.insertchecklistData(db, checklistdata).then(
+        //     (value) {
+        //       checklistdata = [];
+        //     },
+        //   );
+        //   notifyListeners();
+        // }
 
         await DBOperation.insertscanpostData(db, scandata).then((value) {
           focus2.requestFocus();
@@ -1967,47 +3155,134 @@ class AuditCtrlProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  callNextBtnMethod(BuildContext context, ThemeData theme, String srialbtchx,
-      String itemcodex) async {
+  insertCheckListData() async {
     Database db = (await DBHelper.getInstance())!;
-    List<Map<String, Object?>> result2 = await DBOperation.getscandataData(db);
+
+    if (checklistdata.isNotEmpty) {
+      for (var i = 0; i < checklistdata.length; i++) {
+        checklistdata[i].scanguid = uuiDeviceId;
+      }
+      await DBOperation.insertchecklistData(db, checklistdata).then(
+        (value) {
+          checklistdata = [];
+        },
+      );
+      notifyListeners();
+    }
+    notifyListeners();
+  }
+
+  checkAlreadyItem(BuildContext context, ThemeData theme, String srialbtchx,
+      int auditId) async {
+    final database = (await AppDatabase.initialize())!;
+    uuiDeviceId = '';
+    mangedBy = '';
+    String itemcodex = '';
+    Database db = (await DBHelper.getInstance())!;
+    List<LineData> getLineItemResult =
+        await driftoperation.getdriftallserialLineColumn(database, srialbtchx);
+
+    log('getLineItemResultgetLineItemResult::${getLineItemResult.length}');
+    if (getLineItemResult.isNotEmpty) {
+      itemcodex = getLineItemResult[0].itemCode.toString();
+    }
+
+    List<Map<String, Object?>> result2 = await DBOperation.getscandataData(
+        db, fetchAuditForDetails!.docEntry.toString());
+    List<Map<String, Object?>> result3 =
+        await DBOperation.getchecklistAllData(db);
+    List<HeaderData> headeItemResult =
+        await driftoperation.getItemCodeInHeader(database, itemcodex);
+
+    // log("result22222:${result2.length} ==result3:::${result3.length}");
+    uuiDeviceId = uuid.v1();
+    List<Map<String, Object?>> checkScanItem =
+        await DBOperation.checkScandata(db, srialbtchx, itemcodex, auditId);
+
+    List<Map<String, Object?>> checkpushedScanItem =
+        await DBOperation.checkPushedAlreadyScandata(
+            db, srialbtchx, itemcodex, auditId);
+
+    List<Map<String, Object?>> checkErrorScanItem =
+        await DBOperation.checkErrorAlreadyScandata(
+            db, auditId, srialbtchx, itemcodex);
+    if (headeItemResult.isNotEmpty) {
+      mangedBy = headeItemResult[0].manageBy;
+    }
+    if (mangedBy == 'S' && itemcodex.isNotEmpty) {
+      if (checkScanItem.isEmpty &&
+          checkpushedScanItem.isEmpty &&
+          checkErrorScanItem.isEmpty) {
+        log('checkScanItem::${checkScanItem.length}');
+
+        await afterScanSerialBatch(
+          context,
+          theme,
+          mycontroller[3].text,
+        );
+        notifyListeners();
+      } else {
+        Get.defaultDialog(
+            title: 'Alert',
+            titleStyle: TextStyle(color: Colors.red),
+            middleText: 'This item already inserted.',
+            actions: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.primaryColor,
+                      foregroundColor: Colors.white),
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: Text('OK'))
+            ]);
+        notifyListeners();
+      }
+    } else {
+      await afterScanSerialBatch(
+        context,
+        theme,
+        mycontroller[3].text,
+      );
+    }
+  }
+
+  callNextBtnMethod(BuildContext context, ThemeData theme, String srialbtchx,
+      String itemcodex, int auditId) async {
+    uuiDeviceId = '';
+    Database db = (await DBHelper.getInstance())!;
+    List<Map<String, Object?>> result2 = await DBOperation.getscandataData(
+        db, fetchAuditForDetails!.docEntry.toString());
     List<Map<String, Object?>> result3 =
         await DBOperation.getchecklistAllData(db);
     log("result22222:${result2.length} ==result3:::${result3.length}");
-    String uuiDeviceId = uuid.v1();
+    uuiDeviceId = uuid.v1();
     List<Map<String, Object?>> checkScanItem =
-        await DBOperation.checkScandata(db, srialbtchx, itemcodex);
+        await DBOperation.checkScandata(db, srialbtchx, itemcodex, auditId);
 
     List<Map<String, Object?>> checkpushedScanItem =
-        await DBOperation.checkPushedAlreadyScandata(db, srialbtchx, itemcodex);
+        await DBOperation.checkPushedAlreadyScandata(
+            db, srialbtchx, itemcodex, auditId);
 
     List<Map<String, Object?>> checkErrorScanItem =
-        await DBOperation.checkErrorAlreadyScandata(db, srialbtchx, itemcodex);
-    log('checkpushedScanItemcheckpushedScanItemcheckpushedScanItem::${checkpushedScanItem.length}');
+        await DBOperation.checkErrorAlreadyScandata(
+            db, auditId, srialbtchx, itemcodex);
+    log('checkScanItem::${checkScanItem.length}');
     if (scandata.isNotEmpty) {
+      log('message:zzzzzz');
       scandata[0].notes = mycontroller[6].text.toString();
       scandata[0].scanguid = uuiDeviceId;
 
       if (checkScanItem.isEmpty &&
           checkpushedScanItem.isEmpty &&
           checkErrorScanItem.isEmpty) {
-        if (checklistdata.isNotEmpty) {
-          for (var i = 0; i < checklistdata.length; i++) {
-            checklistdata[i].scanguid = uuiDeviceId;
-          }
-          await DBOperation.insertchecklistData(db, checklistdata)
-              .then((value) {
-            checklistdata = [];
-          });
-
-          notifyListeners();
-        }
         await DBOperation.insertscanpostData(db, scandata).then((value) {
           focus2.requestFocus();
           nextdisable = false;
           totalscandeviceQty = 0;
           mycontroller[3].text = '';
           binTableDetails(mycontroller[2].text);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               duration: Duration(seconds: 1),
@@ -2039,22 +3314,35 @@ class AuditCtrlProvider extends ChangeNotifier {
         isManualtype = false;
         selectFirstTapVal();
         notifyListeners();
-      } else {
-        scandata = [];
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            duration: Duration(seconds: 1),
-            content: Text('This item already inserted..!!'),
-            backgroundColor: Colors.red,
-            elevation: 10,
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.all(5),
-            dismissDirection: DismissDirection.up,
-          ),
-        );
-        nextdisable = false;
-        notifyListeners();
       }
+      // else {
+      // log('message:zzzzzzyyy');
+
+      // scandata = [];
+      // Get.defaultDialog(
+      //     title: 'Alert',
+      //     middleText: 'This item already inserted.',
+      //     actions: [
+      //       TextButton(
+      //           onPressed: () {
+      //             Get.back();
+      //           },
+      //           child: Text('OK'))
+      //     ]);
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     duration: Duration(seconds: 1),
+      //     content: Text('This item already inserted.'),
+      //     backgroundColor: Colors.red,
+      //     elevation: 10,
+      //     behavior: SnackBarBehavior.floating,
+      //     margin: EdgeInsets.all(5),
+      //     dismissDirection: DismissDirection.up,
+      //   ),
+      // );
+      // nextdisable = false;
+      notifyListeners();
+      // }
       notifyListeners();
     } else {
       nextdisable = false;
@@ -2069,7 +3357,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     String? deviceId = await HelperFunctions.getDeviceIDSharedPreference();
     BinPostData? binpostDat = BinPostData();
     binpostDat = BinPostData(
-        auditid: fetchAuditForDetails.docEntry,
+        auditid: fetchAuditForDetails!.docEntry,
         bincode: binpostdata,
         devicecode: deviceId,
         scantime: config.firstDate());
@@ -2094,27 +3382,40 @@ class AuditCtrlProvider extends ChangeNotifier {
     bool? noNetbool = await config.haveNoInterNet();
     if (noNetbool == false) {
       whileOffline = false;
-      await Get.defaultDialog(
-          barrierDismissible: false,
-          title: 'Message',
-          content: Column(
-            children: [
-              Text('Sync operation initiating.\nPlease wait for Sometime.'),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      foregroundColor: Colors.white,
-                      backgroundColor: theme.primaryColor),
-                  onPressed: () async {
-                    syncdatafreeze = true;
-                    Get.back();
-                    await syncAllData(theme);
-                  },
-                  child: const Text(' Ok '))
-            ],
-          ));
+      final Database db = (await DBHelper.getInstance())!;
 
+      List<Map<String, Object?>> result2 = await DBOperation.getscandataData(
+          db, fetchAuditForDetails!.docEntry.toString());
+      List<Map<String, Object?>> result3 =
+          await DBOperation.getErrorscandataData(
+              db, fetchAuditForDetails!.docEntry.toString());
+      if (result2.isNotEmpty || result3.isNotEmpty) {
+        await Get.defaultDialog(
+            barrierDismissible: false,
+            title: 'Message',
+            content: Column(
+              children: [
+                Text('Sync operation initiating.\nPlease wait for sometime.'),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        foregroundColor: Colors.white,
+                        backgroundColor: theme.primaryColor),
+                    onPressed: () async {
+                      syncdatafreeze = true;
+                      Get.back();
+                      await syncAllData(
+                        context,
+                        theme,
+                      );
+                    },
+                    child: const Text(' Ok '))
+              ],
+            ));
+      } else {
+        RescheduleAbortAlertBox(context, theme, "No data to sync.");
+      }
       notifyListeners();
     } else {
       whileOffline = true;
@@ -2122,7 +3423,7 @@ class AuditCtrlProvider extends ChangeNotifier {
           title: 'Message',
           content: Column(
             children: [
-              Text('Check Your Internet..!!'),
+              Text('Check your internet.'),
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -2225,8 +3526,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     final Database db = (await DBHelper.getInstance())!;
     List<Map<String, Object?>> pushedScannedPostData =
         await DBOperation.getpushedscandataData(
-      db,
-    );
+            db, fetchAuditForDetails!.docEntry.toString());
     for (var i = 0; i < pushedScannedPostData.length; i++) {
       pushedexcelvaluers.add(ScanDataPost(
           auditid: int.parse(pushedScannedPostData[i]['Auditid'].toString()),
@@ -2306,8 +3606,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     final Database db = (await DBHelper.getInstance())!;
     List<Map<String, Object?>> ErrorsScasnnedData =
         await DBOperation.getErrorscandataData(
-      db,
-    );
+            db, fetchAuditForDetails!.docEntry.toString());
 
     if (ErrorsScasnnedData.isNotEmpty) {
       errorexcelvaluers = [];
@@ -2353,7 +3652,7 @@ class AuditCtrlProvider extends ChangeNotifier {
       sheet.getRangeByIndex(1, 11).setText("Stockstatus");
       sheet.getRangeByIndex(1, 12).setText("Templateid");
       sheet.getRangeByIndex(1, 13).setText("Whscode");
-      sheet.getRangeByIndex(1, 13).setText("ApiErrorMsg");
+      sheet.getRangeByIndex(1, 14).setText("ApiErrorMsg");
 
       for (var i = 0; i < errorexcelvaluers.length; i++) {
         final item = errorexcelvaluers[i];
@@ -2372,7 +3671,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         sheet.getRangeByIndex(i + 2, 11).setText(item.stockstatus.toString());
         sheet.getRangeByIndex(i + 2, 12).setText(item.templateid.toString());
         sheet.getRangeByIndex(i + 2, 13).setText(item.whscode.toString());
-        sheet.getRangeByIndex(i + 2, 13).setText(item.errormsg.toString());
+        sheet.getRangeByIndex(i + 2, 14).setText(item.errormsg.toString());
       }
 
       final List<int> bytes = workbook.saveAsStream();
@@ -2394,8 +3693,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     final Database db = (await DBHelper.getInstance())!;
     List<Map<String, Object?>> getcasnnedData =
         await DBOperation.getscandataData(
-      db,
-    );
+            db, fetchAuditForDetails!.docEntry.toString());
 
     if (getcasnnedData.isNotEmpty) {
       pendingexcelvaluers = [];
@@ -2497,14 +3795,16 @@ class AuditCtrlProvider extends ChangeNotifier {
     return exPath;
   }
 
-  syncAllData(ThemeData theme) async {
+  syncAllData(BuildContext context, ThemeData theme) async {
     Database db = (await DBHelper.getInstance())!;
     auditScannData = [];
     errorMsg = '';
     List<ScanDataPost> scandatax = [];
     List<ErrorScanDataPost> errorscandatax = [];
     List<DispListData> checklistt = [];
-    List<Map<String, Object?>> result2 = await DBOperation.getscandataData(db);
+    List<Map<String, Object?>> result2 = await DBOperation.getscandataData(
+        db, fetchAuditForDetails!.docEntry.toString());
+
     if (result2.isNotEmpty) {
       scandatax = [];
       log('result2result2scandata::${result2.length}');
@@ -2575,7 +3875,10 @@ class AuditCtrlProvider extends ChangeNotifier {
                   whscode: scandatax[ij].whscode));
               await DBOperation.insertPushedscanpostData(db, insertdata)
                   .then((value) async {
-                await DBOperation.getpushedscandataData(db);
+                await callAuditapiwhilenetoff(context, theme);
+
+                await DBOperation.getpushedscandataData(
+                    db, fetchAuditForDetails!.docEntry.toString());
                 await DBOperation.getDeleteScanlistData(
                   db,
                   scandatax[ij].scanguid.toString(),
@@ -2615,8 +3918,9 @@ class AuditCtrlProvider extends ChangeNotifier {
               await DBOperation.insertErrorscanpostData(db, errorscandatax)
                   .then((value) async {
                 totalscandeviceQty = 0;
+
                 await getScannedInformation(
-                    int.parse(fetchAuditForDetails.docEntry.toString()));
+                    int.parse(fetchAuditForDetails!.docEntry.toString()));
                 viewmain = false;
                 viewerrors = true;
                 viewsucess = false;
@@ -2627,7 +3931,8 @@ class AuditCtrlProvider extends ChangeNotifier {
                   log("afterdeletescan2222::;" + scandatax.length.toString());
                 });
 
-                await DBOperation.getErrorscandataData(db);
+                await DBOperation.getErrorscandataData(
+                    db, fetchAuditForDetails!.docEntry.toString());
 
                 notifyListeners();
               });
@@ -2658,7 +3963,7 @@ class AuditCtrlProvider extends ChangeNotifier {
                 .then((value) async {
               totalscandeviceQty = 0;
               await getScannedInformation(
-                  int.parse(fetchAuditForDetails.docEntry.toString()));
+                  int.parse(fetchAuditForDetails!.docEntry.toString()));
               viewmain = false;
               viewerrors = true;
               viewsucess = false;
@@ -2668,7 +3973,8 @@ class AuditCtrlProvider extends ChangeNotifier {
               ).then((value) async {
                 log("afterdeletescan3333::;" + scandatax.length.toString());
               });
-              await DBOperation.getErrorscandataData(db);
+              await DBOperation.getErrorscandataData(
+                  db, fetchAuditForDetails!.docEntry.toString());
               notifyListeners();
             });
           }
@@ -2678,7 +3984,7 @@ class AuditCtrlProvider extends ChangeNotifier {
 
       log('Successsssss1111');
     }
-    await resyncMethod(theme);
+    await resyncMethod(theme, context);
     await selectFirstTapVal();
 
     notifyListeners();
@@ -2700,7 +4006,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         notifyListeners();
       } else if (value.stsCode >= 400 && value.stsCode <= 410) {
         errorMsg = value.exception;
-        apiResponseDialog(context, theme, errorMsg);
+        await apiResponseDialog(context, theme, errorMsg);
         isLoading = false;
         notifyListeners();
       } else {
@@ -2711,14 +4017,15 @@ class AuditCtrlProvider extends ChangeNotifier {
   }
 
   addscanneddata(int i) async {
+    log('dispCode!::$dispCode');
     String? deviceID = await HelperFunctions.getDeviceIDSharedPreference();
     scandata = [];
     // String uuiDeviceId = uuid.v1();
-    // log('isSelectedCusTagxxx::${fetchAuditForDetails.docEntry.toString()}');
+    // log('isSelectedCusTagxxx::${fetchAuditForDetails!.docEntry.toString()}');
     // log('mycontroller[6].textsssssss::${uuiDeviceId}');
 
     scandata.add(ScanDataPost(
-        auditid: fetchAuditForDetails.docEntry,
+        auditid: fetchAuditForDetails!.docEntry,
         bincode: mycontroller[2].text,
         devicecode: deviceID,
         ismanual: isManualtype == true ? 1 : 0,
@@ -2729,8 +4036,8 @@ class AuditCtrlProvider extends ChangeNotifier {
         serialbatch: mycontroller[3].text,
         stockstatus: isSelectedCusTag,
         scanguid: '',
-        templateid: dispCode,
-        whscode: fetchAuditForDetails.whsCode,
+        templateid: dispCode!.isEmpty ? 0 : int.parse(dispCode.toString()),
+        whscode: fetchAuditForDetails!.whsCode,
         checklist: checklistdata));
 
     log('scandatascandata length3333::${scandata.length}');
@@ -2848,7 +4155,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   //   // }
   //   log('mycontroller[4]::${mycontroller[4].text}');
   // }
-  callGetBinNumApiApi(
+  callGetBinNumApi(
     int docEntry,
     BuildContext context,
     ThemeData theme,
@@ -2867,7 +4174,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         notifyListeners();
       } else if (value.stsCode >= 400 && value.stsCode <= 410) {
         errorMsg = value.exception;
-        // apiResponseDialog(context, theme, errorMsg);
+        // await apiResponseDialog(context, theme, errorMsg);
 
         isLoading = false;
         notifyListeners();
@@ -2881,6 +4188,9 @@ class AuditCtrlProvider extends ChangeNotifier {
   splitAuditJob() {
     log('getAuditListgetAuditList::${getAuditList.length}');
     errorMsg = '';
+    openAuditList = [];
+    completedAuditList = [];
+    upcomingtAuditList = [];
     if (getAuditList.isNotEmpty) {
       for (var i = 0; i < getAuditList.length; i++) {
         // log("getAuditList[i].status::${getAuditList[i].status}");
@@ -2890,6 +4200,7 @@ class AuditCtrlProvider extends ChangeNotifier {
           openAuditList.add(GetAuditDataModel(
               auditFrom: getAuditList[i].auditFrom ?? '',
               auditTo: getAuditList[i].auditTo,
+              selectListcolor: false,
               blockTrans: getAuditList[i].blockTrans,
               createdBy: getAuditList[i].createdBy,
               createdDatetime: getAuditList[i].createdDatetime,
@@ -2921,6 +4232,7 @@ class AuditCtrlProvider extends ChangeNotifier {
               auditFrom: getAuditList[i].auditFrom,
               percent: getAuditList[i].percent,
               deviceCode: getAuditList[i].deviceCode,
+              selectListcolor: false,
               auditTo: getAuditList[i].auditTo,
               blockTrans: getAuditList[i].blockTrans,
               unitsScanned: getAuditList[i].unitsScanned,
@@ -2952,6 +4264,7 @@ class AuditCtrlProvider extends ChangeNotifier {
               auditFrom: getAuditList[i].auditFrom,
               auditTo: getAuditList[i].auditTo,
               unitsScanned: getAuditList[i].unitsScanned,
+              selectListcolor: false,
               percent: getAuditList[i].percent,
               totalItems: getAuditList[i].totalItems,
               deviceCode: getAuditList[i].deviceCode,
@@ -3016,7 +4329,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   validateReschedule(
       BuildContext context, ThemeData theme, int docentry) async {
     apiResponse = '';
-    if (formkey[0].currentState!.validate()) {
+    if (formkey.currentState!.validate()) {
       DateTime date = DateTime.now();
       String chooseddate;
       chooseddate =
@@ -3033,13 +4346,13 @@ class AuditCtrlProvider extends ChangeNotifier {
             apiResponse = value.respDesc;
             isLoading = false;
             Get.back();
-            apiResponseDialog(context, theme, apiResponse);
+            await apiResponseDialog(context, theme, apiResponse);
             log('getBinList::${getBinList.length}');
             notifyListeners();
           } else if (value.stsCode >= 400 && value.stsCode <= 410) {
             errorMsg = value.exception;
             Get.back();
-            apiResponseDialog(context, theme, errorMsg);
+            await apiResponseDialog(context, theme, errorMsg);
             isLoading = false;
             notifyListeners();
           }
@@ -3251,10 +4564,13 @@ class AuditCtrlProvider extends ChangeNotifier {
                                 await driftoperation.deletItemCodeDataById(
                                     docEntry, database);
                                 Get.back();
+                                String mssgg =
+                                    "Downloading item data takes some time";
+
                                 String mssgg2 =
-                                    'This Operation may take few minutes. Closing the application may interrupt the process.\n Do you want to continue ?';
+                                    'This operation may take few minutes. Closing the application may interrupt the process.\n\nDo you want to continue ?';
                                 actionwarningDialog(context, theme, mssgg2,
-                                    'Start', docEntry, indx);
+                                    mssgg, 'Start', docEntry, indx);
                               },
                               child: const Text(
                                 "Reset",
@@ -3269,15 +4585,15 @@ class AuditCtrlProvider extends ChangeNotifier {
         });
   }
 
-  resyncMethod(ThemeData theme) async {
+  resyncMethod(ThemeData theme, BuildContext context) async {
     auditScannData = [];
     errorMsg = '';
     List<ScanDataPost> scandatax = [];
     List<DispListData> checklistt = [];
     Database db = (await DBHelper.getInstance())!;
 
-    List<Map<String, Object?>> result2 =
-        await DBOperation.getErrorscandataData(db);
+    List<Map<String, Object?>> result2 = await DBOperation.getErrorscandataData(
+        db, fetchAuditForDetails!.docEntry.toString());
     if (result2.isNotEmpty) {
       scandatax = [];
       log('result2result2scandata::${result2.length}');
@@ -3349,7 +4665,8 @@ class AuditCtrlProvider extends ChangeNotifier {
 
               await DBOperation.insertPushedscanpostData(db, insertdata)
                   .then((values) async {
-                await DBOperation.getpushedscandataData(db);
+                await DBOperation.getpushedscandataData(
+                    db, fetchAuditForDetails!.docEntry.toString());
                 await DBOperation.getDeleteerrorScanlistData(
                   db,
                   scandatax[ij].scanguid.toString(),
@@ -3360,7 +4677,8 @@ class AuditCtrlProvider extends ChangeNotifier {
               log('ErrorgetAuditList::${auditScannData.length}');
               notifyListeners();
             } else {
-              await DBOperation.getErrorscandataData(db);
+              await DBOperation.getErrorscandataData(
+                  db, fetchAuditForDetails!.docEntry.toString());
               notifyListeners();
             }
           } else {
@@ -3376,7 +4694,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         title: 'Message',
         content: Column(
           children: [
-            Text('Sync Operation Completed..!!'),
+            Text('Sync operation completed.'),
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -3386,7 +4704,7 @@ class AuditCtrlProvider extends ChangeNotifier {
                 onPressed: () async {
                   syncdatafreeze = false;
                   await getScannedInformation(
-                      int.parse(fetchAuditForDetails.docEntry.toString()));
+                      int.parse(fetchAuditForDetails!.docEntry.toString()));
                   viewmain = false;
                   viewerrors = false;
                   viewsucess = true;
@@ -3401,7 +4719,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   }
 
   actionwarningDialog(BuildContext context, ThemeData theme, String apiRes,
-      String actionName, int docEntry, int indx) {
+      String msg, String actionName, int docEntry, int indx) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -3428,20 +4746,50 @@ class AuditCtrlProvider extends ChangeNotifier {
                               topRight: Radius.circular(8))),
                       width: Screens.width(context),
                       height: Screens.bodyheight(context) * 0.06,
-                      child: Container(
-                        width: Screens.width(context) * 0.8,
-                        child: Center(
-                            child: Text("Warning",
-                                style: theme.textTheme.bodyLarge!
-                                    .copyWith(color: Colors.white))),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                                left: Screens.padingHeight(context) * 0.07),
+                            width: Screens.width(context) * 0.75,
+                            child: Center(
+                                child: Text("Warning",
+                                    style: theme.textTheme.bodyLarge!
+                                        .copyWith(color: Colors.white))),
+                          ),
+                          Container(
+                            child: IconButton(
+                                onPressed: () {
+                                  Get.back();
+                                  notifyListeners();
+                                },
+                                icon: Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                )),
+                          )
+                        ],
                       ),
                     ),
                     SizedBox(
                       height: Screens.padingHeight(context) * 0.02,
                     ),
                     Container(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(apiRes),
+                      padding: EdgeInsets.only(
+                          left: Screens.padingHeight(context) * 0.02),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            // padding: const EdgeInsets.all(8),
+                            child: Text(msg),
+                          ),
+                          Container(
+                            // padding: const EdgeInsets.all(8),
+                            child: Text(apiRes),
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(
                       height: Screens.padingHeight(context) * 0.02,
@@ -3510,66 +4858,69 @@ class AuditCtrlProvider extends ChangeNotifier {
         });
   }
 
-  void apiResponseDialog(BuildContext context, ThemeData theme, String apiRes) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, st) {
-            // final theme=Theme.of(context)
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              insetPadding: const EdgeInsets.all(20),
-              contentPadding: EdgeInsets.zero,
-              content: Container(
-                  padding: EdgeInsets.zero,
-                  width: Screens.width(context),
-                  //  height: Screens.bodyheight(context)*0.5,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          color: theme.primaryColor,
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              topRight: Radius.circular(8))),
-                      width: Screens.width(context),
-                      height: Screens.bodyheight(context) * 0.06,
-                      child: Container(
-                        width: Screens.width(context) * 0.8,
-                        child: Center(
-                            child: Text("Alert",
-                                style: theme.textTheme.bodyLarge!
-                                    .copyWith(color: Colors.white))),
+  apiResponseDialog(
+      BuildContext contextt, ThemeData theme, String apiRes) async {
+    if (contextt.mounted) {
+      await showDialog(
+          context: contextt,
+          builder: (BuildContext context) {
+            return StatefulBuilder(builder: (context, st) {
+              // final theme=Theme.of(context)
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                insetPadding: const EdgeInsets.all(20),
+                contentPadding: EdgeInsets.zero,
+                content: Container(
+                    padding: EdgeInsets.zero,
+                    width: Screens.width(context),
+                    //  height: Screens.bodyheight(context)*0.5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: theme.primaryColor,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8))),
+                        width: Screens.width(context),
+                        height: Screens.bodyheight(context) * 0.06,
+                        child: Container(
+                          width: Screens.width(context) * 0.8,
+                          child: Center(
+                              child: Text("Alert",
+                                  style: theme.textTheme.bodyLarge!
+                                      .copyWith(color: Colors.white))),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: Screens.padingHeight(context) * 0.02,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(apiRes),
-                    ),
-                    SizedBox(
-                      height: Screens.padingHeight(context) * 0.02,
-                    ),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            foregroundColor: Colors.white,
-                            backgroundColor: theme.primaryColor),
-                        onPressed: () {
-                          Get.back();
-                        },
-                        child: const Text('OK'))
-                  ])),
-            );
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.02,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(apiRes),
+                      ),
+                      SizedBox(
+                        height: Screens.padingHeight(context) * 0.02,
+                      ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              foregroundColor: Colors.white,
+                              backgroundColor: theme.primaryColor),
+                          onPressed: () {
+                            Get.back();
+                          },
+                          child: const Text('OK'))
+                    ])),
+              );
+            });
           });
-        });
+    }
   }
 
   validateAbort(
@@ -3577,7 +4928,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     BuildContext context,
     ThemeData theme,
   ) async {
-    if (formkey[1].currentState!.validate()) {
+    if (formkey1.currentState!.validate()) {
       await GetAuditCancelApi.getData(docEntry, mycontroller[1].text)
           .then((value) async {
         if (value.stsCode >= 200 && value.stsCode <= 210) {
@@ -3585,17 +4936,84 @@ class AuditCtrlProvider extends ChangeNotifier {
           isLoading = false;
           Get.back();
 
-          apiResponseDialog(context, theme, apiResponse);
+          await apiResponseDialog(context, theme, apiResponse);
         } else if (value.stsCode >= 400 && value.stsCode <= 410) {
           errorMsg = value.exception;
           Get.back();
-          apiResponseDialog(context, theme, errorMsg);
+          await apiResponseDialog(context, theme, errorMsg);
           isLoading = false;
           notifyListeners();
         }
       });
       notifyListeners();
     }
+  }
+
+  showDatexxxxx(BuildContext context, ThemeData theme) {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2050),
+      barrierDismissible: false,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            size: Size(400, 400), // Change width and height
+          ),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              textTheme: TextTheme(
+                headlineSmall: TextStyle(fontSize: 20), // Year picker font size
+                bodyLarge: TextStyle(fontSize: 12), // Date picker font size
+              ),
+              colorScheme: ColorScheme.light(
+                primary: theme.primaryColor, // Header background color
+                onSurface: Colors.black, // Body text color
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  textStyle: TextStyle(
+                    fontSize: 18, // Change the font size here
+                  ),
+                  foregroundColor: theme.primaryColor, // Button text color
+                ),
+              ),
+            ),
+            child: child!,
+          ),
+          // Center(
+          //   child: Container(
+          //     // width: 300, // Set the width
+          //     height: 500, // Set the height
+        );
+        // Theme(
+        //   data: Theme.of(context).copyWith(
+        // textTheme: TextTheme(
+        // headlineSmall: TextStyle(fontSize: 20), // Year picker font size
+        // bodyLarge: TextStyle(fontSize: 10), // Date picker font size
+        // ),
+        //   ),
+        //   child: child!,
+        // );
+      },
+    ).then((value) {
+      if (value == null) {
+        return;
+      }
+      String chooseddate = value.toString();
+      var date = DateTime.parse(chooseddate);
+      chooseddate = "";
+      chooseddate =
+          "${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year}";
+      apidate =
+          "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+      print(apidate);
+
+      mycontroller[0].text = chooseddate;
+      notifyListeners();
+    });
+    ;
   }
 
   String apidate = '';
@@ -3784,13 +5202,3 @@ class ViewDetailsData {
 // .scanTime.toString());
 // }
 //52141601SD00393
-// linemaster limitresult::S0001125241:vue52::.SS UTENSIL FLASK:: 565
-// [log] linemaster limitresult::S0001125242:vue53::0 NO OVEL LADDLE:: 767
-// [log] linemaster limitresult::S0001125243:vue54::001@:: 784555
-// [log] linemaster limitresult::S0001125244:vue55::002 DRESSING TABLE:: 852
-// [log] linemaster limitresult::S0001125245:vue56::006 SIL dummy item10:: abcd
-// [log] linemaster limitresult::S0001125246:vue57::006 SIL dummy item35:: B001
-// [log] linemaster limitresult::S0001125247:vue58::006 SIL dummy item36:: B0011
-// [log] linemaster limitresult::S0001125248:vue59::006 SIL dummy item37:: B0012
-// [log] linemaster limitresult::S0001125249:vue60::006 SIL dummy item39:: B002
-// [log] linemaster limitresult::S0001125250:vue61::006 SIL dummy item41:: B00265

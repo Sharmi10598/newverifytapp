@@ -12,12 +12,12 @@ class GetItemCodeMasterApi {
     int resCode = 500;
 
     try {
-      log(Url.queryApi + 'WareSmart/v1/LoadAuditItesByItemcode/$docEntry');
+      log(Url.queryApi + 'Verifyt/v1/LoadAuditItesByItemcode/$docEntry');
       log("ConstantValues.token::${ConstantValues.token}");
 
       final response = await http.get(
         Uri.parse(
-            Url.queryApi + "WareSmart/v1/LoadAuditItesByItemcode/$docEntry"),
+            Url.queryApi + "Verifyt/v1/LoadAuditItesByItemcode/$docEntry"),
         headers: {
           "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,

@@ -1,38 +1,40 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings, unnecessary_null_comparison
-
+// {
+//     "respType": "Success",
+//     "respCode": "WS100",
+//     "respDesc": "Data retriaved successfully",
+//     "data": "[{\"Id\":1,\"Customer_Id\":3,\"Service\":\"Setup\",\"ServiceUrl\":\"http://dev.sellerkit.in:5451\"},{\"Id\":4,\"Customer_Id\":3,\"Service\":\"Audit\",\"ServiceUrl\":\"http://dev.sellerkit.in:5452\"},{\"Id\":5,\"Customer_Id\":3,\"Service\":\"Logistics\",\"ServiceUrl\":\"http://dev.sellerkit.in:5460\"},{\"Id\":6,\"Customer_Id\":3,\"Service\":\"Operations\",\"ServiceUrl\":\"http://dev.sellerkit.in:5456\"},{\"Id\":7,\"Customer_Id\":3,\"Service\":\"Planning\",\"ServiceUrl\":\"sdf\"}]"
+// }
 import 'dart:convert';
 
 class GetUrlModel {
-  String? stocksnapUrl;
-  String? customeridUrl;
   String message;
-
   bool? status;
   String? exception;
+  List<GetUrlModelData> urlData;
   int? stcode;
   GetUrlModel(
-      {required this.stocksnapUrl,
-      required this.customeridUrl,
-      required this.message,
+      {required this.message,
       required this.status,
       this.exception,
+      required this.urlData,
       required this.stcode});
   factory GetUrlModel.fromJson(Map<String, dynamic> jsons, int stcode) {
-    print("URL JSON Before Api::" + jsons.toString());
-    if (jsons != null) {
-      print("URL JSON After Api::" + jsons.toString());
-      print("customerUrl::" + jsons['customerUrl'].toString());
+    if (jsons['data'] != null) {
+      // log('message::${jsonDecode(json['data'])}');
+      var list = jsonDecode(jsons['data']) as List;
+      List<GetUrlModelData> dataList =
+          list.map((data) => GetUrlModelData.fromJson(data)).toList();
+
       return GetUrlModel(
-          customeridUrl: jsons['customerUrl'] ?? '',
-          stocksnapUrl: jsons['snapStockSyncUrl'] ?? '',
-          message: "sucess",
-          status: true,
-          stcode: stcode,
-          exception: null);
+        message: "sucess",
+        status: true,
+        urlData: dataList,
+        stcode: stcode,
+        exception: null,
+      );
     } else {
       return GetUrlModel(
-          stocksnapUrl: null,
-          customeridUrl: null,
+          urlData: [],
           message: "failed",
           status: false,
           stcode: stcode,
@@ -41,29 +43,47 @@ class GetUrlModel {
   }
   factory GetUrlModel.issue(int rescode, String exp) {
     return GetUrlModel(
-      stocksnapUrl: null,
-      customeridUrl: null,
+      urlData: [],
       message: 'Exception',
       status: null,
       stcode: rescode,
       exception: exp,
     );
   }
-  // factory GetUrlModel.error(String jsons, int stcode) {
-  //   return GetUrlModel(
-  //       url: null,
-  //       message: 'Exception',
-  //       status: null,
-  //       stcode: stcode,
-  //       exception: jsons);
-  // }
+
   factory GetUrlModel.error(String jsons, int stcode) {
     return GetUrlModel(
-        stocksnapUrl: null,
-        customeridUrl: null,
+        urlData: [],
         message: 'Catch',
         status: null,
         stcode: stcode,
         exception: jsons);
+  }
+}
+
+class GetUrlModelData {
+  int id;
+  int? custId;
+  String? Service;
+  String? type;
+  String? ServiceUrl;
+
+  GetUrlModelData({
+    required this.id,
+    required this.type,
+    required this.custId,
+    required this.Service,
+    required this.ServiceUrl,
+  });
+// {\"Id\":1,\"Customer_Id\":3,\"Service\":\"Setup\",\"ServiceUrl\":\"http://dev.sellerkit.in:5451\"}
+  factory GetUrlModelData.fromJson(Map<String, dynamic> jsons) {
+    return GetUrlModelData(
+      type: jsons['Type'] != null ? jsons['Type'].toString() : '',
+      id: jsons['Id'] != null ? jsons['Id'] : 0,
+      custId: jsons['Customer_Id'] ?? 0,
+      Service: jsons['Service'] != null ? jsons['Service'].toString() : '',
+      ServiceUrl:
+          jsons['ServiceUrl'] != null ? jsons['ServiceUrl'].toString() : '',
+    );
   }
 }

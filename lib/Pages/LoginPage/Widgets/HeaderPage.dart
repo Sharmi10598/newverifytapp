@@ -17,6 +17,7 @@ class _LoginHeaderState extends State<LoginHeader> {
 
     return Stack(children: [
       Container(
+        color: Colors.white,
         padding: EdgeInsets.only(
             top: Screens.bodyheight(context) * 0.32,
             bottom: Screens.bodyheight(context) * 0.1),
@@ -26,21 +27,27 @@ class _LoginHeaderState extends State<LoginHeader> {
         ),
       ),
       Container(
-        padding: EdgeInsets.only(top: Screens.fullHeight(context)) * 0.18,
+        padding: EdgeInsets.only(top: Screens.fullHeight(context)) * 0.15,
         child: Center(
           child: Column(
             children: [
-              Text(
-                'Verifyt',
-                style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                    fontSize: 45),
-              ),
-              Text(
-                'Ensure Accuracy',
-                style: theme.textTheme.titleMedium?.copyWith(),
-              ),
+              Container(
+                  height: Screens.fullHeight(context) * 0.18,
+                  width: Screens.width(context) * 0.4,
+                  child: Image(
+                      fit: BoxFit.fill,
+                      image: AssetImage('assets/appiconlaunch.png'))),
+              // Text(
+              //   'Verifyt',
+              //   style: theme.textTheme.titleLarge?.copyWith(
+              //       fontWeight: FontWeight.bold,
+              //       letterSpacing: 2,
+              //       fontSize: 45),
+              // ),
+              // Text(
+              //   'Ensure Accuracy',
+              //   style: theme.textTheme.titleMedium?.copyWith(),
+              // ),
               SizedBox(
                 height: Screens.bodyheight(context) * 0.07,
               ),

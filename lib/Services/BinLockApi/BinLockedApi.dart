@@ -13,9 +13,9 @@ class BinLockedAPi {
 
     try {
       // log('ConstantValues.token::${ConstantValues.token}');
-      log(Url.queryApi + 'WareSmart/v1/PostAuditBinBlock');
+      log(Url.queryApi + 'Verifyt/v1/PostAuditBinBlock');
       final response = await http.post(
-          Uri.parse(Url.queryApi + 'WareSmart/v1/PostAuditBinBlock'),
+          Uri.parse(Url.queryApi + 'Verifyt/v1/PostAuditBinBlock'),
           headers: {
             "accept": "/",
             "Authorization": 'bearer ' + ConstantValues.token,

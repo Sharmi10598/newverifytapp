@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Constant/Configuration.dart';
 import '../../../Constant/Screen.dart';
@@ -42,7 +43,7 @@ class _DataScreenPageState extends State<DataScreenPage> {
           // Container(
           //   height: Screens.padingHeight(context),
           //   child: Center(
-          //     child: Text('No data to load..!!!'),
+          //     child: Text('No data to load.!'),
           //   ),
           // )
           SingleChildScrollView(
@@ -139,6 +140,7 @@ class _DataScreenPageState extends State<DataScreenPage> {
                   Container(
                     // width: Screens.width(context),
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
@@ -151,7 +153,7 @@ class _DataScreenPageState extends State<DataScreenPage> {
                                 onPressed: () {
                                   setState(() {
                                     String mssgg =
-                                        "Already stock master related data are available in memory. Click 'Continue' to proceed with this data or 'OK' to downloada new process.";
+                                        "Already stock master related data are available in memory. Click 'Continue' to proceed with this data or 'OK' to download new process.";
                                     context.read<Datactrls>().checkTableEmpty(
                                           context,
                                           theme,
@@ -172,63 +174,77 @@ class _DataScreenPageState extends State<DataScreenPage> {
                               // border: Border.all(color: Colors.black26)
                             ),
                             width: Screens.width(context) * 0.7,
-                            child: DropdownButtonFormField(
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 5.0, horizontal: 12.0),
-                                focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 5.0, horizontal: 12.0),
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.grey),
+                                  ),
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1, color: Colors.grey),
+                                  ),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.grey),
+                                  ),
+                                  errorBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.grey),
+                                  ),
                                 ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(width: 1, color: Colors.grey),
-                                ),
-                                focusedErrorBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
-                                errorBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return '*Please Select Warehouse';
-                                }
-                                return null;
-                              },
-                              value:
-                                  context.watch<Datactrls>().selectedStockValue,
-                              hint: Text(context
-                                          .watch<Datactrls>()
-                                          .selectedStockValue ==
-                                      null
-                                  ? 'Select Warehouse'
-                                  : ''),
-                              items: context
-                                  .watch<Datactrls>()
-                                  .whsListDropData
-                                  .map((label) => DropdownMenuItem(
-                                        alignment:
-                                            AlignmentDirectional.centerStart,
-                                        child: Text(
-                                          label.whsName!,
-                                          style: theme.textTheme.bodyMedium
-                                              ?.copyWith(
-                                            color: Colors.black,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return '*Please Select Warehouse';
+                                  }
+                                  return null;
+                                },
+                                value: context
+                                    .watch<Datactrls>()
+                                    .selectedStockValue,
+                                hint: Text(context
+                                            .watch<Datactrls>()
+                                            .selectedStockValue ==
+                                        null
+                                    ? 'Select Warehouse'
+                                    : ''),
+                                items: context
+                                    .watch<Datactrls>()
+                                    .whsListDropData!
+                                    .map((label) => DropdownMenuItem(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 1.0),
+                                            child: Text(
+                                              label.whsName!,
+                                              style: theme.textTheme.bodyMedium
+                                                  ?.copyWith(
+                                                color: Colors.black,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                        value: label.whsName,
-                                      ))
-                                  .toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
+                                          value: label.whsName,
+                                        ))
+                                    .toList(),
+                                onChanged: (String? newValue) async {
+                                  Future<SharedPreferences> pref =
+                                      SharedPreferences.getInstance();
+
                                   context.read<Datactrls>().selectedStockValue =
                                       newValue!;
+                                  final pref2 = await pref;
+                                  await pref2.setString(
+                                      'selecWarehouse',
+                                      context
+                                          .read<Datactrls>()
+                                          .selectedStockValue!);
                                   context
                                       .read<Datactrls>()
                                       .selectStockWhsCode();
-                                });
-                              },
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -321,7 +337,7 @@ class _DataScreenPageState extends State<DataScreenPage> {
                                 onPressed: () {
                                   setState(() {
                                     String mssgg =
-                                        "Already bin master related data are available in memory. Click 'Continue' to proceed with this data or 'OK' to downloada new process.";
+                                        "Already bin master related data are available in memory. Click 'Continue' to proceed with this data or 'OK' to download new process.";
                                     context.read<Datactrls>().checkTableEmpty(
                                           context,
                                           theme,

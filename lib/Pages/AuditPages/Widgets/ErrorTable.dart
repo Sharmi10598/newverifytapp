@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +6,8 @@ import '../../../Controllers/AuditController/AuditControllers.dart';
 import '../../../Model/ErrorModel/ErrorModeldaata.dart';
 
 class DataTableErrorWidget extends StatefulWidget {
-  DataTableErrorWidget({Key? key, required this.tablerColumn}) : super(key: key);
+  DataTableErrorWidget({Key? key, required this.tablerColumn})
+      : super(key: key);
 
   List<ErrorScanDataPost> tablerColumn = [];
 
@@ -25,11 +25,45 @@ class _DataTableErrorWidgetState extends State<DataTableErrorWidget> {
       var data = valuesx.map((e) => e.toMapErrors()).toList();
       // log('yyyyyyyyyyyyyyyykey::${data.first.keys.length}');
 
-      data.first.keys.forEach((key) {
-        columns.add(DataColumn(
-          label: Text(key),
-        ));
-      });
+      // data.first.keys.forEach((key) {
+      //   columns.add(DataColumn(
+      //     label: Text(key),
+      //   ));
+      // });
+      columns = [
+        DataColumn(
+          label: Text('Bin Code'),
+        ),
+        DataColumn(
+          label: Text('Is Manual'),
+        ),
+        DataColumn(
+          label: Container(
+              alignment: Alignment.center, child: Text('  Item Code')),
+        ),
+        DataColumn(
+          label: Text('Quantity'),
+        ),
+        DataColumn(
+          label: Text('Notes'),
+        ),
+        DataColumn(
+          label: Text('Scanned Time'),
+        ),
+        DataColumn(
+          label: Text('Serial Batch'),
+        ),
+        DataColumn(
+          label: Text('Stock Status'),
+        ),
+        // DataColumn(
+        //   label: Text('Whs Code'),
+        // ),
+        DataColumn(
+          label: Text('Error Msg'),
+        ),
+      ];
+
       return columns;
     }
 
@@ -43,19 +77,25 @@ class _DataTableErrorWidgetState extends State<DataTableErrorWidget> {
         List<DataCell> cells = [];
         // item.forEach((key) {
         // cells.add(DataCell(Text(item.localid.toString())));
-        cells.add(DataCell(Text(item.auditid.toString())));
+        // cells.add(DataCell(Text(item.auditid.toString())));
         cells.add(DataCell(Text(item.bincode.toString())));
-        cells.add(DataCell(Text(item.devicecode.toString())));
-        cells.add(DataCell(Text(item.ismanual.toString())));
+        // cells.add(DataCell(Text(item.devicecode.toString())));
+        cells.add(DataCell(Container(
+            alignment: Alignment.centerRight,
+            child: Text(item.ismanual.toString()))));
         cells.add(DataCell(Text(item.itemCode.toString())));
-        cells.add(DataCell(Text(item.quantity.toString())));
+        cells.add(DataCell(Container(
+            alignment: Alignment.centerRight,
+            child: Text(item.quantity.toString().replaceAll('.0', '')))));
         cells.add(DataCell(Text(item.notes.toString())));
         cells.add(DataCell(Text(item.scandatetime.toString())));
         cells.add(DataCell(Text(item.serialbatch.toString())));
         cells.add(DataCell(Text(item.stockstatus.toString())));
-        cells.add(DataCell(Text(item.templateid.toString())));
-        cells.add(DataCell(Text(item.whscode.toString())));
-        cells.add(DataCell(Text(item.scanguid.toString())));
+        // cells.add(DataCell(Container(
+        //     alignment: Alignment.centerRight,
+        //     child: Text(item.templateid.toString()))));
+        // cells.add(DataCell(Text(item.whscode.toString())));
+        // cells.add(DataCell(Text(item.scanguid.toString())));
         cells.add(DataCell(Text(item.errormsg.toString())));
         rows.add(DataRow(cells: cells));
       });
@@ -92,10 +132,10 @@ class _DataTableErrorWidgetState extends State<DataTableErrorWidget> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                       
                         DataTable(
-                         headingRowHeight: Screens.padingHeight(context)*0.05,
-                          dataRowHeight:  Screens.padingHeight(context)*0.045,
+                          headingRowHeight:
+                              Screens.padingHeight(context) * 0.05,
+                          dataRowHeight: Screens.padingHeight(context) * 0.045,
                           columnSpacing: 7.0,
                           border: TableBorder.symmetric(
                               inside: BorderSide(

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:verifytapp/Model/ScanPostModel/ScanPostDataaModel.dart';
@@ -24,14 +23,45 @@ class _DataTableSuccessState extends State<DataTableSuccess> {
       // log('valuesxvaluesxvaluesxvaluesx::${valuesx.length}');
       List<DataColumn> columns = [];
       var data = valuesx.map((e) => e.toMapSuccess()).toList();
-      // log('yyyyyyyyyyyyyyyy::${data.length}');
-      // log('yyyyyyyyyyyyyyyykey::${data.first.keys.length}');
+      // // log('yyyyyyyyyyyyyyyy::${data.length}');
+      // // log('yyyyyyyyyyyyyyyykey::${data.first.keys.length}');
 
-      data.first.keys.forEach((key) {
-        columns.add(DataColumn(
-          label: Text(key),
-        ));
-      });
+      // data.first.keys.forEach((key) {
+      //   columns.add(DataColumn(
+      //     label: Text(key),
+      //   ));
+      // });
+      columns = [
+        DataColumn(
+          label: Text('Bin Code'),
+        ),
+        DataColumn(
+          label: Text('Is Manual'),
+        ),
+        DataColumn(
+          label: Container(
+              alignment: Alignment.center, child: Text('  Item Code')),
+        ),
+        DataColumn(
+          label: Text('Quantity'),
+        ),
+        DataColumn(
+          label: Text('Notes'),
+        ),
+        DataColumn(
+          label: Text('Scanned Time'),
+        ),
+        DataColumn(
+          label: Text('Serial Batch'),
+        ),
+        DataColumn(
+          label: Text('Stock Status'),
+        ),
+        // DataColumn(
+        //   label: Text('Whs Code'),
+        // ),
+      ];
+
       return columns;
     }
 
@@ -45,19 +75,25 @@ class _DataTableSuccessState extends State<DataTableSuccess> {
         List<DataCell> cells = [];
         // item.forEach((key) {
         // cells.add(DataCell(Text(item.localid.toString())));
-        cells.add(DataCell(Text(item.auditid.toString())));
+        // cells.add(DataCell(Text(item.auditid.toString())));
         cells.add(DataCell(Text(item.bincode.toString())));
-        cells.add(DataCell(Text(item.devicecode.toString())));
-        cells.add(DataCell(Text(item.ismanual.toString())));
+        // cells.add(DataCell(Text(item.devicecode.toString())));
+        cells.add(DataCell(Container(
+            alignment: Alignment.center,
+            child: Text(item.ismanual.toString()))));
         cells.add(DataCell(Text(item.itemCode.toString())));
-        cells.add(DataCell(Text(item.quantity.toString())));
+        cells.add(DataCell(Container(
+            alignment: Alignment.centerRight,
+            child: Text(item.quantity.toString().replaceAll('.0', '')))));
         cells.add(DataCell(Text(item.notes.toString())));
         cells.add(DataCell(Text(item.scandatetime.toString())));
         cells.add(DataCell(Text(item.serialbatch.toString())));
         cells.add(DataCell(Text(item.stockstatus.toString())));
-        cells.add(DataCell(Text(item.templateid.toString())));
-        cells.add(DataCell(Text(item.whscode.toString())));
-        cells.add(DataCell(Text(item.scanguid.toString())));
+        // cells.add(DataCell(Container(
+        //     alignment: Alignment.centerRight,
+        //     child: Text(item.templateid.toString()))));
+        // cells.add(DataCell(Text(item.whscode.toString())));
+        // cells.add(DataCell(Text(item.scanguid.toString())));
 
         rows.add(DataRow(cells: cells));
       });

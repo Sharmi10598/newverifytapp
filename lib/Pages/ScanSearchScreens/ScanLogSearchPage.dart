@@ -1,13 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:verifytapp/Constant/Configuration.dart';
 import 'package:verifytapp/Constant/Screen.dart';
+import 'package:verifytapp/Pages/QrScannerPage/QrPage.dart';
 
 import '../../Controllers/SearchController/SerchControllers.dart';
 
 class ScanLogsSearch extends StatefulWidget {
-  const ScanLogsSearch({super.key});
-
+  ScanLogsSearch({super.key, required this.docEntry});
+  String docEntry;
   @override
   State<ScanLogsSearch> createState() => _ScanLogsSearchState();
 }
@@ -20,6 +23,7 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<SearchCtrl>().init();
+      context.read<SearchCtrl>().getSerachValues(widget.docEntry);
     });
   }
 
@@ -51,6 +55,7 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
                 child: TextFormField(
                   onChanged: (value) {
                     setState(() {
+                      log('valuevalue::${value}');
                       context.read<SearchCtrl>().filterSearchBoxList(value);
                     });
                   },
@@ -59,6 +64,14 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
                   onEditingComplete: () {},
                   onTap: () {},
                   decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          context.read<SearchCtrl>().SearchController.text = '';
+                          ScannerPageState.searchScan = true;
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (_) => ScannerPage()));
+                        },
+                        icon: Icon(Icons.qr_code)),
                     contentPadding: EdgeInsets.symmetric(
                         horizontal: Screens.width(context) * 0.03,
                         vertical: Screens.fullHeight(context) * 0.01),
@@ -85,8 +98,29 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
               ),
               context.watch<SearchCtrl>().fileterSearchValues.length < 1
                   ? Container(
-                      height: Screens.padingHeight(context) * 0.7,
-                      child: Center(child: Text('No data found..!!')))
+                      height: Screens.padingHeight(context) * 0.85,
+                      child: Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: Screens.padingHeight(context) * 0.15,
+                              width: Screens.width(context) * 0.5,
+                              child: Image(
+                                  image: AssetImage('assets/no-data.png')),
+                            ),
+                            SizedBox(
+                              height: Screens.padingHeight(context) * 0.01,
+                            ),
+                            Text(
+                              'No data',
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                   : Expanded(
                       child: ListView.builder(
                           itemCount: context
@@ -130,7 +164,7 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
                                         children: [
                                           Container(
                                               width:
-                                                  Screens.width(context) * 0.57,
+                                                  Screens.width(context) * 0.55,
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -148,7 +182,7 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
                                                             FontWeight.bold,
                                                       )),
                                                   Text(
-                                                      "Serial : " +
+                                                      "Serial   : " +
                                                           context
                                                               .watch<
                                                                   SearchCtrl>()
@@ -167,7 +201,7 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
                                                           .stockstatus!
                                                           .isNotEmpty
                                                       ? Text(
-                                                          "Status : " +
+                                                          "Status  : " +
                                                               context
                                                                   .watch<
                                                                       SearchCtrl>()
@@ -201,7 +235,7 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
                                                                       .grey))
                                                       : Container(),
                                                   Text(
-                                                      'Scanned at ${config.alignDate(context.watch<SearchCtrl>().fileterSearchValues[index].scandatetime!)}',
+                                                      'Scanned at ${context.watch<SearchCtrl>().fileterSearchValues[index].scandatetime!.replaceAll('T', ' ')}',
                                                       style: theme
                                                           .textTheme.bodyMedium
                                                           ?.copyWith(
@@ -211,11 +245,30 @@ class _ScanLogsSearchState extends State<ScanLogsSearch> {
                                               )),
                                           Container(
                                               width:
-                                                  Screens.width(context) * 0.3,
+                                                  Screens.width(context) * 0.34,
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.centerRight,
+                                                    child: Text(
+                                                        "Bin Code : " +
+                                                            context
+                                                                .watch<
+                                                                    SearchCtrl>()
+                                                                .fileterSearchValues[
+                                                                    index]
+                                                                .bincode
+                                                                .toString(),
+                                                        style: theme.textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith(
+                                                                // fontWeight: FontWeight.bold,
+                                                                color: Colors
+                                                                    .grey)),
+                                                  ),
                                                   Container(
                                                     alignment:
                                                         Alignment.centerRight,

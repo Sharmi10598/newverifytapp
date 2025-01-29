@@ -12,11 +12,11 @@ class GetItemMasterApi {
     int resCode = 500;
 
     try {
-      log(Url.queryApi + 'WareSmart/v1/LoadMasterStock/$whsCode/$name');
+      log(Url.queryApi + 'Verifyt/v1/LoadMasterStock/$whsCode/$name');
       log("ConstantValues.token::${ConstantValues.token}");
 
       final response = await http.get(
-        Uri.parse(Url.queryApi + "WareSmart/v1/LoadMasterStock/$whsCode/$name"),
+        Uri.parse(Url.queryApi + "Verifyt/v1/LoadMasterStock/$whsCode/$name"),
         headers: {
           "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,
@@ -33,7 +33,7 @@ class GetItemMasterApi {
             response.statusCode);
       } else if (response.statusCode >= 400 && response.statusCode <= 410) {
         print("Error: error");
-        log("AuditByDevice Res22:::" "${response.body.toString()}");
+        log("LoadMasterStock Allitem:::" "${response.body.toString()}");
         return GetAuditItemModel.issue(
             json.decode(response.body), response.statusCode);
       } else {

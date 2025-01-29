@@ -12,14 +12,14 @@ class GetAuditByDeviceApi {
     int resCode = 500;
 
     try {
-      log('XXXXXX' +
+      log('XXXXXX:::' +
           Url.queryApi +
-          'WareSmart/v1/GetAuditByDevice?DeviceCode="$deviceID"');
+          'Verifyt/v1/GetAuditByDevice?DeviceCode=$deviceID');
       log("ConstantValues.token::${ConstantValues.token}");
 
       final response = await http.get(
-        Uri.parse(Url.queryApi +
-            "WareSmart/v1/GetAuditByDevice?DeviceCode=$deviceID"),
+        Uri.parse(
+            Url.queryApi + "Verifyt/v1/GetAuditByDevice?DeviceCode=$deviceID"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": 'bearer ' + ConstantValues.token,

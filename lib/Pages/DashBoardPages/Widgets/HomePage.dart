@@ -109,7 +109,71 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            setState(() {
+                              context
+                                  .read<DashBoardCtrlProvider>()
+                                  .onItemTapped(1);
+                              // context
+                              //     .read<DashBoardCtrlProvider>()
+                              //     .selectedIndex = 1;
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.only(
+                                left: Screens.width(context) * 0.01,
+                                right: Screens.width(context) * 0.01,
+                                top: Screens.bodyheight(context) * 0.01),
+                            width: Screens.width(context) * 0.46,
+                            height: Screens.bodyheight(context) * 0.13,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_month,
+                                      color: Colors.purple,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.grey,
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: Screens.bodyheight(context) * 0.01,
+                                ),
+                                Text(
+                                  'Audit Schedules',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: Screens.bodyheight(context) * 0.015,
+                                ),
+                                Text(
+                                  'Stock Audit, Reconcillation',
+                                  style: theme.textTheme.bodySmall?.copyWith(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              context
+                                  .read<DashBoardCtrlProvider>()
+                                  .onItemTapped(2);
+                            });
+                          },
                           child: Container(
                             padding: EdgeInsets.only(
                                 left: Screens.width(context) * 0.015,
@@ -131,29 +195,9 @@ class _HomePageState extends State<HomePage> {
                                       Icons.shopping_cart,
                                       color: theme.primaryColor,
                                     ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        context
-                                                .read<DashBoardCtrlProvider>()
-                                                .source1 =
-                                            await context
-                                                .read<DashBoardCtrlProvider>()
-                                                .getPathOFDB();
-                                        context
-                                                .read<DashBoardCtrlProvider>()
-                                                .copyTo =
-                                            await context
-                                                .read<DashBoardCtrlProvider>()
-                                                .getDirectory();
-
-                                        await context
-                                            .read<DashBoardCtrlProvider>()
-                                            .copyDatabaseToExternalStorage();
-                                      },
-                                      child: Icon(
-                                        Icons.arrow_forward,
-                                        color: Colors.grey,
-                                      ),
+                                    Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.grey,
                                     )
                                   ],
                                 ),
@@ -161,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                                   height: Screens.bodyheight(context) * 0.01,
                                 ),
                                 Text(
-                                  'Outward',
+                                  'Stock Data',
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -170,66 +214,11 @@ class _HomePageState extends State<HomePage> {
                                   height: Screens.bodyheight(context) * 0.015,
                                 ),
                                 Text(
-                                  'Orders, Pickup, Deliveries',
+                                  'Products, Stock, Bin',
                                   style: theme.textTheme.bodySmall?.copyWith(),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(
-                              left: Screens.width(context) * 0.01,
-                              right: Screens.width(context) * 0.01,
-                              top: Screens.bodyheight(context) * 0.01),
-                          width: Screens.width(context) * 0.46,
-                          height: Screens.bodyheight(context) * 0.13,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(
-                                    Icons.calendar_month,
-                                    color: Colors.purple,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      // context
-                                      //     .read<DashBoardCtrlProvider>()
-                                      //     .selectedIndex = 1;
-
-                                      // Get.offAllNamed(ConstantRoutes.dashboard);
-                                    },
-                                    child: Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.grey,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: Screens.bodyheight(context) * 0.01,
-                              ),
-                              Text(
-                                'Audit Schedules',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(
-                                height: Screens.bodyheight(context) * 0.015,
-                              ),
-                              Text(
-                                'Stock Audit, Reconcillation',
-                                style: theme.textTheme.bodySmall?.copyWith(),
-                              ),
-                            ],
                           ),
                         ),
                       ],
@@ -316,10 +305,23 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.only(
                 left: Screens.width(context) * 0.03,
               ),
-              child: Text(
-                'Overview',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+              child: GestureDetector(
+                onTap: () async {
+                  context.read<DashBoardCtrlProvider>().source1 =
+                      await context.read<DashBoardCtrlProvider>().getPathOFDB();
+                  context.read<DashBoardCtrlProvider>().copyTo = await context
+                      .read<DashBoardCtrlProvider>()
+                      .getDirectory();
+
+                  await context
+                      .read<DashBoardCtrlProvider>()
+                      .copyDatabaseToExternalStorage();
+                },
+                child: Text(
+                  'Overview',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

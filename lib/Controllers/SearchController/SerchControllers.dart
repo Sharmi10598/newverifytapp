@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqlite_api.dart';
 import '../../DBHelper/DBHelpers.dart';
@@ -7,7 +9,6 @@ import '../../Model/SearchModel/SearchModelData.dart';
 class SearchCtrl extends ChangeNotifier {
   init() {
     clearAllData();
-    getSerachValues();
   }
 
   TextEditingController SearchController = TextEditingController();
@@ -15,18 +16,18 @@ class SearchCtrl extends ChangeNotifier {
   List<SearchScanDataPost> fileterSearchValues = [];
 
   clearAllData() {
-    SearchController.text = '';
     searchListValues = [];
+    SearchController.text = '';
     fileterSearchValues = [];
     notifyListeners();
   }
 
-  getSerachValues() async {
+  getSerachValues(String docEntry) async {
     searchListValues = [];
     fileterSearchValues = [];
     Database db = (await DBHelper.getInstance())!;
     List<Map<String, Object?>> result2 =
-        await DBOperation.getSearchAllTables(db);
+        await DBOperation.getSearchAllTables(db, docEntry);
 
     if (result2.isNotEmpty) {
       for (var i = 0; i < result2.length; i++) {
@@ -53,17 +54,22 @@ class SearchCtrl extends ChangeNotifier {
 
   filterSearchBoxList(String v) {
     if (v.isNotEmpty) {
+      log('searchListValues lenght::${searchListValues.length}');
       fileterSearchValues = searchListValues
           .where((e) =>
               e.bincode!.toLowerCase().contains(v.toLowerCase()) ||
-              e.serialbatch.toString().contains(v.toLowerCase()) ||
-              e.itemCode.toString().contains(v.toLowerCase()) ||
-              e.notes.toString().contains(v.toLowerCase()))
+              e.serialbatch
+                  .toString()
+                  .toLowerCase()
+                  .contains(v.toLowerCase()) ||
+              e.itemCode.toString().toLowerCase().contains(v.toLowerCase()) ||
+              e.notes!.toString().toLowerCase().contains(v.toLowerCase()))
           .toList();
       notifyListeners();
     } else if (v.isEmpty) {
       fileterSearchValues = searchListValues;
       notifyListeners();
     }
+    log("fileterSearchValues::${fileterSearchValues.length}");
   }
 }

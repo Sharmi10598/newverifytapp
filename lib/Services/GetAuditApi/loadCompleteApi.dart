@@ -13,11 +13,10 @@ class LoadCompleteDataApi {
 
     try {
       // log('ConstantValues.token::${ConstantValues.token}');
-      log(Url.queryApi +
-          'WareSmart/v1/PostAuditLoadComplete?AuditId=$docEntry');
+      log(Url.queryApi + 'Verifyt/v1/PostAuditLoadComplete?AuditId=$docEntry');
       final response = await http.post(
         Uri.parse(Url.queryApi +
-            'WareSmart/v1/PostAuditLoadComplete?AuditId=$docEntry'),
+            'Verifyt/v1/PostAuditLoadComplete?AuditId=$docEntry'),
         headers: {
           "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,

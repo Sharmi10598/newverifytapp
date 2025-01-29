@@ -12,11 +12,11 @@ class GetBinMasterApi {
     int resCode = 500;
 
     try {
-      log(Url.queryApi + 'WareSmart/v1/LoadMasterStock/$whsCode/$name');
+      log('${Url.queryApi}Verifyt/v1/LoadMasterStock/$whsCode/$name');
       log("ConstantValues.token::${ConstantValues.token}");
 
       final response = await http.get(
-        Uri.parse(Url.queryApi + "WareSmart/v1/LoadMasterStock/W001/Bin"),
+        Uri.parse(Url.queryApi + "Verifyt/v1/LoadMasterStock/$whsCode/$name"),
         headers: {
           "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,

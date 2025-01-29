@@ -13,11 +13,11 @@ class GetAuditActionApi {
     int resCode = 500;
 
     try {
-      log(Url.queryApi + 'WareSmart/v1/LoadAuditItems/$docEntry/$actionName');
+      log(Url.queryApi + 'Verifyt/v1/LoadAuditItems/$docEntry/$actionName');
       log(' ConstantValues.token::${ConstantValues.token}');
       final response = await http.get(
         Uri.parse(
-            Url.queryApi + "WareSmart/v1/LoadAuditItems/$docEntry/$actionName"),
+            Url.queryApi + "Verifyt/v1/LoadAuditItems/$docEntry/$actionName"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": 'bearer ' + ConstantValues.token,

@@ -25,11 +25,41 @@ class _DataTableMainState extends State<DataTableMain> {
       var data = valuesx.map((e) => e.toMap()).toList();
       // log('yyyyyyyyyyyyyyyykey::${data.first.keys.length}');
 
-      data.first.keys.forEach((key) {
-        columns.add(DataColumn(
-          label: Text(key),
-        ));
-      });
+      // data.first.keys.forEach((key) {
+      //   columns.add(DataColumn(
+      //     label: Text(key),
+      //   ));
+      // });
+      columns = [
+        DataColumn(
+          label: Text('Bin Code'),
+        ),
+        DataColumn(
+          label: Text('Is Manual'),
+        ),
+        DataColumn(
+          label: Container(
+              alignment: Alignment.center, child: Text('  Item Code')),
+        ),
+        DataColumn(
+          label: Text('Quantity'),
+        ),
+        DataColumn(
+          label: Text('Notes'),
+        ),
+        DataColumn(
+          label: Text('Scanned Time'),
+        ),
+        DataColumn(
+          label: Text('Serial Batch'),
+        ),
+        DataColumn(
+          label: Text('Stock Status'),
+        ),
+        // DataColumn(
+        //   label: Text('Whs Code'),
+        // ),
+      ];
       return columns;
     }
 
@@ -39,21 +69,28 @@ class _DataTableMainState extends State<DataTableMain> {
 
       data.forEach((item) {
         List<DataCell> cells = [];
-        // item.forEach((key) {
-        // cells.add(DataCell(Text(item.localid.toString())));
-        cells.add(DataCell(Text(item.auditid.toString())));
+
+        // cells.add(DataCell(Text(item.auditid.toString())));
         cells.add(DataCell(Text(item.bincode.toString())));
-        cells.add(DataCell(Text(item.devicecode.toString())));
-        cells.add(DataCell(Text(item.ismanual.toString())));
+        // cells.add(DataCell(Text(item.devicecode.toString())));
+        cells.add(DataCell(Container(
+            alignment: Alignment.centerRight,
+            child: Container(
+                alignment: Alignment.center,
+                child: Text(item.ismanual.toString())))));
         cells.add(DataCell(Text(item.itemCode.toString())));
-        cells.add(DataCell(Text(item.quantity.toString())));
+        cells.add(DataCell(Container(
+            alignment: Alignment.centerRight,
+            child: Text(item.quantity.toString().replaceAll('.0', '')))));
         cells.add(DataCell(Text(item.notes.toString())));
         cells.add(DataCell(Text(item.scandatetime.toString())));
         cells.add(DataCell(Text(item.serialbatch.toString())));
         cells.add(DataCell(Text(item.stockstatus.toString())));
-        cells.add(DataCell(Text(item.templateid.toString())));
-        cells.add(DataCell(Text(item.whscode.toString())));
-        cells.add(DataCell(Text(item.scanguid.toString())));
+        // cells.add(DataCell(Container(
+        //     alignment: Alignment.centerRight,
+        // child: Text(item.templateid.toString()))));
+        // cells.add(DataCell(Text(item.whscode.toString())));
+        // cells.add(DataCell(Text(item.scanguid.toString())));
 
         rows.add(DataRow(cells: cells));
       });
@@ -100,7 +137,6 @@ class _DataTableMainState extends State<DataTableMain> {
                                   color: theme.primaryColor.withOpacity(0.1))),
                           columns: _generateColumns(widget.tablerColumn),
                           rows: _generateRows(widget.tablerColumn),
-
                           headingTextStyle: theme.textTheme.bodyMedium!
                               .copyWith(
                                   color: theme.primaryColor,

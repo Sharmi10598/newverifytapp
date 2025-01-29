@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqlite_api.dart';
 import '../../Constant/Configuration.dart';
@@ -15,6 +16,7 @@ import '../../DBHelper/DBOperations.dart';
 import '../../Model/CheckListModel/CheckListMaster.dart';
 import '../../Model/CheckListModel/CheckLstModel.dart';
 import '../../Model/DispositionListModel/DispositionModel.dart';
+import '../../Model/GetTenentIdmodel/TenentIdModel.dart';
 import '../../Model/LoginModel/loginmodel.dart';
 import '../../Services/GetDispositionList/CheckListApi.dart';
 import '../../Services/GetDispositionList/CheckListMasterApi.dart';
@@ -24,6 +26,7 @@ import '../../Services/LoginAPI/loginApi.dart';
 import '../../Services/TenentApi/TenentidApi.dart';
 import '../../driftDB/driftTablecreation.dart';
 import '../../driftDB/driftoperation.dart';
+import '../DashBoardController/DashBoradControllers.dart';
 
 class LoginController extends ChangeNotifier {
   // LoginController() {
@@ -65,7 +68,8 @@ class LoginController extends ChangeNotifier {
         'tenantId',
         mycontroller[3].text.toString(),
       );
-      callGetTenentIdApi(context);
+      await callGetTenentIdApi(context);
+
       progrestext = true;
       errorMsh = "";
       erroMsgVisble = false;
@@ -76,9 +80,37 @@ class LoginController extends ChangeNotifier {
     }
   }
 
-  init() {
+  init(BuildContext context) async {
+    final database = (await AppDatabase.initialize())!;
+    Database db = (await DBHelper.getInstance())!;
+    final preff = await pref;
+    await HelperFunctions.clearStockHostSP();
+    await HelperFunctions.clearCheckedTennetIDSharedPref();
+    await HelperFunctions.clearCheckedDeviceIDSharedPref();
+    await driftoperation.deletItemCodeData(database);
+    await driftoperation.deleteChecklistMaster(database);
+    await driftoperation.deleteChecklistLine(database);
+    await driftoperation.deleteChecklistHeader(database);
+    await driftoperation.deletestocksnap(database);
+    await driftoperation.deletHeaderItem(database);
+    await driftoperation.deleteBinListItem(database);
+    await DBOperation.truncateScanpostDataT(db);
+    await DBOperation.truncateCheckListT(db);
+    await DBOperation.truncateWarehouseDb(db);
+    await DBOperation.truncateAuditByDevice(db);
+    await DBOperation.truncateAuditByDevice(db);
+    await DBOperation.truncatedispval(db);
+    await DBOperation.truncheckListDataDB(db);
+
+    await preff.remove('selecWarehouse');
+    preff.remove('stockLastDownTime');
+    preff.remove('binLastDownTime');
+    preff.remove('itemLastDownTime');
+
+    // Datactrls.selectedStockwhscode = null;
+    context.read<DashBoardCtrlProvider>().selectedIndex = 0;
     if (mycontroller[3].text.isEmpty && errorMsh.isEmpty) {
-      errorMsh = "Complete the setup..!!";
+      errorMsh = "Complete the setup.";
       notifyListeners();
     }
   }
@@ -155,7 +187,7 @@ class LoginController extends ChangeNotifier {
   validateMethod(BuildContext context) async {
     if (formkeys[0].currentState!.validate()) {
       if (mycontroller[3].text.toString().trim().isEmpty) {
-        errorMsh = "Complete the setup..!!";
+        errorMsh = "Complete the setup.";
       } else {
         isloading = true;
         notifyListeners();
@@ -184,8 +216,8 @@ class LoginController extends ChangeNotifier {
         postLoginData.fcmToken =
             await HelperFunctions.getFCMTokenSharedPreference();
 
-        postLoginData.username = mycontroller[0].text;
-        postLoginData.password = mycontroller[1].text;
+        postLoginData.username = mycontroller[0].text.trim();
+        postLoginData.password = mycontroller[1].text.trim();
         String? model = await Config.getdeviceModel();
         String? brand = await Config.getdeviceBrand();
 
@@ -203,8 +235,8 @@ class LoginController extends ChangeNotifier {
             await HelperFunctions.savewhseCode(value.whsCode!);
             String? whsCode = await HelperFunctions.getWhsCode();
             log('whsCodewhsCodewhsCodewhsCode::::$whsCode');
-            ConstantValues.userNamePM = mycontroller[0].text;
-            await HelperFunctions.saveUserName(mycontroller[0].text);
+            ConstantValues.userNamePM = mycontroller[0].text.trim();
+            await HelperFunctions.saveUserName(mycontroller[0].text.trim());
 
             await HelperFunctions.saveLogginUserCodeSharedPreference(
                 mycontroller[0].text);
@@ -232,11 +264,11 @@ class LoginController extends ChangeNotifier {
             // await HelperFunctions.saveUserType(value.data!.userType);
             // await HelperFunctions.savewhseCode(value.data!.whsecode!);
 
-            mycontroller[0].clear();
-            mycontroller[1].clear();
             await callDispValApi();
             await callCheckListMasterApi();
             await callCheckListApi();
+            mycontroller[0].clear();
+            mycontroller[1].clear();
             Get.offAllNamed(ConstantRoutes.dashboard);
             // } else if (value.loginstatus!.toLowerCase().contains("failed") &&
             //     value.data == null) {
@@ -256,16 +288,15 @@ class LoginController extends ChangeNotifier {
             if (value.excep == 'No route to host') {
               isloading = false;
               erroMsgVisble = true;
-              errorMsh = 'Check your Internet Connection...!!';
+              errorMsh = 'Check your Internet Connection..';
             } else if (value.loginMsg == "Catch") {
               isloading = false;
               erroMsgVisble = true;
-              errorMsh =
-                  '${value.resCode!}..!!Network Issue..\nTry again Later..!!';
+              errorMsh = '${value.resCode!}.Network Issue..\nTry again Later.';
             } else {
               isloading = false;
               erroMsgVisble = true;
-              errorMsh = '${value.resCode!}..!!${value.excep!}';
+              errorMsh = '${value.resCode!}.${value.excep!}';
             }
             notifyListeners();
           }
@@ -274,24 +305,36 @@ class LoginController extends ChangeNotifier {
     }
   }
 
-  callGetTenentIdApi(BuildContext context) {
-    TenantIdApi.getData(mycontroller[3].text).then((value) async {
+  List<GetUrlModelData> getUrlData = [];
+  callGetTenentIdApi(BuildContext context) async {
+    await TenantIdApi.getData(mycontroller[3].text.trim()).then((value) async {
       await HelperFunctions.clearSaveHostSP();
       await HelperFunctions.clearStockHostSP();
       Url.queryApi = '';
       Url.stockSnapApi = '';
       if (value.stcode! >= 200 && value.stcode! <= 210) {
-        print("url method111::" + value.customeridUrl.toString());
+        if (value.urlData.isNotEmpty) {
+          getUrlData = value.urlData;
 
-        if (value.customeridUrl != null) {
-          // customerid = value.customeridUrl;
-          // stocksnap = value.stocksnapUrl;
-          print("url method::" + value.customeridUrl.toString());
-          await HelperFunctions.saveHostSP(value.customeridUrl!.trim());
-          await HelperFunctions.saveStockHostSP(value.stocksnapUrl!.trim());
+          for (var i = 0; i < getUrlData.length; i++) {
+            if (getUrlData[i].Service.toString() == 'Setup') {
+              if (getUrlData[i].type.toString().trim() == 'Api') {
+                await HelperFunctions.saveMasterHostSP(
+                    getUrlData[i].ServiceUrl!.trim());
+              }
+            }
+            if (getUrlData[i].Service.toString() == 'Audit') {
+              if (getUrlData[i].type.toString().trim() == 'Api') {
+                await HelperFunctions.saveHostSP(
+                    getUrlData[i].ServiceUrl!.trim());
+                // await HelperFunctions.saveStockHostSP(value.stocksnapUrl!.trim());
+              }
+            }
+          }
+
           await HelperFunctions.saveTenetIDSharedPreference(
               mycontroller[3].text.toString().trim());
-          setURL();
+          await setURL();
           errorMsh = "";
           erroMsgVisble = false;
           settingError = false;
@@ -300,7 +343,7 @@ class LoginController extends ChangeNotifier {
       } else if (value.stcode! >= 400 && value.stcode! <= 410) {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Check Your Internet..!!'),
+          content: Text('Something went wrong. Try again'),
           backgroundColor: Colors.red,
           elevation: 10,
           behavior: SnackBarBehavior.floating,
@@ -313,26 +356,13 @@ class LoginController extends ChangeNotifier {
 
   setURL() async {
     String? getCustUrl = await HelperFunctions.getHostDSP();
+    String? getMasterApiUrl = await HelperFunctions.getMasterHostDSP();
     String? getStockUrl = await HelperFunctions.getStockHostDSP();
-
-    log('getStockUrlget33:$getStockUrl');
-    // String hostip = '';
-    // if (getCustUrl != null) {
-    //   for (int i = 0; i < getCustUrl.length; i++) {
-    //     if (getCustUrl[i] == ":") {
-    //       break;
-    //     }
-    //     // log("for ${hostip}");
-    //     hostip = hostip + getCustUrl[i];
-    //   }
-    // }
-
-    // log("for last ${hostip}");
-    // HelperFunctions.saveHostSP(hostip);
-    // ConstantValues.userNamePM = await HelperFunctions.getUserName();
+    log('getStockUrlget44t:$getCustUrl');
     Url.queryApi = "${getCustUrl.toString()}/api/";
-    Url.stockSnapApi = "${getStockUrl.toString()}/api/";
-    log('  Url.queryApi Url.queryApi::${Url.queryApi}:::stockSnapApi::${Url.stockSnapApi}');
+    Url.queryMasterApi = "${getMasterApiUrl.toString()}/api/";
+    // Url.stockSnapApi = "${getStockUrl.toString()}/api/";
+    log('Url.queryApi Url.queryApi222::${Url.queryApi}:::stockSnapApi::${Url.queryMasterApi}');
   }
 
   apiResponseDialog(BuildContext context, ThemeData theme, String apiRes) {

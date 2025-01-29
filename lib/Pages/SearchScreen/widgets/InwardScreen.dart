@@ -26,8 +26,16 @@ class _SearchScreenPageState extends State<SearchScreenPage> {
           SingleChildScrollView(
             child: Container(
               height: Screens.padingHeight(context) * 0.85,
-              child: Center(
-                child: Text('No data to load..!!!'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: Screens.padingHeight(context) * 0.15,
+                    width: Screens.width(context) * 0.5,
+                    child: Image(image: AssetImage('assets/no-data.png')),
+                  ),
+                  Text('No data'),
+                ],
               ),
             ),
           )

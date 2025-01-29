@@ -28,19 +28,18 @@ class LoginModel {
 
   factory LoginModel.fromJson(Map<String, dynamic> json,
       Map<String, dynamic> verifijsons, int rescode) {
-    if (verifijsons != null) {
-      // var list = verifijsons['restrictionData'] as List;
-      // if(list.isEmpty){
-      return LoginModel(
-          respDesc: verifijsons['respDesc'],
-          loginstatus: "Success",
-          loginMsg: "Success",
-          whsCode: json['WhsCode'].toString(),
-          // data: LoginModelData.fromJson(jsons),
-          excep: null,
-          loginVerifiList: null,
-          resCode: rescode,
-          token: verifijsons['data']);
+    // var list = verifijsons['restrictionData'] as List;
+    // if(list.isEmpty){
+    return LoginModel(
+        respDesc: verifijsons['respDesc'],
+        loginstatus: "Success",
+        loginMsg: "Success",
+        whsCode: json['WhsCode'].toString(),
+        // data: LoginModelData.fromJson(jsons),
+        excep: null,
+        loginVerifiList: null,
+        resCode: rescode,
+        token: verifijsons['data']);
 //       }else{
 // List<LoginVerificationList> dataList =
 //           list.map((data) => LoginVerificationList.fromJson(data)).toList();
@@ -55,16 +54,6 @@ class LoginModel {
 //          token: verifijsons['data']
 //       );
 //       }
-    } else {
-      return LoginModel(
-          loginstatus: "failed",
-          respDesc: verifijsons['respDesc'],
-          loginMsg: "failed",
-          excep: null,
-          loginVerifiList: null,
-          resCode: rescode,
-          whsCode: '');
-    }
   }
 
   factory LoginModel.issue(int rescode, Map<String, dynamic> exp) {

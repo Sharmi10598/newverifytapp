@@ -12,9 +12,9 @@ class GetuserDetailsApi {
     int resCode = 500;
 
     try {
-      log(Url.queryApi + 'WareSmart/v1/GetAuditUserDetails/$docEntry');
+      log(Url.queryApi + 'Verifyt/v1/GetAuditUserDetails/$docEntry');
       final response = await http.get(
-        Uri.parse(Url.queryApi + "WareSmart/v1/GetAuditUserDetails/$docEntry"),
+        Uri.parse(Url.queryApi + "Verifyt/v1/GetAuditUserDetails/$docEntry"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": 'bearer ' + ConstantValues.token,
@@ -22,7 +22,7 @@ class GetuserDetailsApi {
       );
 
       log("UserDetails sts:::" "${response.statusCode.toString()}");
-      // log("UserDetails Res:::" "${response.body.toString()}");
+      log("UserDetails Res:::" "${response.body.toString()}");
 
       resCode = response.statusCode;
       if (response.statusCode == 200) {

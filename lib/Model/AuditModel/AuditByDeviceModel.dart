@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:verifytapp/DBModel/GetAuditByDevice/GetAuditByDeviceDBModel.dart';
 
@@ -94,6 +93,7 @@ class GetAuditDataModel {
   bool? isStarting;
   int unitsScanned;
   double percent;
+  bool? selectListcolor;
   int totalItems;
   String remarks;
   String status;
@@ -120,6 +120,7 @@ class GetAuditDataModel {
   GetAuditDataModel(
       {required this.auditFrom,
       required this.user,
+      this.selectListcolor,
       required this.percent,
       this.isStarting,
       required this.unitsScanned,
@@ -209,6 +210,8 @@ class FetchAuditDetais {
   String? status;
   String? createdDatetime;
   int? createdBy;
+  int? index;
+
   String? deviceCode;
   int? updatedBy;
   String? updatedDatetime;
@@ -236,6 +239,7 @@ class FetchAuditDetais {
       {this.auditFrom,
       this.auditTo,
       this.percent,
+      this.index,
       this.unitsScanned,
       this.totalItems,
       this.user,

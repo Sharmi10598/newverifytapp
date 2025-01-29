@@ -40,13 +40,11 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                   style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
                 )),
             Container(
-                padding: EdgeInsets.only(
-                  top: Screens.padingHeight(context) * 0.02,
-                ),
-                height: Screens.padingHeight(context) * 0.45,
+                height: Screens.padingHeight(context) * 0.4,
                 width: Screens.width(context),
                 child: ListView.builder(
-                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    // physics: NeverScrollableScrollPhysics(),
                     itemCount: context
                         .watch<AuditCtrlProvider>()
                         .getckeckDataListForm55
@@ -57,27 +55,47 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                           .getckeckDataListForm55[index]
                           .listValue!
                           .split(',');
-                      // chkListController[index].text = 'x';
+                      log('litstagexlitstagex11::${context.watch<AuditCtrlProvider>().getckeckDataListForm55[index].acceptAttach}');
                       return Column(
                         children: [
                           Container(
-                            // height: Screens.padingHeight(context) * 0.06,
+                            height: Screens.padingHeight(context) * 0.1,
+                            padding: EdgeInsets.all(5),
                             width: Screens.width(context),
-                            child: TextField(
+                            // child:
+                            // Form(
+                            //   key: context
+                            //       .watch<AuditCtrlProvider>()
+                            //       .checkformkey,
+                            child: TextFormField(
                               readOnly: true,
+                              autofocus: true,
                               controller: chkListController[index],
                               decoration: InputDecoration(
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
                                 labelText:
                                     '${context.watch<AuditCtrlProvider>().getckeckDataListForm55[index].checklistName}',
+                                // hintText:
+                                //     '${context.watch<AuditCtrlProvider>().getckeckDataListForm55[index].checklistName}',
                                 suffixIcon: Container(
-                                  padding: EdgeInsets.only(
-                                      left: Screens.width(context) * 0.03),
-                                  height: Screens.padingHeight(context) * 0.07,
+                                  padding: EdgeInsets.all(10),
+
+                                  // padding: EdgeInsets.only(
+                                  //     left: Screens.width(context) * 0.03),
+                                  height: Screens.padingHeight(context) * 0.09,
                                   width: Screens.width(context) * 0.95,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: litstagex.length,
                                     itemBuilder: (context, indexx) {
+                                      context
+                                          .read<AuditCtrlProvider>()
+                                          .filenamedet
+                                          .add(FileNameDet(
+                                              name: '', indexId: indexx));
+                                      log('litstagexlitstagex::${litstagex[indexx].toString()}');
+                                      log('filenamedet length::${context.read<AuditCtrlProvider>().filenamedet.length.toString()}');
                                       return Container(
                                         child: Row(
                                           children: [
@@ -106,7 +124,7 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                                           0.03),
                                               height: Screens.padingHeight(
                                                       context) *
-                                                  0.046,
+                                                  0.06,
                                               child: IconButton(
                                                   icon: context
                                                               .watch<
@@ -142,12 +160,14 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                                         true) {
                                                       log('Image checklistdata length::${context.read<AuditCtrlProvider>().checklistdata.length}');
 
+                                                      log('index::${index}');
                                                       setState(() {
                                                         context
                                                             .read<
                                                                 AuditCtrlProvider>()
                                                             .imageBottomSheet(
-                                                                context);
+                                                                context,
+                                                                indexx);
 
                                                         log('urlImageurlImage:${context.read<AuditCtrlProvider>().urlImage}');
 
@@ -182,22 +202,6 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                                       });
                                                     } else {
                                                       setState(() {
-                                                        // if (context
-                                                        //         .read<
-                                                        //             AuditCtrlProvider>()
-                                                        //         .isselected ==
-                                                        //     true) {
-                                                        //   context
-                                                        //       .read<
-                                                        //           AuditCtrlProvider>()
-                                                        //       .isselected = false;
-                                                        // } else {
-                                                        //   context
-                                                        //       .read<
-                                                        //           AuditCtrlProvider>()
-                                                        //       .isselected = true;
-                                                        // }
-
                                                         context
                                                                 .read<
                                                                     AuditCtrlProvider>()
@@ -208,13 +212,7 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                                         log('messagevalvalaval::${litstagex[indexx].toString()}');
 
                                                         log('indexxindexxindexx::${context.read<AuditCtrlProvider>().isselected}');
-                                                        // if (litstagex[indexx] ==
-                                                        //     context
-                                                        //         .read<
-                                                        //             AuditCtrlProvider>()
-                                                        //         .getckeckDataListForm55[
-                                                        //             index]
-                                                        //         .isselectlistval!) {}
+
                                                         context
                                                                 .read<
                                                                     AuditCtrlProvider>()
@@ -233,29 +231,6 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                                                 index,
                                                                 litstagex[
                                                                     indexx]);
-                                                        //   context
-                                                        //       .read<
-                                                        //           AuditCtrlProvider>()
-                                                        //       .checklistdata
-                                                        //       .add(DispListData(
-                                                        //           attachurl: '',
-                                                        //           auditid: context
-                                                        //               .read<
-                                                        //                   AuditCtrlProvider>()
-                                                        //               .getckeckDataListForm55[
-                                                        //                   index]
-                                                        //               .docEntry,
-                                                        //           checklistcode: context
-                                                        //               .read<
-                                                        //                   AuditCtrlProvider>()
-                                                        //               .getckeckDataListForm55[
-                                                        //                   index]
-                                                        //               .checklistCode,
-
-                                                        //           checklistvalue: context
-                                                        //               .read<
-                                                        //                   AuditCtrlProvider>()
-                                                        //               .isSelectedCusTag));
                                                       });
                                                     }
                                                   }),
@@ -273,12 +248,13 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                                     context
                                                         .read<
                                                             AuditCtrlProvider>()
-                                                        .filedata
+                                                        .filenamedet
                                                         .isNotEmpty
                                                 ? Text(context
                                                     .read<AuditCtrlProvider>()
-                                                    .filedata[0]
-                                                    .fileName)
+                                                    .filenamedet[indexx]
+                                                    .name
+                                                    .toString())
                                                 : Container(),
                                           ],
                                         ),
@@ -288,18 +264,8 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                 ),
                                 border: const OutlineInputBorder(),
                               ),
-                              onSubmitted: (text) {
-                                if (text.isNotEmpty) {
-                                  context
-                                      .read<AuditCtrlProvider>()
-                                      .addTag(text);
-                                }
-                              },
                             ),
                           ),
-                          SizedBox(
-                            height: Screens.padingHeight(context) * 0.015,
-                          )
                         ],
                       );
                     })),
@@ -310,13 +276,51 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                   foregroundColor: Colors.white,
                   backgroundColor: theme.primaryColor),
               onPressed: () {
-                Get.back();
+                if (context
+                    .read<AuditCtrlProvider>()
+                    .checklistdata
+                    .isNotEmpty) {
+                  setState(() {
+                    context.read<AuditCtrlProvider>().insertCheckListData();
+                  });
+                  Get.back();
+                } else {
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          contentPadding: EdgeInsets.zero,
+                          content: Container(
+                            height: Screens.padingHeight(context) * 0.15,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  height: Screens.padingHeight(context) * 0.03,
+                                ),
+                                const Text('Choose Checklist values'),
+                                SizedBox(
+                                  height: Screens.padingHeight(context) * 0.03,
+                                ),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: theme.primaryColor),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(child: const Text(' OK ')))
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                }
               },
-
-              // context
-              //     .read<AuditCtrlProvider>()
-              //     .callScannLockedApi(context, theme);
-
               child: const Center(
                 child: Text('OK'),
               ),
@@ -326,4 +330,10 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
       ),
     );
   }
+}
+
+class FileNameDet {
+  String name;
+  int indexId;
+  FileNameDet({required this.name, required this.indexId});
 }

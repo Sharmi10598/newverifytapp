@@ -1,12 +1,10 @@
-// PostAuditloadcomplete{
+// {
 //   "respType": "success",
 //   "respCode": "WS100",
 //   "respDesc": "Status updated successfully",
 //   "data": "[]"
 // }
-// class LoadComplete {
 
-// }
 class LoadComplete {
   String respType;
   String respCode;

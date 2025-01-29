@@ -23,13 +23,14 @@ class Datactrls extends ChangeNotifier {
   Config config = Config();
   init(
     BuildContext context,
-  ) {
-    clearAllData();
-    callGetWhsListApi(context);
-    getTablesLength();
+  ) async {
+    await clearAllData(context);
+    await callGetWhsListApi(context);
+    await getTablesLength();
   }
 
-  clearAllData() {
+  clearAllData(BuildContext context) async {
+    Future<SharedPreferences> pref = SharedPreferences.getInstance();
     itemloading = false;
     stockloading = false;
     binloading = false;
@@ -37,15 +38,16 @@ class Datactrls extends ChangeNotifier {
     itemLength = 0;
     stocklength = 0;
     binLength = 0;
-    whsListtData = [];
     whsListDropData = [];
+    whsListtData = [];
     auditActionHeaderList = [];
     auditActionLineList = [];
     auditActionBinMasterList = [];
     errorMsg = '';
-    // selectedStockValue = null;
     selectwhs = true;
-
+    selectedStockValue = null;
+    selectedStockValue = null;
+    selectedStockwhscode = null;
     notifyListeners();
   }
 
@@ -58,7 +60,7 @@ class Datactrls extends ChangeNotifier {
   int stocklength = 0;
   int binLength = 0;
   List<WareHouseListData> whsListtData = [];
-  List<WareHouseListData> whsListDropData = [];
+  List<WareHouseListData>? whsListDropData = [];
   final formKey = GlobalKey<FormState>();
   List<HeaderData> auditActionHeaderList = [];
   List<LineData> auditActionLineList = [];
@@ -70,7 +72,7 @@ class Datactrls extends ChangeNotifier {
   Future<SharedPreferences> pref = SharedPreferences.getInstance();
   bool selectwhs = true;
   String? selectedStockValue;
-  String? selectedStockwhscode;
+  static String? selectedStockwhscode;
   String? itemLastDownTime;
   String? stockLastDownTime;
   String? binLastDownTime;
@@ -250,7 +252,7 @@ class Datactrls extends ChangeNotifier {
                                 } else if (actionName == 'Stock') {
                                   selectedStockValue = null;
                                   await driftoperation
-                                      .deleteListItem(database)
+                                      .deletestocksnap(database)
                                       .then((value) {
                                     pref2.remove('stockLastDownTime');
                                     getTablesLength();
@@ -287,6 +289,24 @@ class Datactrls extends ChangeNotifier {
     itemLength = getheaderresult.length;
     stocklength = getlineresult.length;
     binLength = getbinresult.length;
+
+    if (stocklength > 0) {
+      final pref2 = await pref;
+
+      await getwhsdropList();
+
+      for (var i = 0; i < whsListDropData!.length; i++) {
+        if (pref2.getString('selecWarehouse') != null) {
+          if (whsListDropData![i].whsName ==
+              pref2.getString('selecWarehouse')) {
+            selectedStockValue = await pref2.getString('selecWarehouse');
+            await selectStockWhsCode();
+          } else {
+            selectedStockValue = null;
+          }
+        }
+      }
+    }
     String itemLastTime = pref2.getString("itemLastDownTime") ?? '';
     String stockLastTime = pref2.getString("stockLastDownTime") ?? '';
     String binLastTime = pref2.getString("binLastDownTime") ?? '';
@@ -368,7 +388,7 @@ class Datactrls extends ChangeNotifier {
             itemLastDownTime = config.aligndateforTimeStampt(itemTime);
 
             DataSuccessMsg(
-                context, theme, 'ItemMaster Downloaded Successfully..!!');
+                context, theme, 'Item master downloaded successfully.');
             itemViewDetails = ViewDetailsData(
                 actionName: 'Item',
                 itemslength: getheaderresult.length,
@@ -399,7 +419,7 @@ class Datactrls extends ChangeNotifier {
     notifyListeners();
   }
 
-  void apiResponseDialog(
+  apiResponseDialog(
       BuildContext context, ThemeData theme, String resCode, String apiRes) {
     showDialog(
         context: context,
@@ -441,7 +461,7 @@ class Datactrls extends ChangeNotifier {
                     ),
                     Container(
                       padding: const EdgeInsets.all(8),
-                      child: Text('${resCode}..!!  ' + apiRes),
+                      child: Text('${resCode}.  ' + apiRes),
                     ),
                     SizedBox(
                       height: Screens.padingHeight(context) * 0.02,
@@ -492,7 +512,7 @@ class Datactrls extends ChangeNotifier {
             String stockTime = pref2.getString("stockLastDownTime").toString();
             stockLastDownTime = config.aligndateforTimeStampt(stockTime);
             DataSuccessMsg(
-                context, theme, 'StockSnap Downloaded Successfully..!!');
+                context, theme, 'Stock data downloaded duccessfully.');
             stockViewDetails = ViewDetailsData(
                 actionName: 'Stock',
                 itemslength: getlineresult.length,
@@ -505,10 +525,16 @@ class Datactrls extends ChangeNotifier {
             notifyListeners();
           });
           ;
+        } else {
+          btnDisabled = false;
+          itemloading = false;
+          stockloading = false;
+          binloading = false;
+          DataSuccessMsg(context, theme, 'No data found.');
         }
         notifyListeners();
       } else if (value.stsCode >= 400 && value.stsCode <= 410) {
-        apiResponseDialog(context, theme, value.respCode, value.respDesc);
+        await apiResponseDialog(context, theme, value.respCode, value.respDesc);
         errorMsg = value.respDesc;
         btnDisabled = false;
         itemloading = false;
@@ -517,6 +543,7 @@ class Datactrls extends ChangeNotifier {
 
         notifyListeners();
       } else {
+        await apiResponseDialog(context, theme, value.respCode, value.respDesc);
         errorMsg = value.respDesc;
         btnDisabled = false;
         itemloading = false;
@@ -553,7 +580,7 @@ class Datactrls extends ChangeNotifier {
 
             binLastDownTime = config.aligndateforTimeStampt(bintime);
             DataSuccessMsg(
-                context, theme, 'BinMaster Downloaded Successfully..!!');
+                context, theme, 'Bin master downloaded successfully.');
             binViewDetails = ViewDetailsData(
                 actionName: 'Bin',
                 itemslength: getbinresult.length,
@@ -599,47 +626,22 @@ class Datactrls extends ChangeNotifier {
     if (result2.isNotEmpty) {
       whsListDropData = [];
       for (int i = 0; i < result2.length; i++) {
-        whsListDropData.add(WareHouseListData(
-            // address1: result2[i]['Address1'].toString(),
-            // address2: result2[i]['Address2'].toString(),
-            // address3: result2[i]['Address3'].toString(),
-            // city: result2[i]['City'].toString(),
-            // country: result2[i]['Country'].toString(),
-            // createdBy: int.parse(result2[i]['CreatedBy'].toString()),
-            // createdOn: result2[i]['CreatedOn'].toString(),
-            // gstNo: result2[i]['GSTNo'].toString(),
-            // longitude: result2[i]['Longitude'] != null
-            //     ? result2[i]['Longitude'].toString()
-            //     : "",
-            // lotitude: result2[i]['Latitude'] != null
-            //     ? result2[i]['Latitude'].toString()
-            //     : '',
-            // picode: result2[i]['Picode'].toString(),
-            // primaryContact: result2[i]['PrimaryContact'].toString(),
-            // primaryEmail: result2[i]['PrimaryEmail'].toString(),
-            // state: result2[i]['State'].toString(),
-            // status: int.parse(result2[i]['Status'].toString()),
-            // traceid: result2[i]['Traceid'].toString(),
-            // updatedBy: result2[i]['UpdatedBy'] != null
-            //     ? int.parse(result2[i]['UpdatedBy'].toString())
-            //     : 0,
-            // updatedOn: result2[i]['UpdatedOn'] != null
-            //     ? result2[i]['UpdatedOn'].toString()
-            //     : '',
+        whsListDropData!.add(WareHouseListData(
             whsCode: result2[i]['WhsCode'].toString(),
             whsName: result2[i]['WhsName'].toString()));
       }
     }
-    log('whsListDropDatawhsListDropData::${whsListDropData.length}');
+    log('whsListDropDatawhsListDropData::${whsListDropData!.length}');
     notifyListeners();
   }
 
   selectStockWhsCode() {
-    for (var i = 0; i < whsListDropData.length; i++) {
-      if (selectedStockValue == whsListDropData[i].whsName) {
-        selectedStockwhscode = whsListDropData[i].whsCode;
+    for (var i = 0; i < whsListDropData!.length; i++) {
+      // log('message:::${whsListDropData[i].whsName}');
+      if (selectedStockValue == whsListDropData![i].whsName) {
+        selectedStockwhscode = whsListDropData![i].whsCode;
+        notifyListeners();
       }
-      notifyListeners();
     }
     notifyListeners();
   }

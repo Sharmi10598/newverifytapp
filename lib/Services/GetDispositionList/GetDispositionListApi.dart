@@ -12,9 +12,11 @@ class DispListapi {
     int resCode = 500;
 
     try {
+      log("${Url.queryMasterApi}Masters/v1/GetDispositionList");
+      http: //91.203.133.224:5451/api/Masters/v1/GetDispositionList");
       // log('ConstantValues.token::${ConstantValues.token}');
       final response = await http.get(
-        Uri.parse(Url.queryApi + "WareSmart/v1/GetDispositionList"),
+        Uri.parse("${Url.queryMasterApi}Masters/v1/GetDispositionList"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": 'bearer ' + ConstantValues.token,

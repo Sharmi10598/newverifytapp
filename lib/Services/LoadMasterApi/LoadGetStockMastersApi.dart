@@ -8,24 +8,24 @@ import '../../Constant/LocalUrl/GetLocalUrl.dart';
 import '../../Model/DownloadDataModel/StocksDataModels.dart';
 
 class GetLoadStocksMastersApi {
-  static Future<GetAuditStocksModel> getData(String whsCode, String name) async {
+  static Future<GetAuditStocksModel> getData(
+      String whsCode, String name) async {
     int resCode = 500;
 
     try {
-      log(Url.queryApi + 'WareSmart/v1/LoadMasterStock/$whsCode/$name');
+      log('${Url.queryApi} Verifyt/v1/LoadMasterStock/$whsCode/$name');
       log("ConstantValues.token::${ConstantValues.token}");
 
       final response = await http.get(
-        Uri.parse(Url.queryApi +
-            "WareSmart/v1/LoadMasterStock/$whsCode/$name"),
+        Uri.parse(Url.queryApi + "Verifyt/v1/LoadMasterStock/$whsCode/$name"),
         headers: {
-           "accept": "/",
+          "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,
         },
       );
 
       log("StockMaster sts:::" "${response.statusCode.toString()}");
-      // log("AuditByDevice Res:::" "${response.body.toString()}");
+      // log("StockMaster Res:::" "${response.body.toString()}");
 
       resCode = response.statusCode;
       if (response.statusCode == 200) {

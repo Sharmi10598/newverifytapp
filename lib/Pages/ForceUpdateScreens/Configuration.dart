@@ -21,7 +21,7 @@ class CheckVersionConfig {
       ITunesSearchAPI iTunesSearchAPI = ITunesSearchAPI();
       Map<dynamic, dynamic>? result =
           await iTunesSearchAPI.lookupByBundleId(myAppBundleId, country: 'IN');
-      if (result != null) storeVersion = iTunesSearchAPI.version(result);
+      storeVersion = iTunesSearchAPI.version(result!);
     } else {
       storeVersion = null;
     }

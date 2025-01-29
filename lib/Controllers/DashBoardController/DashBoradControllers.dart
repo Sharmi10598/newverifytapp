@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:verifytapp/Constant/Configuration.dart';
 import 'package:verifytapp/Constant/ConstantRoutes.dart';
@@ -21,8 +20,6 @@ import '../../Pages/DataScreen/Widgets/DataDownloadScreen.dart';
 import '../../Pages/SearchScreen/widgets/InwardScreen.dart';
 import '../../Pages/LogoutScreens/logoutscreen.dart';
 import '../../Services/GetAuditApi/GetAuditByDeviceAPI.dart';
-import '../../driftDB/driftTablecreation.dart';
-import '../../driftDB/driftoperation.dart';
 
 class DashBoardCtrlProvider extends ChangeNotifier {
   init() {
@@ -102,7 +99,8 @@ class DashBoardCtrlProvider extends ChangeNotifier {
               whsCode: result2[i]['WhsCode'] != null
                   ? result2[i]['WhsCode'].toString()
                   : '',
-              deviceCode: ''));
+              deviceCode: '',
+              selectListcolor: false));
           notifyListeners();
         }
       }
@@ -149,10 +147,11 @@ class DashBoardCtrlProvider extends ChangeNotifier {
   void onItemDetTapped(
     int index,
   ) {
-    log('Index ItemDet::$index');
     selectedIndex = index;
-    notifyListeners();
+    log('Index ItemDet::$index');
     Get.offAllNamed(ConstantRoutes.dashboard);
+
+    notifyListeners();
   }
 
   apiResponseDialog(BuildContext context, ThemeData theme, String apiRes) {
@@ -227,26 +226,13 @@ class DashBoardCtrlProvider extends ChangeNotifier {
 
   setURL() async {
     String? getCustUrl = await HelperFunctions.getHostDSP();
+    String? getMasterApiUrl = await HelperFunctions.getMasterHostDSP();
     String? getStockUrl = await HelperFunctions.getStockHostDSP();
-
-    log('getStockUrlget22:$getStockUrl');
-    // String hostip = '';
-    // if (getCustUrl != null) {
-    //   for (int i = 0; i < getCustUrl.length; i++) {
-    //     if (getCustUrl[i] == ":") {
-    //       break;
-    //     }
-    //     // log("for ${hostip}");
-    //     hostip = hostip + getCustUrl[i];
-    //   }
-    // }
-
-    // log("for last ${hostip}");
-    // HelperFunctions.saveHostSP(hostip);
-    // ConstantValues.userNamePM = await HelperFunctions.getUserName();
+    log('getStockUrlget44t:$getCustUrl');
     Url.queryApi = "${getCustUrl.toString()}/api/";
-    Url.stockSnapApi = "${getStockUrl.toString()}/api/";
-    log('  Url.queryApi Url.queryApi333::${Url.queryApi}:::stockSnapApi::${Url.stockSnapApi}');
+    Url.queryMasterApi = "${getMasterApiUrl.toString()}/api/";
+    // Url.stockSnapApi = "${getStockUrl.toString()}/api/";
+    log('Url.queryApi Url.queryApi222::${Url.queryApi}:::stockSnapApi::${Url.queryMasterApi}');
   }
 
   callGetAuditApi() async {
@@ -258,8 +244,8 @@ class DashBoardCtrlProvider extends ChangeNotifier {
       if (value.stsCode >= 200 && value.stsCode <= 210) {
         getAuditList2 = value.auditData;
         openAuditList = [];
-        DBOperation.truncateAuditByDevice(db);
-        DBOperation.insertAuditByDervice(db, getAuditList2);
+        await DBOperation.truncateAuditByDevice(db);
+        await DBOperation.insertAuditByDervice(db, getAuditList2);
 
         List<Map<String, Object?>> result2 =
             await DBOperation.getAuditByDervice(db);
@@ -271,6 +257,7 @@ class DashBoardCtrlProvider extends ChangeNotifier {
                 result2[i]['Status'].toString() == 'Starting') {
               openAuditList.add(GetAuditDataModel(
                   auditFrom: result2[i]['AuditFrom'].toString(),
+                  selectListcolor: false,
                   user: result2[i]['User'].toString(),
                   percent: result2[i]['Percent'] != null
                       ? double.parse(result2[i]['Percent'].toString())

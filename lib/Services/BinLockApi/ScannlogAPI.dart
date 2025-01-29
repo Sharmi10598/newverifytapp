@@ -58,9 +58,9 @@ class ScannLockedAPiApi {
 //             );
     try {
       log('ConstantValues.token::${ConstantValues.token}');
-      log(Url.queryApi + 'WareSmart/v1/PostAuditScanLog');
+      log(Url.queryApi + 'Verifyt/v1/PostAuditScanLog');
       final response = await http.post(
-          Uri.parse(Url.queryApi + 'WareSmart/v1/PostAuditScanLog'),
+          Uri.parse(Url.queryApi + 'Verifyt/v1/PostAuditScanLog'),
           headers: {
             "accept": "/",
             "Authorization": 'bearer ' + ConstantValues.token,

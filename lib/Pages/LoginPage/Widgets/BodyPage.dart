@@ -64,7 +64,7 @@ class _LoginBodyPageState extends State<LoginBodyPage> {
                   contentPadding: EdgeInsets.symmetric(
                       horizontal: Screens.width(context) * 0.03,
                       vertical: Screens.fullHeight(context) * 0.01),
-                  labelText: 'User Code',
+                  labelText: 'Username',
                   labelStyle: theme.textTheme.bodyMedium
                       ?.copyWith(color: Colors.black54),
                   focusedBorder: OutlineInputBorder(
@@ -152,6 +152,7 @@ class _LoginBodyPageState extends State<LoginBodyPage> {
                             context
                                 .read<LoginController>()
                                 .validateMethod(context);
+                            context.read<LoginController>().setURL();
                           });
                         },
                   child: Container(
@@ -171,24 +172,24 @@ class _LoginBodyPageState extends State<LoginBodyPage> {
             SizedBox(
               height: Screens.fullHeight(context) * 0.015,
             ),
-            Container(
-              padding: EdgeInsets.only(
-                  left: Screens.width(context) * 0.13,
-                  right: Screens.width(context) * 0.09),
-              child: Row(
-                children: [
-                  Container(
-                      child: Text("Don't have an account?",
-                          style: theme.textTheme.bodyMedium
-                              ?.copyWith(color: Colors.white))),
-                  TextButton(
-                      onPressed: () {},
-                      child: Text("Sign Up",
-                          style: theme.textTheme.bodyMedium
-                              ?.copyWith(color: Colors.white))),
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: EdgeInsets.only(
+            //       left: Screens.width(context) * 0.13,
+            //       right: Screens.width(context) * 0.09),
+            //   child: Row(
+            //     children: [
+            //       Container(
+            //           child: Text("Don't have an account?",
+            //               style: theme.textTheme.bodyMedium
+            //                   ?.copyWith(color: Colors.white))),
+            //       TextButton(
+            //           onPressed: () {},
+            //           child: Text("Sign Up",
+            //               style: theme.textTheme.bodyMedium
+            //                   ?.copyWith(color: Colors.white))),
+            //     ],
+            //   ),
+            // ),
             Container(
                 padding: EdgeInsets.only(
                     left: Screens.width(context) * 0.11,
@@ -198,7 +199,7 @@ class _LoginBodyPageState extends State<LoginBodyPage> {
                     child: Text("Forgot Password?",
                         style: theme.textTheme.bodyMedium
                             ?.copyWith(color: Colors.white)))),
-            SizedBox(height: Screens.fullHeight(context) * 0.05),
+            SizedBox(height: Screens.fullHeight(context) * 0.02),
             Container(
               padding: EdgeInsets.only(left: Screens.width(context) * 0.05),
               child: IconButton(

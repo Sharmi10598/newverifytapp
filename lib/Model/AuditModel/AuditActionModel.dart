@@ -411,10 +411,8 @@ class BinMasterData {
       required this.status,
       required this.whsCode,
       required this.zoneCode});
-// {\"AuditID\":26,\"BinCode\":\"WC001\",\"WhsCode\":\"W001\",\"AreaCode\":\"AC1234\",\"ZoneCode\":\"Zone12345\",\"RackCode\":\"RK8005\",\"Status\":1}
 
   factory BinMasterData.fromJson(Map<String, dynamic> jsons) {
-    // log('NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN');
     return BinMasterData(
         areaCode: jsons['AreaCode'] != null ? jsons['AreaCode'].toString() : '',
         auditId: jsons['AuditID'] ?? 0,

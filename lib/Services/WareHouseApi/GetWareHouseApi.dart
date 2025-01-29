@@ -12,20 +12,19 @@ class WareHouseDataApi {
     int resCode = 500;
 
     try {
-      log(Url.queryApi + 'WareSmart/v1/WareSmart/v1/GetAllWarehouse');
+      log('${Url.queryMasterApi}Masters/v1/GetAllWarehouse');
       log("ConstantValues.token::${ConstantValues.token}");
 
       final response = await http.get(
-        Uri.parse(Url.queryApi +
-            "WareSmart/v1/GetAllWarehouse"),
+        Uri.parse("${Url.queryMasterApi}Masters/v1/GetAllWarehouse"),
         headers: {
-           "accept": "/",
+          "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,
         },
       );
 
       log("Whs sts:::" "${response.statusCode.toString()}");
-      // log("AuditByDevice Res:::" "${response.body.toString()}");
+      // log("WareHouse Res:::" "${response.body.toString()}");
 
       resCode = response.statusCode;
       if (response.statusCode == 200) {

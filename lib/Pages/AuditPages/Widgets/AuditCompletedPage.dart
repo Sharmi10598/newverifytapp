@@ -53,8 +53,26 @@ class _AuditingCompletedScreenState extends State<AuditingCompletedScreen> {
                 //         context.watch<AuditCtrlProvider>().errorMsg.isEmpty &&
 
                 context.watch<AuditCtrlProvider>().completedAuditList.isEmpty
-                    ? Container(
-                        child: Center(child: Text('No Data..!!')),
+                    ? Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: Screens.padingHeight(context) * 0.15,
+                              width: Screens.width(context) * 0.5,
+                              child: Image(
+                                  image: AssetImage('assets/no-data.png')),
+                            ),
+                            SizedBox(
+                              height: Screens.padingHeight(context) * 0.01,
+                            ),
+                            Text(
+                              'No data',
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
                       )
                     : ListView.builder(
                         padding: EdgeInsets.all(0),
@@ -85,7 +103,7 @@ class _AuditingCompletedScreenState extends State<AuditingCompletedScreen> {
                               onTap: () {
                                 // context
                                 //     .read<AuditCtrlProvider>()
-                                //     .callGetBinNumApiApi(
+                                //     .callGetBinNumApi(
                                 //         context
                                 //             .read<AuditCtrlProvider>()
                                 //             .openAuditList[index]

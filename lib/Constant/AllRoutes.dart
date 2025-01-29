@@ -14,7 +14,7 @@ class Routes {
   static List<GetPage> allRoutes = [
     GetPage<dynamic>(
         name: ConstantRoutes.login,
-        page: () => const LoginPageScreens(),
+        page: () => LoginPageScreens(),
         transition: Transition.fade,
         transitionDuration: const Duration(seconds: 1)),
     GetPage<dynamic>(
@@ -44,7 +44,7 @@ class Routes {
         transitionDuration: const Duration(seconds: 1)),
     GetPage<dynamic>(
         name: ConstantRoutes.splashScreen,
-        page: () => const SplashScreenpage(),
+        page: () => SplashScreenpage(),
         transition: Transition.fade,
         transitionDuration: const Duration(seconds: 1)),
   ];

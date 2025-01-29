@@ -136,14 +136,12 @@ class _LogoutAlertDialogState extends State<LogoutAlertDialog> {
                           await HelperFunctions.clearUserCodeDSharedPref();
                           await HelperFunctions.clearPasswordSharedPreference();
                           await driftoperation.deletItemCodeData(database);
-                          await driftoperation.deleteBinListItem(database);
-                          await driftoperation.deleteListItem(database);
-                          await driftoperation.deletHeaderItem(database);
+                          // await driftoperation.deleteBinListItem(database);
+                          // await driftoperation.deleteListItem(database);
                           await driftoperation.deleteChecklistMaster(database);
                           await driftoperation.deleteChecklistLine(database);
                           await driftoperation.deleteChecklistHeader(database);
-                          await driftoperation.deletHeaderItem(database);
-                          await driftoperation.deletHeaderItem(database);
+                          // await driftoperation.deletHeaderItem(database);
                           await DBOperation.truncateScanpostDataT(db);
                           await DBOperation.truncateCheckListT(db);
                           await DBOperation.truncateWarehouseDb(db);
@@ -151,6 +149,7 @@ class _LogoutAlertDialogState extends State<LogoutAlertDialog> {
                           await DBOperation.truncateAuditByDevice(db);
                           await DBOperation.truncatedispval(db);
                           await DBOperation.truncheckListDataDB(db);
+                          // Datactrls.selectedStockwhscode = null;
                           context.read<DashBoardCtrlProvider>().selectedIndex =
                               0;
                           Get.offAllNamed(ConstantRoutes.login);

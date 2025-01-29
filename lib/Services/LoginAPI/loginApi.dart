@@ -16,17 +16,15 @@ class LoginAPi {
     int resCode = 500;
 
     try {
-      log('login url::${Url.queryApi} WareSmart/v1/MobileLogin');
+      log('login url::${Url.queryMasterApi}Masters/v1/MobileLogin');
       final response = await http.post(
-          // http://216.48.189.191:4041/api/WareSmart/v1/MobileLogin
-          Uri.parse(Url.queryApi + "WareSmart/v1/MobileLogin"),
+          Uri.parse("${Url.queryMasterApi}Masters/v1/MobileLogin"),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({
             "tenantId": "${postLoginData.tenentID}", //WareSmart
             "userCode": "${postLoginData.username}", //U003
             "password": "${postLoginData.password}", //SINE90
             "deviceCode": "${postLoginData.deviceCode}",
-            // //HGAFSH88798 or YUTYY7575775
             "devicename": "${postLoginData.devicename}", //SAMSUNG
             "fcmToken": "${postLoginData.fcmToken}",
             "ip": "",

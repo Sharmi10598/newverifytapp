@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:verifytapp/Model/AuditModel/AuditActionModel.dart';
 
 class GetItemCodeModel {
   String respType;

@@ -14,10 +14,10 @@ class GetBinNumApi {
     try {
       log('ConstantValues.token::${ConstantValues.token}');
       log(Url.queryApi +
-          'WareSmart/v1/GetAuditUserDefaultBin?DocEntry=$docEntry');
+          'Verifyt/v1/GetAuditUserDefaultBin?DocEntry=$docEntry');
       final response = await http.get(
         Uri.parse(Url.queryApi +
-            'WareSmart/v1/GetAuditUserDefaultBin?DocEntry=$docEntry'),
+            'Verifyt/v1/GetAuditUserDefaultBin?DocEntry=$docEntry'),
         headers: {
           "accept": "/",
           "Authorization": 'bearer ' + ConstantValues.token,
