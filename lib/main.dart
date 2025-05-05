@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:verifytapp/Constant/AllRoutes.dart';
 import 'package:verifytapp/Controllers/AuditController/AuditControllers.dart';
 import 'package:verifytapp/Controllers/DashBoardController/DashBoradControllers.dart';
+import 'package:verifytapp/Controllers/LebelprintController/LabelprintController.dart';
 import 'package:verifytapp/Controllers/LoginController/LoginControllers.dart';
 import 'package:verifytapp/DBHelper/DBHelpers.dart';
 import 'package:verifytapp/Themes/theme_manager.dart';
@@ -40,6 +41,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => ConfigController()),
           ChangeNotifierProvider(create: (_) => Datactrls()),
           ChangeNotifierProvider(create: (_) => SearchCtrl()),
+          ChangeNotifierProvider(create: (_) => LabelPrintcontrller()),
+          
         ],
         child:
             Consumer<ThemeManager>(builder: (context, themes, Widget? child) {
@@ -47,6 +50,12 @@ class MyApp extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               title: 'Verifyt',
               getPages: Routes.allRoutes,
+              // builder: (context,child){
+              //   return MediaQuery(
+              //     data: MediaQuery.of(context).copyWith(textScaleFactor: ), 
+              //     child: child!
+              //     );
+              // },
               theme: ThemeData(
                 colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
                 useMaterial3: true,

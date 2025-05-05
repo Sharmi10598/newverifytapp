@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:verifytapp/Constant/ConstantRoutes.dart';
 import 'package:verifytapp/Constant/Screen.dart';
 import 'package:verifytapp/Controllers/DashBoardController/DashBoradControllers.dart';
 import 'PendingAudit.dart';
@@ -279,19 +281,69 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
-                        Container(
+                         Container(
                           padding: EdgeInsets.only(
                               left: Screens.width(context) * 0.01,
                               right: Screens.width(context) * 0.01,
                               top: Screens.bodyheight(context) * 0.01),
-                          width: Screens.width(context) * 0.43,
+                          width: Screens.width(context) * 0.46,
                           height: Screens.bodyheight(context) * 0.13,
-                          child: const Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 30,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Icon(Icons.bar_chart_outlined,
+                                      color: Colors.indigo),
+                                  GestureDetector(
+                                    onTap: () {
+                                      // context
+                                      //     .read<DashBoardCtrlProvider>()
+                                      //     .selectedIndex = 1;
+
+                                      Get.offAllNamed(ConstantRoutes.lableprint);
+                                    },
+                                    child: Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.grey,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: Screens.bodyheight(context) * 0.01,
+                              ),
+                              Text(
+                                'Label Printing',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'label Reports,label print',
+                                style: theme.textTheme.bodySmall?.copyWith(),
+                              ),
+                            ],
                           ),
-                        )
+                        ),
+                        // Container(
+                        //   padding: EdgeInsets.only(
+                        //       left: Screens.width(context) * 0.01,
+                        //       right: Screens.width(context) * 0.01,
+                        //       top: Screens.bodyheight(context) * 0.01),
+                        //   width: Screens.width(context) * 0.43,
+                        //   height: Screens.bodyheight(context) * 0.13,
+                        //   child: const Icon(
+                        //     Icons.add,
+                        //     color: Colors.white,
+                        //     size: 30,
+                        //   ),
+                        // )
                       ],
                     ),
                   ],

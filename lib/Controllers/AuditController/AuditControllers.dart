@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:verifytapp/Pages/AuditPages/Widgets/newshowdialog.dart';
 import '../../Constant/ConstantSapValues.dart';
 import '../../Constant/LocalUrl/GetLocalUrl.dart';
 import '../../Model/CheckListModel/CheckLstModel.dart';
@@ -105,6 +109,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   GlobalKey<FormState> formkey1 = GlobalKey<FormState>();
   GlobalKey<FormState> formkey2 = GlobalKey<FormState>();
   GlobalKey<FormState> formkey3 = GlobalKey<FormState>();
+  GlobalKey<FormState> formkey4 = GlobalKey<FormState>();
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
   final checkformkey = GlobalKey<FormState>();
@@ -122,7 +127,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   List<ScanDataPost> viewSuccessDetails = [];
   List<ScanDataPost> viewScanMainDetails = [];
   List<ScanDataPost> binDetails = [];
-
+List<ScanDataPost> reveresebinDetails = [];
   Uuid uuid = const Uuid();
   List<ScanDataPost> scandata = [];
   List<DispListData> checklistdata = [];
@@ -159,16 +164,25 @@ class AuditCtrlProvider extends ChangeNotifier {
   List<ScanDataPost> pendingexcelvaluers = [];
   List<ErrorScanDataPost> errorexcelvaluers = [];
   List<LineData> listScanBatch = [];
-
+ deletescandetails(String binCode, String auditID,String itemcode,String serial)async{
+   Database db = (await DBHelper.getInstance())!;
+   await DBOperation.deletescandata(
+        db, binCode, auditID,itemcode,serial);
+        notifyListeners();
+        binTableDetails(mycontroller[2].text);
+        scantotaldeviceqty();
+        notifyListeners();
+ }
   binTableDetails(String binVal) async {
     Database db = (await DBHelper.getInstance())!;
     binDetails = [];
+    reveresebinDetails=[];
     log('fetchAuditForDetails!.docEntry::${fetchAuditForDetails!.docEntry.toString()}');
     List<Map<String, Object?>> result2 = await DBOperation.getscandataDataBin(
         db, binVal, fetchAuditForDetails!.docEntry.toString());
     if (result2.isNotEmpty) {
       for (var i = 0; i < result2.length; i++) {
-        binDetails.add(ScanDataPost(
+        reveresebinDetails.add(ScanDataPost(
             auditid: int.parse(result2[i]['Auditid'].toString()),
             bincode: result2[i]['Bincode'].toString(),
             scanguid: result2[i]['scanguid'].toString(),
@@ -187,9 +201,12 @@ class AuditCtrlProvider extends ChangeNotifier {
                 : 0,
             whscode: result2[i]['Whscode'].toString()));
         notifyListeners();
+        // binDetails.sort((a,b)=>b(a));
       }
+      binDetails =reveresebinDetails.reversed.toList();
       notifyListeners();
     }
+    
   }
 
   checkCtrlFocus() {
@@ -239,7 +256,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   int? totalscandeviceQty = 0;
 
   bool invalidBin = false;
-  scantotaldeviceqty() async {
+  Future scantotaldeviceqty() async {
     totalscandevicecount = 0;
     totalscandeviceQty = 0;
     int pendingScanqtyy = 0;
@@ -283,7 +300,77 @@ class AuditCtrlProvider extends ChangeNotifier {
     log('totalscandeviceQtytotalscandeviceQty::${totalscandeviceQty}');
     notifyListeners();
   }
+  getdeviceqty()async{
+    totalscandeviceQty = 0;
+    int pendingScanqtyy = 0;
+    int successqtyy = 0;
+    int errorrrqtyy = 0;
+    totalscandeviceQty = 0;
 
+    Database db = (await DBHelper.getInstance())!;
+
+    List<Map<String, Object?>> scannedPostData =
+        await DBOperation.getAllscandataDataLength(
+            db, fetchAuditForDetails!.docEntry.toString());
+    for (var i = 0; i < scannedPostData.length; i++) {
+      pendingScanqtyy = pendingScanqtyy +
+          int.parse(scannedPostData[i]['Quantity'].toString());
+      notifyListeners();
+    }
+    List<Map<String, Object?>> pushedScannedPostData =
+        await DBOperation.getpushedscandataData(
+            db, fetchAuditForDetails!.docEntry.toString());
+
+    for (var i = 0; i < pushedScannedPostData.length; i++) {
+      successqtyy = successqtyy +
+          int.parse(pushedScannedPostData[i]['Quantity'].toString());
+      notifyListeners();
+    }
+    List<Map<String, Object?>> errorScannedPostData =
+        await DBOperation.getAllErrorscandataData(
+            db, fetchAuditForDetails!.docEntry.toString());
+
+    for (var i = 0; i < errorScannedPostData.length; i++) {
+      errorrrqtyy = errorrrqtyy +
+          int.parse(errorScannedPostData[i]['Quantity'].toString());
+      notifyListeners();
+    }
+    totalscandeviceQty = 0;
+  
+    totalscandeviceQty = pendingScanqtyy +   errorrrqtyy;
+    log('totalscandeviceQtytotalscandeviceQty::${totalscandeviceQty}');
+    notifyListeners();
+return totalscandeviceQty;
+  }
+  getdevicecount()async{
+  totalscandevicecount=0;
+   totalscandevicecount = 0;
+    
+
+    Database db = (await DBHelper.getInstance())!;
+
+    List<Map<String, Object?>> scannedPostData =
+        await DBOperation.getAllscandataDataLength(
+            db, fetchAuditForDetails!.docEntry.toString());
+    
+    List<Map<String, Object?>> pushedScannedPostData =
+        await DBOperation.getpushedscandataData(
+            db, fetchAuditForDetails!.docEntry.toString());
+
+    
+    List<Map<String, Object?>> errorScannedPostData =
+        await DBOperation.getAllErrorscandataData(
+            db, fetchAuditForDetails!.docEntry.toString());
+
+   
+    totalscandevicecount = int.parse(scannedPostData.length.toString()) +
+        
+        int.parse(errorScannedPostData.length.toString());
+    // totalscandeviceQty = pendingScanqtyy +   errorrrqtyy;
+    // log('totalscandeviceQtytotalscandeviceQty::${totalscandeviceQty}');
+    notifyListeners();
+return totalscandevicecount.toString();
+}
   showRescheduleDialog(BuildContext context, ThemeData theme, int docEntry) {
     showDialog(
         context: context,
@@ -1363,7 +1450,7 @@ class AuditCtrlProvider extends ChangeNotifier {
   List<FileNameDet> filenamedet = [];
 
   Future imagetoBinary2(
-      ImageSource source, BuildContext context, int index) async {
+      ImageSource source, BuildContext context, int index,) async {
     List<File> filesz = [];
     urlImage = '';
     // await LocationTrack.checkcamlocation();
@@ -1391,7 +1478,7 @@ class AuditCtrlProvider extends ChangeNotifier {
           // getckeckDataListForm55[index].fileattachname = filesz[i].path;
           if (filenamedet.isNotEmpty) {
             for (var ix = 0; ix < filenamedet.length; ix++) {
-              log('filenamedet index::${filenamedet[ix].indexId.toString()}');
+              log('filenamedet index$index::${filenamedet[ix].indexId.toString()}');
               if (ix == index) {
                 filenamedet[ix].name = filesz[i].path;
               }
@@ -1432,7 +1519,7 @@ class AuditCtrlProvider extends ChangeNotifier {
     log("camera fileslength${files.length}");
     log("camera filesdatalength${filedata.length}");
     notifyListeners();
-
+// onTapattach(index,isSelectedCusTag,);
     // showtoast();
   }
 
@@ -1563,11 +1650,14 @@ class AuditCtrlProvider extends ChangeNotifier {
       }
       notifyListeners();
     }
+    
+onTapattach(index,isSelectedCusTag,);
   }
 
   selectCustomerTag(String code) {
     isSelectedCusTag = '';
     isSelectedCusTag = code;
+    log("isSelectedCusTag::"+isSelectedCusTag.toString());
     notifyListeners();
   }
 
@@ -1705,9 +1795,47 @@ class AuditCtrlProvider extends ChangeNotifier {
     _tags.add(tag);
     notifyListeners();
   }
+// checkListformCreation22(BuildContext context, ThemeData theme, int dispnum) {
+//     List<String> listval = [];
+//     files = [];
+// getckeckDataListForm55.clear();
+//     if (getckeckDataListForm.isNotEmpty || getckeckDataListForm != null) {
+//       // Get.back();
+//       getckeckDataListForm55 = [];
+//       checklistdata = [];
 
+//       for (var i = 0; i < getckeckDataListForm.length; i++) {
+//         if (getckeckDataListForm[i].docEntry == dispnum) {
+//           log('getckeckDataListForm[i].checklistName:::${getckeckDataListForm[i].listValue}');
+//           getckeckDataListForm55.add(CheckListLineData(
+//               checklistName: getckeckDataListForm[i].checklistName,
+//               acceptAttach: getckeckDataListForm[i].acceptAttach,
+//               acceptMultiValue: getckeckDataListForm[i].acceptMultiValue,
+//               checklistCode: getckeckDataListForm[i].checklistCode,
+//               createdBy: getckeckDataListForm[i].createdBy,
+//               createdDatetime: getckeckDataListForm[i].createdDatetime,
+//               docEntry: getckeckDataListForm[i].docEntry,
+//               // docEntry1: getckeckDataListForm[i].docEntry1,
+//               isMandaory: getckeckDataListForm[i].isMandaory,
+//               listValue: getckeckDataListForm[i].listValue,
+//               isselectlistval: '',
+//               templateName: getckeckDataListForm[i].templateName,
+//               traceid: getckeckDataListForm[i].traceid,
+//               updatedBy: getckeckDataListForm[i].updatedBy,
+//               updatedDatetime: getckeckDataListForm[i].updatedDatetime));
+//         }
+//         notifyListeners();
+//       }
+//       filedata = [];
+//       Get.back();
+//       showingChecklistBottomSheet(context, theme);
+//     }
+//     notifyListeners();
+//   }
+ 
   List<CheckListLineData> getckeckDataListForm55 = [];
   checkListformCreation(BuildContext context, ThemeData theme, int dispnum) {
+    log("dispnum::"+dispnum.toString());
     List<String> listval = [];
     files = [];
 
@@ -1733,7 +1861,8 @@ class AuditCtrlProvider extends ChangeNotifier {
               templateName: getckeckDataListForm[i].templateName,
               traceid: getckeckDataListForm[i].traceid,
               updatedBy: getckeckDataListForm[i].updatedBy,
-              updatedDatetime: getckeckDataListForm[i].updatedDatetime));
+              updatedDatetime: getckeckDataListForm[i].updatedDatetime)
+              );
         }
         notifyListeners();
       }
@@ -1781,7 +1910,18 @@ class AuditCtrlProvider extends ChangeNotifier {
   }
 
   var selectAnsx = '';
-
+onTapattach(ij,String isSelectedCusTag){
+   checklistdata.add(DispListData(
+                                                            attachurl:urlImage
+                                                                    .isNotEmpty
+                                                                ? urlImage
+                                                                : '',
+                                                            auditid: fetchAuditForDetails!.docEntry,
+                                                            checklistcode: getckeckDataListForm55[ij].checklistCode,
+                                                            checklistvalue: isSelectedCusTag,
+                                                            scanguid: ''));
+                                                            // urlImage='';
+}
   onTapCheckListVal(ij, String selectedchecklistval) {
     if (checklistdata.isEmpty) {
       checklistdata.add(DispListData(
@@ -1844,8 +1984,8 @@ class AuditCtrlProvider extends ChangeNotifier {
     showModalBottomSheet(
         isDismissible: false,
         context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(builder: (BuildContext context, setSt) {
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setSt) {
             return GetImageFilePage();
           });
         });
@@ -1951,47 +2091,122 @@ class AuditCtrlProvider extends ChangeNotifier {
     networkTimeStatus = '';
     _checkAutomaticTimeZoneSetting(context, theme);
   }
+// bottomSheetafterscanserial22(
+//     BuildContext context,
+//     ThemeData theme,
+//     int? docentry,
+//     GlobalKey<FormState> formkeynew
+//   ) async {
+//     log("docentry:::::"+docentry.toString());
+//     final database = (await AppDatabase.initialize())!;
+// // Get.back();
+//     focus1.unfocus();
+//     focus2.unfocus();
+//     int offline = whileOffline == true ? 1 : 0;
+//     dispCode = dispCode ?? '';
 
+//     List<Checklisttemplate> checklistvalx = await driftoperation.checkListPopup(
+//         database, mycontroller[3].text, dispCode.toString(), 1, 0);
+//     if (checklistvalx.isNotEmpty || checklistvalx != null) {
+//       for (var i = 0; i < checklistvalx.length; i++) {
+//         if (checklistvalx[i].templateid != null) {
+//           log('messagevvvvvv11');
+
+//           await checkListformCreation22(context, theme,
+//               int.parse(checklistvalx[i].templateid.toString()));
+//           notifyListeners();
+//         }
+//       }
+//     }
+//     log('messagevvvvvv');
+    
+//     callSerialbatchDet(context,docentry,formkeynew);
+//     notifyListeners();
+//   }
+ bool isconnectivity=false;
+Future checkconnection()async{
+List <ConnectivityResult> result = await Connectivity().checkConnectivity();
+if(result.contains(ConnectivityResult.none)){
+   isconnectivity=true;
+  log("no network");
+  notifyListeners();
+}else{
+   isconnectivity=false;
+   log("jjjjj network");
+   notifyListeners();
+}
+}
+setManualType(bool value){
+   if (isManualtype != value) {
+      isManualtype = value;
+      notifyListeners();
+    }
+    log("isManualtype::"+isManualtype.toString());
+}
   bottomSheetafterscanserial(
     BuildContext context,
     ThemeData theme,
+    int? docentry,
+    // GlobalKey<FormState> formkeynew
   ) async {
+   
+    isconnectivity=false;
     final database = (await AppDatabase.initialize())!;
+  await  checkconnection();
+//  Connectivity()
+//       .onConnectivityChanged
+//       .listen((List<ConnectivityResult> result) async {
+//         log("ssss"+result.toString());
+//         if (result.contains(ConnectivityResult.none)) {
 
+//     isconnectivity=true;
+//     notifyListeners();
+//     } else{
+//        isconnectivity=false;
+//        notifyListeners();
+//     }
+//       });
     focus1.unfocus();
     focus2.unfocus();
     int offline = whileOffline == true ? 1 : 0;
     dispCode = dispCode ?? '';
-
+log("isconnectivity::"+isconnectivity.toString());
     List<Checklisttemplate> checklistvalx = await driftoperation.checkListPopup(
-        database, mycontroller[3].text, dispCode.toString(), 1, 0);
-    if (checklistvalx.isNotEmpty || checklistvalx != null) {
+        database, mycontroller[3].text, isSelectedCusTag,isconnectivity ==true? 1:0,isManualtype==true?1: 0);
+    if (checklistvalx != null && checklistvalx.isNotEmpty  ) {
       for (var i = 0; i < checklistvalx.length; i++) {
         if (checklistvalx[i].templateid != null) {
           log('messagevvvvvv11');
+          Get.back();
 
           await checkListformCreation(context, theme,
               int.parse(checklistvalx[i].templateid.toString()));
           notifyListeners();
+        }else{
+          checknextbtn(context,theme,mycontroller[3].text,mycontroller[4].text,docentry!);
+          notifyListeners();
         }
       }
+    }else{
+      checknextbtn(context,theme,mycontroller[3].text,mycontroller[4].text,docentry!);
+          notifyListeners();
+         
     }
     log('messagevvvvvv');
-    callSerialbatchDet(context);
+    // callSerialbatchDet(context,docentry,formkeynew);
     notifyListeners();
   }
 
   callSerialbatchDet(
-    BuildContext context,
+    BuildContext context,int? docentry,GlobalKey<FormState> formkeynew
   ) {
+    // Get.back()
     showModalBottomSheet(
-        isDismissible: false,
+        // isDismissible: false,
         isScrollControlled: true,
         context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(builder: (BuildContext context, setSt) {
-            return SerialBatchDetails();
-          });
+        builder: (_) {
+          return SerialBatchDetails(docentry: docentry!,formkey: formkeynew,);
         });
     notifyListeners();
   }
@@ -2042,7 +2257,43 @@ class AuditCtrlProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+  
+ SearchFilteTab(String v) {
 
+    log('saearch ${getheaderresultsearch.length}sjdk$serachitemcode:' + v);
+    if (v.isNotEmpty) {
+      // serachitemcode=true;
+      notifyListeners();
+      getheaderresultsearch = mainresultsearch
+          .where((e) =>
+              (e).itemCode!.toLowerCase().contains(v.toLowerCase()) 
+             )
+          .toList();
+      notifyListeners();
+    } else if (v.isEmpty) {
+       serachitemcode=false;
+      notifyListeners();
+       getheaderresultsearch = mainresultsearch;
+      notifyListeners();
+    }
+  }
+  bool serachitemcode =false;
+   List<LineData> getheaderresultsearch=[];
+     List<LineData> mainresultsearch=[];
+getitemcodeforsuggestion()async{
+  mainresultsearch.clear();
+  getheaderresultsearch.clear();
+  // notifyListeners();
+    final database = (await AppDatabase.initialize())!;
+   mainresultsearch =
+                await driftoperation.getallLineproduct(database);
+               
+                getheaderresultsearch  =  mainresultsearch;
+                 log("getheaderresult::"+getheaderresultsearch.length.toString());
+                notifyListeners();
+          
+
+}
   List<LoadItemCodeLists> getItemCodeResult = [];
   List<LoadItemCodeLists> getItemCodedocentryResult = [];
 
@@ -2636,7 +2887,10 @@ class AuditCtrlProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  clearbtn() {
+  clearbtn() async{
+  //   final database = (await AppDatabase.initialize())!;
+  //   Database db = (await DBHelper.getInstance())!;
+  // await DBOperation. truncateScanpostDataT(db);
     scandata = [];
     checklistdata = [];
     skuCosde = '';
@@ -2656,9 +2910,69 @@ class AuditCtrlProvider extends ChangeNotifier {
     focus2.requestFocus();
     notifyListeners();
   }
+  
+  // afterScanMultiSerialBatch22(List<LineData> multiLineItemResult,
+  //     BuildContext context, ThemeData theme,int docenrty,GlobalKey<FormState> formkeynew) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return StatefulBuilder(builder: (context, st) {
+  //           return AlertDialog(
+  //               shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.all(Radius.circular(8.0))),
+  //               insetPadding: EdgeInsets.all(8),
+  //               content: Container(
+  //                   height: Screens.padingHeight(context) * 0.4,
+  //                   width: Screens.width(context),
+  //                   child: ListView.builder(
+  //                       padding: EdgeInsets.all(0),
+  //                       itemCount: multiLineItemResult.length,
+  //                       itemBuilder: (context, index) {
+  //                         return Card(
+  //                             elevation: 0,
+  //                             child: GestureDetector(
+  //                               onTap: () async {
+  //                                 Get.back();
+  //                                 getMultiItemDetails(
+  //                                     multiLineItemResult[index]
+  //                                         .itemCode
+  //                                         .toString(),
+  //                                     multiLineItemResult[index]
+  //                                         .serailBatch
+  //                                         .toString());
+  //                                 await bottomSheetafterscanserial22(
+  //                                     context, theme,docenrty,formkeynew);
+  //                               },
+  //                               child: Container(
+  //                                 padding: EdgeInsets.all(
+  //                                     Screens.padingHeight(context) * 0.008),
+  //                                 decoration: BoxDecoration(
+  //                                     borderRadius: BorderRadius.circular(8),
+  //                                     color: Colors.white,
+  //                                     border:
+  //                                         Border.all(color: Colors.black26)),
+  //                                 child: Column(
+  //                                   crossAxisAlignment:
+  //                                       CrossAxisAlignment.start,
+  //                                   children: [
+  //                                     Text(multiLineItemResult[index]
+  //                                         .itemCode
+  //                                         .toString()),
+  //                                     Text(multiLineItemResult[index]
+  //                                         .serailBatch
+  //                                         .toString()),
+  //                                   ],
+  //                                 ),
+  //                               ),
+  //                             ));
+  //                       })));
+  //         });
+  //       });
+  //   notifyListeners();
+  // }
 
   afterScanMultiSerialBatch(List<LineData> multiLineItemResult,
-      BuildContext context, ThemeData theme) {
+      BuildContext context, ThemeData theme,int docenrty,GlobalKey<FormState> formkeynew) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -2668,9 +2982,10 @@ class AuditCtrlProvider extends ChangeNotifier {
                     borderRadius: BorderRadius.all(Radius.circular(8.0))),
                 insetPadding: EdgeInsets.all(8),
                 content: Container(
-                    height: Screens.padingHeight(context) * 0.4,
+                    // height: Screens.padingHeight(context) * 0.4,
                     width: Screens.width(context),
                     child: ListView.builder(
+                      shrinkWrap: true,
                         padding: EdgeInsets.all(0),
                         itemCount: multiLineItemResult.length,
                         itemBuilder: (context, index) {
@@ -2686,8 +3001,9 @@ class AuditCtrlProvider extends ChangeNotifier {
                                       multiLineItemResult[index]
                                           .serailBatch
                                           .toString());
-                                  await bottomSheetafterscanserial(
-                                      context, theme);
+                                       await   callSerialbatchDet(context,docenrty,formkeynew);
+                                  // await bottomSheetafterscanserial(
+                                  //     context, theme,docenrty,formkeynew);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(
@@ -2700,12 +3016,25 @@ class AuditCtrlProvider extends ChangeNotifier {
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      Text("Serial Batch :",style: theme.textTheme.bodyMedium!.copyWith(
+                                        color: theme.primaryColor
+                                      ),),
+                                      Text(multiLineItemResult[index]
+                                          .serailBatch
+                                          .toString()),
+                                      Text("Item Code :",style: theme.textTheme.bodyMedium!.copyWith(
+                                        color: theme.primaryColor
+                                      ),),
                                       Text(multiLineItemResult[index]
                                           .itemCode
                                           .toString()),
-                                      Text(multiLineItemResult[index]
-                                          .serailBatch
+                                          Text("Item Name :",style: theme.textTheme.bodyMedium!.copyWith(
+                                        color: theme.primaryColor
+                                      ),),
+                                        Text(multiLineItemResult[index]
+                                          .itemName
                                           .toString()),
                                     ],
                                   ),
@@ -2716,11 +3045,93 @@ class AuditCtrlProvider extends ChangeNotifier {
         });
     notifyListeners();
   }
+// afterScanSerialBatch22(
+//     BuildContext context,
+//     ThemeData theme,
+//     String scanbatchval,
+//     int docentry,
+//     GlobalKey<FormState> formkeynew
+//   ) async {
+//     nextdisable = false;
+//     filenamedet = [];
+//     final database = (await AppDatabase.initialize())!;
+//     Database db = (await DBHelper.getInstance())!;
+//     List<LineData> getLineItemResult = await driftoperation
+//         .getdriftallserialLineColumn(database, scanbatchval);
+//     List<LineData> alterlineItemResult =
+//         await driftoperation.geAlterserialLineColumn(database, scanbatchval);
 
+//     if (getLineItemResult.isNotEmpty) {
+//       if (getLineItemResult.length > 1) {
+//         log('message222');
+
+//         log('lineItemResultlineItemResult::${getLineItemResult.length}');
+//         await afterScanMultiSerialBatch22(getLineItemResult, context, theme,docentry,formkeynew);
+//         await getSingleItemDetails(getLineItemResult, scanbatchval);
+       
+//         notifyListeners();
+//       } else {
+//         log('message1111');
+//         await afterScanSingleSerialBatch22(
+//             context, theme, scanbatchval, getLineItemResult,docentry,formkeynew);
+
+//         notifyListeners();
+//       }
+//     }
+
+//     if (getLineItemResult.isEmpty && alterlineItemResult.isEmpty) {
+//       log('message3334');
+//       mycontroller[4].text = '';
+//       freezeItemCode = false;
+//       itemFocus.requestFocus();
+//       mycontroller[3].text = scanbatchval;
+//       mycontroller[5].text = 1.toString();
+//       await bottomSheetafterscanserial22(context, theme,docentry,formkeynew);
+//       await Get.defaultDialog(
+//           title: 'Alert',
+//           middleText: 'Scanned number is not in the stock snap table.',
+//           actions: [
+//             ElevatedButton(
+//                 onPressed: () async {
+//                   scandata = [];
+//                   itemFocus.requestFocus();
+//                   freezeqty = false;
+//                   mycontroller[3].selection = TextSelection(
+//                     baseOffset: 0,
+//                     extentOffset: mycontroller[3].text.length,
+//                   );
+//                   Get.back();
+
+//                   notifyListeners();
+//                 },
+//                 style: ElevatedButton.styleFrom(
+//                   backgroundColor: theme.primaryColor,
+//                   foregroundColor: Colors.white,
+//                   textStyle: const TextStyle(),
+//                   shape: const RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.only(
+//                     bottomLeft: Radius.circular(8),
+//                     bottomRight: Radius.circular(8),
+//                   )),
+//                 ),
+//                 child: const Text("Ok")),
+//           ]);
+
+    
+//     }
+
+//     mycontroller[3].selection = TextSelection(
+//       baseOffset: 0,
+//       extentOffset: mycontroller[3].text.length,
+//     );
+//     //   notifyListeners();
+//   }
   afterScanSerialBatch(
     BuildContext context,
     ThemeData theme,
     String scanbatchval,
+    int docentry,
+    GlobalKey<FormState> formkeynew
   ) async {
     nextdisable = false;
     filenamedet = [];
@@ -2736,27 +3147,14 @@ class AuditCtrlProvider extends ChangeNotifier {
         log('message222');
 
         log('lineItemResultlineItemResult::${getLineItemResult.length}');
-        await afterScanMultiSerialBatch(getLineItemResult, context, theme);
+        await afterScanMultiSerialBatch(getLineItemResult, context, theme,docentry,formkeynew);
         await getSingleItemDetails(getLineItemResult, scanbatchval);
-        // List<Checklisttemplate> checklistvalx =
-        //     await driftoperation.checkListPopup(
-        //         database, mycontroller[3].text, dispCode.toString(), 1, 0);
-        // if (checklistvalx.isNotEmpty || checklistvalx != null) {
-        //   for (var i = 0; i < checklistvalx.length; i++) {
-        //     if (checklistvalx[i].templateid != null) {
-        //       checkListformCreation(context, theme,
-        //           int.parse(checklistvalx[i].templateid.toString()));
-        //       notifyListeners();
-        //     }
-        //   }
-
-        //   notifyListeners();
-        // }
+       
         notifyListeners();
       } else {
         log('message1111');
         await afterScanSingleSerialBatch(
-            context, theme, scanbatchval, getLineItemResult);
+            context, theme, scanbatchval, getLineItemResult,docentry,formkeynew);
 
         notifyListeners();
       }
@@ -2769,10 +3167,23 @@ class AuditCtrlProvider extends ChangeNotifier {
       itemFocus.requestFocus();
       mycontroller[3].text = scanbatchval;
       mycontroller[5].text = 1.toString();
-      await bottomSheetafterscanserial(context, theme);
+      await callSerialbatchDet(context,docentry,formkeynew);
+      // await bottomSheetafterscanserial(context, theme,docentry,formkeynew);
       await Get.defaultDialog(
           title: 'Alert',
-          middleText: 'Scanned number is not in the stock snap table.',
+          content:Container(
+            child: Column(children: [
+              Text("$scanbatchval",
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium!.copyWith(
+                fontWeight: FontWeight.bold
+              ),),
+              Text("Scanned number is not in the stock snap table.",
+              textAlign: TextAlign.center,)
+
+            ],),
+          ),
+          // middleText: 'Scanned number is not in the stock snap table.',
           actions: [
             ElevatedButton(
                 onPressed: () async {
@@ -2800,120 +3211,78 @@ class AuditCtrlProvider extends ChangeNotifier {
                 child: const Text("Ok")),
           ]);
 
-      // await showDialog(
-      //   context: context,
-      //   builder: (BuildContext context) {
-      //     return StatefulBuilder(builder: (context, st) {
-      //       return AlertDialog(
-      //         shape: RoundedRectangleBorder(
-      //             borderRadius: BorderRadius.circular(8)),
-      //         insetPadding: EdgeInsets.zero,
-      //         contentPadding: EdgeInsets.zero,
-      //         content: Column(
-      //           mainAxisSize: MainAxisSize.min,
-      //           children: [
-      //             Container(
-      //               decoration: BoxDecoration(
-      //                   color: theme.primaryColor,
-      //                   borderRadius: const BorderRadius.only(
-      //                       topLeft: Radius.circular(8),
-      //                       topRight: Radius.circular(8))),
-      //               width: Screens.width(context) * 0.8,
-      //               height: Screens.padingHeight(context) * 0.06,
-      //               child: Row(
-      //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //                 children: [
-      //                   Container(
-      //                     width: Screens.width(context) * 0.8,
-      //                     child: Center(
-      //                         child: Text("Alert",
-      //                             style: theme.textTheme.bodyLarge!
-      //                                 .copyWith(color: Colors.white))),
-      //                   ),
-      //                 ],
-      //               ),
-      //             ),
-      //             SizedBox(
-      //               height: Screens.padingHeight(context) * 0.02,
-      //             ),
-      //             Container(
-      //               padding: const EdgeInsets.all(10),
-      //               width: Screens.width(context) * 0.8,
-      //               child: const Text(
-      //                   'Scanned number is not in the stock snap table.'),
-      //             ),
-      //             SizedBox(
-      //               height: Screens.padingHeight(context) * 0.02,
-      //             ),
-      //             SizedBox(
-      //               width: Screens.width(context) * 0.8,
-      //               height: Screens.padingHeight(context) * 0.06,
-      //   child: ElevatedButton(
-      //       onPressed: () async {
-      //         st(
-      //           () {
-      //             scandata = [];
-      //             itemFocus.requestFocus();
-      //             freezeqty = false;
-      //             mycontroller[3].selection = TextSelection(
-      //               baseOffset: 0,
-      //               extentOffset: mycontroller[3].text.length,
-      //             );
-      //           },
-      //         );
-      //         Get.back();
-
-      //         notifyListeners();
-      //       },
-      //       style: ElevatedButton.styleFrom(
-      //         backgroundColor: theme.primaryColor,
-      //         foregroundColor: Colors.white,
-      //         textStyle: const TextStyle(),
-      //         shape: const RoundedRectangleBorder(
-      //             borderRadius: BorderRadius.only(
-      //           bottomLeft: Radius.circular(8),
-      //           bottomRight: Radius.circular(8),
-      //         )),
-      //       ),
-      //       child: const Text("Ok")),
-      // ),
-      //           ],
-      //         ),
-      //       );
-      //     });
-      //   },
-      // );
+    
     }
 
-    //   if (alterlineItemResult.isNotEmpty) {
-    //     freezeItemCode = true;
-    //     if (alterlineItemResult.length > 1) {
-    //       await afterScanMultiSerialBatch(alterlineItemResult, context, theme);
-    //     } else {
-    //       scanbatchval = alterlineItemResult[0].serailBatch!;
-    //       await afterScanSingleSerialBatch(
-    //           context, theme, scanbatchval, alterlineItemResult);
-    //       // await bottomSheetafterscanserial(context, theme);
-    //     }
-
-    //   // for (var i = 0; i < alterlineItemResult.length; i++) {
-    //   // itemCode = alterlineItemResult[0].itemCode!;
-    //   // dispCode = alterlineItemResult[0].itemDisposition;
-    //   // mycontroller[3].text = alterlineItemResult[0].serailBatch!;
-    //   // mycontroller[4].text = alterlineItemResult[0].itemCode!;
-    //   //   for (var ik = 0; ik < dispAllvalList.length; ik++) {
-    //   //     if (alterlineItemResult[i].itemDisposition ==
-    //   //         dispAllvalList[ik].dispID) {}
-    //   //   }
-    //   // }
-    // }
     mycontroller[3].selection = TextSelection(
       baseOffset: 0,
       extentOffset: mycontroller[3].text.length,
     );
     //   notifyListeners();
   }
+getcheckdata()async{
+  itemCode = '';
+    skuCosde = '';
+    dispvalList = [];
+    scandata = [];
+    scanTime = '';
+    mycontroller[6].text = '';
+    isSelectedCusTag = '';
+    groupValueSelected = 0;
+    mangedBy = '';
+    String? whsCode = '';
+    // whsCode = await HelperFunctions.getWhsCode();
+    final database = (await AppDatabase.initialize())!;
+    Database db = (await DBHelper.getInstance())!;
+   serialBatch = mycontroller[3].text;
+    itemCode = mycontroller[4].text;
+    scanTime = config.currentDatepdf();
+    mycontroller[5].text = 1.toString();
 
+    List<LoadItemCodeLists> itemCodeResult =
+        await driftoperation.getItemCodedata(database, itemCode);
+
+    List<HeaderData> headeItemResult =
+        await driftoperation.getItemCodeInHeader(database, itemCode);
+
+    log('headeItemResultheadeItemResult::${headeItemResult.length}');
+    if (headeItemResult.isNotEmpty && itemCodeResult.isNotEmpty) {
+      if (headeItemResult[0].itemCode == itemCodeResult[0].itemCode) {
+        log('manageby:${headeItemResult[0].manageBy}');
+        skuCosde = headeItemResult[0].sKUCode.toString();
+        itemName = headeItemResult[0].itemName.toString();
+        dispCode = headeItemResult[0].itemDisposition.toString();
+        mycontroller[4].text = headeItemResult[0].itemCode.toString();
+        mangedBy = headeItemResult[0].manageBy;
+        log('headeItemResult[0].dispID::${headeItemResult[0].itemDisposition}');
+        List<Map<String, Object?>> dispResult2 =
+            await DBOperation.getAllDispDataList(
+                db, headeItemResult[0].itemDisposition);
+        for (var im = 0; im < dispResult2.length; im++) {
+          dispvalList.add(GetDisPositonList(
+              dispID: int.parse(dispResult2[im]['DispID'].toString()),
+              dispListVal: dispResult2[im]['DisPositionVal'] != null
+                  ? dispResult2[im]['DisPositionVal'].toString()
+                  : ''));
+        }
+        if (dispvalList.isNotEmpty) {
+          selectFirstTapVal();
+        }
+
+        if (headeItemResult[0].manageBy == "S") {
+          freezeqty = true;
+          notifyListeners();
+        } else {
+          freezeqty = false;
+          notifyListeners();
+        }
+        log('headeItemResult[0].manageByheadeItemResult[0].manageBy::${headeItemResult[0].manageBy}');
+      }
+    }else{
+       freezeqty = false;
+       notifyListeners();
+    }
+}
   getSingleItemDetails(
       List<LineData> lineItemResult, String scanbatchval) async {
     itemCode = '';
@@ -3061,11 +3430,18 @@ class AuditCtrlProvider extends ChangeNotifier {
       }
     }
   }
+// afterScanSingleSerialBatch22(BuildContext context, ThemeData theme,
+//       String scanbatchval, List<LineData> lineItemResult,int docenrty,GlobalKey<FormState> formkeynew) async {
+//     await getSingleItemDetails(lineItemResult, scanbatchval);
+//     await bottomSheetafterscanserial22(context, theme,docenrty,formkeynew);
 
+//     notifyListeners();
+//   }
   afterScanSingleSerialBatch(BuildContext context, ThemeData theme,
-      String scanbatchval, List<LineData> lineItemResult) async {
+      String scanbatchval, List<LineData> lineItemResult,int docenrty,GlobalKey<FormState> formkeynew) async {
     await getSingleItemDetails(lineItemResult, scanbatchval);
-    await bottomSheetafterscanserial(context, theme);
+    await callSerialbatchDet(context,docenrty,formkeynew);
+    // await bottomSheetafterscanserial(context, theme,docenrty,formkeynew);
 
     notifyListeners();
   }
@@ -3082,11 +3458,119 @@ class AuditCtrlProvider extends ChangeNotifier {
   }
 
   String uuiDeviceId = '';
+   List<TextEditingController> chkListController =
+      List.generate(100, (i) => TextEditingController());
+  checkdata(CheckListLineData getckeckDataListForm55){
+    bool isboolean =false;
+    isboolean=false;
+   for(int i=0;i< checklistdata.length;i++ ){
+    if(checklistdata[i].checklistcode ==getckeckDataListForm55.checklistCode){
+      isboolean=true;
+   notifyListeners();
+    }
+   } 
+   if(isboolean==true){
+
+   }else{
+     isbool=true;
+    isString=getckeckDataListForm55.checklistName.toString();
+    notifyListeners();
+   }
+  }
+   bool  isbool =false;
+    String  isString='';
+  checkMandatory(ThemeData theme,BuildContext context,String binNo,String? serial,String? docenry){
+    log("checklistdata::"+checklistdata.toList().toString());
+       log("checklistdata::"+getckeckDataListForm55.toList().toString());
+   
+    isbool=false;
+    isString='';
+    for(int i=0;i<getckeckDataListForm55.length;i++){
+      log("getckeckDataListForm55[i].isMandaory::"+getckeckDataListForm55[i].isMandaory.toString());
+       log("getckeckDataListForm55[i].isMandaory::"+getckeckDataListForm55[i].checklistName.toString());
+     log("chkListController[i].isMandaory::"+chkListController[i].text.toString());
+    if(isbool==true){
+ break;
+    }
+      else if(getckeckDataListForm55[i].isMandaory ==true){
+        isbool=false;
+    isString='';
+    checkdata(getckeckDataListForm55[i]);
+        // if(chkListController[i].text.isEmpty){
+        //   isbool=true;
+        //   isString=getckeckDataListForm55[i].checklistName.toString();
+        //   notifyListeners();
+        //   break;
+        // }
+
+      }
+
+    }
+    if(isbool==true ){
+       showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          contentPadding: EdgeInsets.zero,
+                          content: Container(
+                            height: Screens.padingHeight(context) * 0.15,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  height: Screens.padingHeight(context) * 0.03,
+                                ),
+                                 Text('Choose ${isString} values'),
+                                SizedBox(
+                                  height: Screens.padingHeight(context) * 0.03,
+                                ),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: theme.primaryColor),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(child: const Text(' OK ')))
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                      notifyListeners();
+    }else{
+      // context
+      //                                       .read<AuditCtrlProvider>()
+      //                                       .mycontroller[3]
+      //                                       .text,
+      //                                   context
+      //                                       .read<AuditCtrlProvider>()
+      //                                       .mycontroller[4]
+      //                                       .text,
+      //                                   int.parse(context
+      //                                       .read<AuditCtrlProvider>()
+      //                                       .fetchAuditForDetails!
+      //                                       .docEntry
+      //                                       .toString())
+      checknextbtn(
+                                        context,
+                                        theme,
+                                       binNo,
+                                        serial!,
+                                        int.parse(docenry!));
+                                        notifyListeners();
+    }
+   
+  }
   checknextbtn(BuildContext context, ThemeData theme, String serialbtch,
       String itemcode, int auditId) async {
     Database db = (await DBHelper.getInstance())!;
     notifyListeners();
-    uuiDeviceId = '';
+    // uuiDeviceId = '';
     log('scandatascandatanext::${scandata.length}');
     log('isManualtype::${isManualtype}');
     if (scandata.isNotEmpty) {
@@ -3116,22 +3600,23 @@ class AuditCtrlProvider extends ChangeNotifier {
           totalscandeviceQty = 0;
           mycontroller[3].text = '';
           binTableDetails(mycontroller[2].text);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              duration: Duration(seconds: 1),
-              content: Text('Scanned data inserted successfully..!'),
-              backgroundColor: Colors.green,
-              elevation: 10,
-              behavior: SnackBarBehavior.floating,
-              margin: EdgeInsets.all(5),
-              dismissDirection: DismissDirection.up,
-            ),
-          );
+showtoastproduct("Scanned data inserted successfully..!",Colors.green);
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     duration: Duration(seconds: 1),
+          //     content: Text('Scanned data inserted successfully..!'),
+          //     backgroundColor: Colors.green,
+          //     elevation: 10,
+          //     behavior: SnackBarBehavior.floating,
+          //     margin: EdgeInsets.all(5),
+          //     dismissDirection: DismissDirection.up,
+          //   ),
+          // );
           notifyListeners();
         });
+        insertCheckListData222();
         notifyListeners();
-
+ isManualtype=false;
         scandata = [];
         mycontroller[3].text = '';
         mycontroller[4].text = '';
@@ -3146,16 +3631,27 @@ class AuditCtrlProvider extends ChangeNotifier {
         dispAllvalList = [];
         isManualtype = false;
         selectFirstTapVal();
+        Get.back();
         notifyListeners();
       }
+
     }
 
     await scantotaldeviceqty();
-    Get.back();
+    
     notifyListeners();
   }
-
-  insertCheckListData() async {
+void showtoastproduct(String msg,Color color) {
+    Fluttertoast.showToast(
+        msg: "$msg",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: color,
+        textColor: Colors.white,
+        fontSize: 14.0);
+  }
+  insertCheckListData222() async {
     Database db = (await DBHelper.getInstance())!;
 
     if (checklistdata.isNotEmpty) {
@@ -3171,9 +3667,105 @@ class AuditCtrlProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+//   checkpopupnew(BuildContext context, ThemeData theme, String srialbtchx,
+//       int auditId,){
+//     mycontroller[3].text = srialbtchx;
+//    if (Navigator.of(context).canPop()) {
+//   Navigator.of(context).pop();
+// }
+//     checkAlreadyItem(context,theme,mycontroller[3].text,auditId);
+//     notifyListeners();
+//   }
+// checkAlreadyItem22(BuildContext context, ThemeData theme, String srialbtchx,
+//       int auditId,GlobalKey<FormState> formkeynew) async {
+//         serachitemcode=false;
+//         notifyListeners();
+//     final database = (await AppDatabase.initialize())!;
+//     uuiDeviceId = '';
+//     mangedBy = '';
+//     String itemcodex = '';
+//     Database db = (await DBHelper.getInstance())!;
+//     List<LineData> getLineItemResult =
+//         await driftoperation.getdriftallserialLineColumn(database, srialbtchx);
 
+//     log('getLineItemResultgetLineItemResult::${getLineItemResult.length}');
+//     if (getLineItemResult.isNotEmpty) {
+//       itemcodex = getLineItemResult[0].itemCode.toString();
+//     }
+
+//     List<Map<String, Object?>> result2 = await DBOperation.getscandataData(
+//         db, fetchAuditForDetails!.docEntry.toString());
+//     List<Map<String, Object?>> result3 =
+//         await DBOperation.getchecklistAllData(db);
+//     List<HeaderData> headeItemResult =
+//         await driftoperation.getItemCodeInHeader(database, itemcodex);
+
+//     // log("result22222:${result2.length} ==result3:::${result3.length}");
+//     uuiDeviceId = uuid.v1();
+//     List<Map<String, Object?>> checkScanItem =
+//         await DBOperation.checkScandata(db, srialbtchx, itemcodex, auditId);
+
+//     List<Map<String, Object?>> checkpushedScanItem =
+//         await DBOperation.checkPushedAlreadyScandata(
+//             db, srialbtchx, itemcodex, auditId);
+
+//     List<Map<String, Object?>> checkErrorScanItem =
+//         await DBOperation.checkErrorAlreadyScandata(
+//             db, auditId, srialbtchx, itemcodex);
+//     if (headeItemResult.isNotEmpty) {
+//       mangedBy = headeItemResult[0].manageBy;
+//     }
+//     if (mangedBy == 'S' && itemcodex.isNotEmpty) {
+//       if (checkScanItem.isEmpty &&
+//           checkpushedScanItem.isEmpty &&
+//           checkErrorScanItem.isEmpty) {
+//         log('checkScanItem::${checkScanItem.length}');
+
+//         await afterScanSerialBatch22(
+//           context,
+//           theme,
+//           srialbtchx,
+//           auditId,
+//           formkeynew
+//         );
+//         notifyListeners();
+//       } else {
+//         Get.defaultDialog(
+//             title: 'Alert',
+//             titleStyle: TextStyle(color: Colors.red),
+//             middleText: 'This item already inserted.',
+//             actions: [
+//               ElevatedButton(
+//                   style: ElevatedButton.styleFrom(
+//                       backgroundColor: theme.primaryColor,
+//                       foregroundColor: Colors.white),
+//                   onPressed: () {
+//                     Get.back();
+//                   },
+//                   child: Text('OK'))
+//             ]);
+//         notifyListeners();
+//       }
+//     } else {
+//       await afterScanSerialBatch22(
+//         context,
+//         theme,
+//         mycontroller[3].text,
+//         auditId,
+//         formkeynew
+//       );
+//     }
+//   }
   checkAlreadyItem(BuildContext context, ThemeData theme, String srialbtchx,
-      int auditId) async {
+      int auditId,GlobalKey<FormState> formkeynew) async {
+        log("jjjjj::${auditId.toString()}llll${srialbtchx.toString()}");
+        dispvalList.clear();
+        itemName='';
+        scanTime='';
+        isSelectedCusTag='';
+        itemCode='';
+        serachitemcode=false;
+        notifyListeners();
     final database = (await AppDatabase.initialize())!;
     uuiDeviceId = '';
     mangedBy = '';
@@ -3183,7 +3775,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         await driftoperation.getdriftallserialLineColumn(database, srialbtchx);
 
     log('getLineItemResultgetLineItemResult::${getLineItemResult.length}');
-    if (getLineItemResult.isNotEmpty) {
+    if (getLineItemResult.isNotEmpty &&getLineItemResult.length ==1) {
       itemcodex = getLineItemResult[0].itemCode.toString();
     }
 
@@ -3219,6 +3811,8 @@ class AuditCtrlProvider extends ChangeNotifier {
           context,
           theme,
           mycontroller[3].text,
+          auditId,
+          formkeynew
         );
         notifyListeners();
       } else {
@@ -3243,6 +3837,8 @@ class AuditCtrlProvider extends ChangeNotifier {
         context,
         theme,
         mycontroller[3].text,
+        auditId,
+        formkeynew
       );
     }
   }
@@ -3282,20 +3878,22 @@ class AuditCtrlProvider extends ChangeNotifier {
           totalscandeviceQty = 0;
           mycontroller[3].text = '';
           binTableDetails(mycontroller[2].text);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              duration: Duration(seconds: 1),
-              content: Text('Scanned data inserted successfully..!'),
-              backgroundColor: Colors.green,
-              elevation: 10,
-              behavior: SnackBarBehavior.floating,
-              margin: EdgeInsets.all(5),
-              dismissDirection: DismissDirection.up,
-            ),
-          );
+showtoastproduct('Scanned data inserted successfully..!',Colors.green);
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     duration: Duration(seconds: 1),
+          //     content: Text('Scanned data inserted successfully..!'),
+          //     backgroundColor: Colors.green,
+          //     elevation: 10,
+          //     behavior: SnackBarBehavior.floating,
+          //     margin: EdgeInsets.all(5),
+          //     dismissDirection: DismissDirection.up,
+          //   ),
+          // );
           notifyListeners();
         });
+        insertCheckListData222();
+        isManualtype=false;
         notifyListeners();
 
         scandata = [];
@@ -3313,7 +3911,11 @@ class AuditCtrlProvider extends ChangeNotifier {
         dispAllvalList = [];
         isManualtype = false;
         selectFirstTapVal();
+        Get.back();
         notifyListeners();
+      }else{
+        
+showtoastproduct('This item already inserted.',Colors.red);
       }
       // else {
       // log('message:zzzzzzyyy');
@@ -3395,8 +3997,13 @@ class AuditCtrlProvider extends ChangeNotifier {
             title: 'Message',
             content: Column(
               children: [
-                Text('Sync operation initiating.\nPlease wait for sometime.'),
-                ElevatedButton(
+    //              progressNotifier =ValueNotifier(0.0);
+   
+    // isUploading = true;
+    // datatype="Scanned Data";
+   
+               Text('Sync operation initiating.\nPlease wait for sometime.'),
+               ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
@@ -3442,7 +4049,15 @@ class AuditCtrlProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+newshowdialog(BuildContext context){
+  showDialog(
+    context: context, 
+    builder: (_){
+      return newshowdialogpage();
 
+    }
+    );
+}
   saveAllExcel(BuildContext context, ThemeData theme) {
     pushedexcelvaluers = [];
     pendingexcelvaluers = [];
@@ -3794,8 +4409,17 @@ class AuditCtrlProvider extends ChangeNotifier {
 
     return exPath;
   }
+  ValueNotifier<int> progressNotifier = ValueNotifier(1);
+  bool isUploading = false;
+  String? datatype='';
 
   syncAllData(BuildContext context, ThemeData theme) async {
+
+    progressNotifier =ValueNotifier(1);
+   
+    isUploading = true;
+    datatype="Scanned Data";
+    newshowdialog(context);
     Database db = (await DBHelper.getInstance())!;
     auditScannData = [];
     errorMsg = '';
@@ -3830,7 +4454,7 @@ class AuditCtrlProvider extends ChangeNotifier {
             auditid: int.parse(result2[i]['Auditid'].toString()),
             bincode: result2[i]['Bincode'].toString() ?? '',
             devicecode: result2[i]['Devicecode'].toString() ?? '',
-            ismanual: 0,
+            ismanual: int.parse(result2[i]['IsManual'].toString()),
             // int.parse(result2[i]['IsManual'].toString()),
             itemCode: result2[i]['ItemCode'].toString() ?? '',
             notes: result2[i]['Notes'].toString() ?? '',
@@ -3979,9 +4603,12 @@ class AuditCtrlProvider extends ChangeNotifier {
             });
           }
         });
+        progressNotifier.value = ((ij +1) * 100 ~/ scandatax.length!);
         notifyListeners();
       }
-
+ isUploading = false;
+ datatype='';
+ notifyListeners();
       log('Successsssss1111');
     }
     await resyncMethod(theme, context);
@@ -4036,7 +4663,7 @@ class AuditCtrlProvider extends ChangeNotifier {
         serialbatch: mycontroller[3].text,
         stockstatus: isSelectedCusTag,
         scanguid: '',
-        templateid: dispCode!.isEmpty ? 0 : int.parse(dispCode.toString()),
+        templateid:dispCode==null|| dispCode!.isEmpty ? 0 : int.parse(dispCode.toString()),
         whscode: fetchAuditForDetails!.whsCode,
         checklist: checklistdata));
 
@@ -4586,6 +5213,9 @@ class AuditCtrlProvider extends ChangeNotifier {
   }
 
   resyncMethod(ThemeData theme, BuildContext context) async {
+     progressNotifier =ValueNotifier(1);
+    isUploading = true;
+    datatype="Scanned Data";
     auditScannData = [];
     errorMsg = '';
     List<ScanDataPost> scandatax = [];
@@ -4687,9 +5317,14 @@ class AuditCtrlProvider extends ChangeNotifier {
             notifyListeners();
           }
         });
+          progressNotifier.value = ((ij +1) * 100 ~/ scandatax.length!);
         notifyListeners();
       }
+ isUploading = false;
+ datatype='';
+ notifyListeners();
     }
+    Navigator.pop(context);
     await Get.defaultDialog(
         title: 'Message',
         content: Column(

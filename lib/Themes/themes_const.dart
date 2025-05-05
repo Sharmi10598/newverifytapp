@@ -23,14 +23,14 @@ ThemeData merronTheme(BuildContext context) {
 
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                 EdgeInsets.symmetric(vertical: 10, horizontal: 10)),
-            shape: WidgetStateProperty.all<OutlinedBorder>(
+            shape: MaterialStateProperty.all<OutlinedBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0))),
             backgroundColor:
-                WidgetStateProperty.all<Color>(Palettes.primary.withOpacity(1)),
-            textStyle: WidgetStateProperty.all<TextStyle>(
+                MaterialStateProperty.all<Color>(Palettes.primary.withOpacity(1)),
+            textStyle: MaterialStateProperty.all<TextStyle>(
                 TextStyle(color: Colors.white, fontFamily: 'Segoe')))),
 
     inputDecorationTheme: InputDecorationTheme(
@@ -62,14 +62,14 @@ ThemeData blueTheme(BuildContext context) {
         FloatingActionButtonThemeData(backgroundColor: Palettes.primary),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                 EdgeInsets.symmetric(vertical: 10, horizontal: 10)),
-            shape: WidgetStateProperty.all<OutlinedBorder>(
+            shape: MaterialStateProperty.all<OutlinedBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0))),
-            backgroundColor: WidgetStateProperty.all<Color>(
+            backgroundColor: MaterialStateProperty.all<Color>(
                 Palettes.primary2.withOpacity(1)),
-            textStyle: WidgetStateProperty.all<TextStyle>(
+            textStyle: MaterialStateProperty.all<TextStyle>(
                 TextStyle(color: Colors.white, fontFamily: 'Segoe')))),
     textTheme: TextTheme(
       displaySmall: TextStyle(fontFamily: 'Segoe'),
@@ -113,14 +113,14 @@ ThemeData orangeTheme(BuildContext context) {
         FloatingActionButtonThemeData(backgroundColor: Palettes.primary3),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                 EdgeInsets.symmetric(vertical: 10, horizontal: 10)),
-            shape: WidgetStateProperty.all<OutlinedBorder>(
+            shape: MaterialStateProperty.all<OutlinedBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0))),
-            backgroundColor: WidgetStateProperty.all<Color>(
+            backgroundColor: MaterialStateProperty.all<Color>(
                 Palettes.primary3.withOpacity(1)),
-            textStyle: WidgetStateProperty.all<TextStyle>(
+            textStyle: MaterialStateProperty.all<TextStyle>(
                 TextStyle(color: Colors.white, fontFamily: 'Segoe')))),
     textTheme: TextTheme(
       displaySmall: TextStyle(fontFamily: 'Segoe'),
@@ -166,18 +166,18 @@ ThemeData darkTheme(BuildContext context) {
           FloatingActionButtonThemeData(backgroundColor: Palettes.primary),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
-              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                   EdgeInsets.symmetric(
                 vertical: 10,
               ) //horizontal: 30
                   ),
-              shape: WidgetStateProperty.all<OutlinedBorder>(
+              shape: MaterialStateProperty.all<OutlinedBorder>(
                   RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0))),
-              backgroundColor: WidgetStateProperty.all<Color>(Palettes.primary),
-              foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+              backgroundColor: MaterialStateProperty.all<Color>(Palettes.primary),
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
               // overlayColor:  MaterialStateProperty.all<Color>(Colors.black26),
-              textStyle: WidgetStateProperty.all<TextStyle>(
+              textStyle: MaterialStateProperty.all<TextStyle>(
                   TextStyle(color: Colors.white, fontFamily: 'Segoe')))),
       textTheme: TextTheme(
         displaySmall: TextStyle(fontFamily: 'Segoe'),
@@ -204,8 +204,8 @@ ThemeData darkTheme(BuildContext context) {
         ),
       ),
       switchTheme: SwitchThemeData(
-          trackColor: WidgetStateProperty.all<Color>(Colors.grey),
-          thumbColor: WidgetStateProperty.all<Color>(Colors.white)),
+          trackColor: MaterialStateProperty.all<Color>(Colors.grey),
+          thumbColor: MaterialStateProperty.all<Color>(Colors.white)),
       primaryIconTheme: IconThemeData(color: Colors.amber),
       iconTheme: IconThemeData(color: Colors.white));
 }

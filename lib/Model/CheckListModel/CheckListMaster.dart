@@ -115,10 +115,14 @@ class CheckListMasterModel {
   String createdDateTime;
   String updatedBy;
   String updatedDateTime;
+  int? IsNewItem;
+
   String traceid;
 //PreviousDispute
   CheckListMasterModel(
-      {required this.areaCode,
+      {
+        required this.IsNewItem,
+        required this.areaCode,
       required this.binCode,
       required this.brand,
       required this.category,
@@ -157,6 +161,7 @@ class CheckListMasterModel {
 //\"traceid\":\"12d14806-7afb-4785-aa81-96e7d86e2d44\",\"WhsName\":\"TEST\"},
   factory CheckListMasterModel.fromJson(Map<String, dynamic> json) {
     return CheckListMasterModel(
+      IsNewItem: json['IsNewItem'] ?? 2,
       areaCode: json['AreaCode'].toString() ?? '',
       rackCode: json['RackCode'].toString() ?? '',
       binCode: json['BinCode'] ?? '',
@@ -176,7 +181,7 @@ class CheckListMasterModel {
       previousDispute: json['Previous_Dispute'] == true ? '1' : '0',
       serialBatch: json['SerialBatch'] ?? '',
       serialBatchManualTyped:
-          json['SerialBatch_ManualTyped'] == true ? '1' : '0',
+          json['SerialBatch_ManualTyped'] .toString(),
       sizeCapacity: json['SizeCapacity'] ?? '',
       specification: json['Specification'] ?? '',
       status: json['Status'] == true ? 1 : 0,
@@ -184,7 +189,7 @@ class CheckListMasterModel {
       traceid: json['traceid'] ?? '',
       updatedBy: json['UpdatedBy'] ?? '',
       updatedDateTime: json['UpdatedDateTime'] ?? '',
-      whileOffline: json['WhileOffline'] == true ? '1' : '0',
+      whileOffline: json['WhileOffline'] .toString(),
       whsCode: json['WhsCode'] ?? '',
       whsName: json['WhsName'] ?? '',
       zoneCode: json['ZoneCode'] ?? '',

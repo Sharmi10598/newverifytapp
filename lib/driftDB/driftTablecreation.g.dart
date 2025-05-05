@@ -2880,6 +2880,274 @@ class DriftLineMasterCompanion extends UpdateCompanion<DriftLineMasterData> {
   }
 }
 
+class $DriftlabelprintscandataTable extends Driftlabelprintscandata
+    with TableInfo<$DriftlabelprintscandataTable, DriftlabelprintscandataData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DriftlabelprintscandataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _IMidMeta = const VerificationMeta('IMid');
+  @override
+  late final GeneratedColumn<int> IMid = GeneratedColumn<int>(
+      'i_mid', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _serialNoMeta =
+      const VerificationMeta('serialNo');
+  @override
+  late final GeneratedColumn<String> serialNo = GeneratedColumn<String>(
+      'SerialNo', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _itemCodeMeta =
+      const VerificationMeta('itemCode');
+  @override
+  late final GeneratedColumn<String> itemCode = GeneratedColumn<String>(
+      'ItemCode', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _quantityMeta =
+      const VerificationMeta('quantity');
+  @override
+  late final GeneratedColumn<String> quantity = GeneratedColumn<String>(
+      'Quantity', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [IMid, serialNo, itemCode, quantity];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'driflabelprintscandata';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<DriftlabelprintscandataData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('i_mid')) {
+      context.handle(
+          _IMidMeta, IMid.isAcceptableOrUnknown(data['i_mid']!, _IMidMeta));
+    }
+    if (data.containsKey('SerialNo')) {
+      context.handle(_serialNoMeta,
+          serialNo.isAcceptableOrUnknown(data['SerialNo']!, _serialNoMeta));
+    }
+    if (data.containsKey('ItemCode')) {
+      context.handle(_itemCodeMeta,
+          itemCode.isAcceptableOrUnknown(data['ItemCode']!, _itemCodeMeta));
+    }
+    if (data.containsKey('Quantity')) {
+      context.handle(_quantityMeta,
+          quantity.isAcceptableOrUnknown(data['Quantity']!, _quantityMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {IMid};
+  @override
+  DriftlabelprintscandataData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DriftlabelprintscandataData(
+      IMid: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}i_mid'])!,
+      serialNo: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}SerialNo']),
+      itemCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ItemCode']),
+      quantity: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}Quantity']),
+    );
+  }
+
+  @override
+  $DriftlabelprintscandataTable createAlias(String alias) {
+    return $DriftlabelprintscandataTable(attachedDatabase, alias);
+  }
+}
+
+class DriftlabelprintscandataData extends DataClass
+    implements Insertable<DriftlabelprintscandataData> {
+  final int IMid;
+  final String? serialNo;
+  final String? itemCode;
+  final String? quantity;
+  const DriftlabelprintscandataData(
+      {required this.IMid, this.serialNo, this.itemCode, this.quantity});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['i_mid'] = Variable<int>(IMid);
+    if (!nullToAbsent || serialNo != null) {
+      map['SerialNo'] = Variable<String>(serialNo);
+    }
+    if (!nullToAbsent || itemCode != null) {
+      map['ItemCode'] = Variable<String>(itemCode);
+    }
+    if (!nullToAbsent || quantity != null) {
+      map['Quantity'] = Variable<String>(quantity);
+    }
+    return map;
+  }
+
+  DriftlabelprintscandataCompanion toCompanion(bool nullToAbsent) {
+    return DriftlabelprintscandataCompanion(
+      IMid: Value(IMid),
+      serialNo: serialNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serialNo),
+      itemCode: itemCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(itemCode),
+      quantity: quantity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quantity),
+    );
+  }
+
+  factory DriftlabelprintscandataData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DriftlabelprintscandataData(
+      IMid: serializer.fromJson<int>(json['IMid']),
+      serialNo: serializer.fromJson<String?>(json['serialNo']),
+      itemCode: serializer.fromJson<String?>(json['itemCode']),
+      quantity: serializer.fromJson<String?>(json['quantity']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'IMid': serializer.toJson<int>(IMid),
+      'serialNo': serializer.toJson<String?>(serialNo),
+      'itemCode': serializer.toJson<String?>(itemCode),
+      'quantity': serializer.toJson<String?>(quantity),
+    };
+  }
+
+  DriftlabelprintscandataData copyWith(
+          {int? IMid,
+          Value<String?> serialNo = const Value.absent(),
+          Value<String?> itemCode = const Value.absent(),
+          Value<String?> quantity = const Value.absent()}) =>
+      DriftlabelprintscandataData(
+        IMid: IMid ?? this.IMid,
+        serialNo: serialNo.present ? serialNo.value : this.serialNo,
+        itemCode: itemCode.present ? itemCode.value : this.itemCode,
+        quantity: quantity.present ? quantity.value : this.quantity,
+      );
+  DriftlabelprintscandataData copyWithCompanion(
+      DriftlabelprintscandataCompanion data) {
+    return DriftlabelprintscandataData(
+      IMid: data.IMid.present ? data.IMid.value : this.IMid,
+      serialNo: data.serialNo.present ? data.serialNo.value : this.serialNo,
+      itemCode: data.itemCode.present ? data.itemCode.value : this.itemCode,
+      quantity: data.quantity.present ? data.quantity.value : this.quantity,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DriftlabelprintscandataData(')
+          ..write('IMid: $IMid, ')
+          ..write('serialNo: $serialNo, ')
+          ..write('itemCode: $itemCode, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(IMid, serialNo, itemCode, quantity);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DriftlabelprintscandataData &&
+          other.IMid == this.IMid &&
+          other.serialNo == this.serialNo &&
+          other.itemCode == this.itemCode &&
+          other.quantity == this.quantity);
+}
+
+class DriftlabelprintscandataCompanion
+    extends UpdateCompanion<DriftlabelprintscandataData> {
+  final Value<int> IMid;
+  final Value<String?> serialNo;
+  final Value<String?> itemCode;
+  final Value<String?> quantity;
+  const DriftlabelprintscandataCompanion({
+    this.IMid = const Value.absent(),
+    this.serialNo = const Value.absent(),
+    this.itemCode = const Value.absent(),
+    this.quantity = const Value.absent(),
+  });
+  DriftlabelprintscandataCompanion.insert({
+    this.IMid = const Value.absent(),
+    this.serialNo = const Value.absent(),
+    this.itemCode = const Value.absent(),
+    this.quantity = const Value.absent(),
+  });
+  static Insertable<DriftlabelprintscandataData> custom({
+    Expression<int>? IMid,
+    Expression<String>? serialNo,
+    Expression<String>? itemCode,
+    Expression<String>? quantity,
+  }) {
+    return RawValuesInsertable({
+      if (IMid != null) 'i_mid': IMid,
+      if (serialNo != null) 'SerialNo': serialNo,
+      if (itemCode != null) 'ItemCode': itemCode,
+      if (quantity != null) 'Quantity': quantity,
+    });
+  }
+
+  DriftlabelprintscandataCompanion copyWith(
+      {Value<int>? IMid,
+      Value<String?>? serialNo,
+      Value<String?>? itemCode,
+      Value<String?>? quantity}) {
+    return DriftlabelprintscandataCompanion(
+      IMid: IMid ?? this.IMid,
+      serialNo: serialNo ?? this.serialNo,
+      itemCode: itemCode ?? this.itemCode,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (IMid.present) {
+      map['i_mid'] = Variable<int>(IMid.value);
+    }
+    if (serialNo.present) {
+      map['SerialNo'] = Variable<String>(serialNo.value);
+    }
+    if (itemCode.present) {
+      map['ItemCode'] = Variable<String>(itemCode.value);
+    }
+    if (quantity.present) {
+      map['Quantity'] = Variable<String>(quantity.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DriftlabelprintscandataCompanion(')
+          ..write('IMid: $IMid, ')
+          ..write('serialNo: $serialNo, ')
+          ..write('itemCode: $itemCode, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $DriftBinMasterTable extends DriftBinMaster
     with TableInfo<$DriftBinMasterTable, DriftBinMasterData> {
   @override
@@ -3832,6 +4100,12 @@ class $CheckListMasterTableTable extends CheckListMasterTable
   late final GeneratedColumn<int> status = GeneratedColumn<int>(
       'Status', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isNewItemMeta =
+      const VerificationMeta('isNewItem');
+  @override
+  late final GeneratedColumn<int> isNewItem = GeneratedColumn<int>(
+      'IsNewItem', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _whsCodeMeta =
       const VerificationMeta('whsCode');
   @override
@@ -3988,6 +4262,7 @@ class $CheckListMasterTableTable extends CheckListMasterTable
         binCode,
         rackCode,
         status,
+        isNewItem,
         whsCode,
         whsName,
         zoneCode,
@@ -4044,6 +4319,10 @@ class $CheckListMasterTableTable extends CheckListMasterTable
     if (data.containsKey('Status')) {
       context.handle(_statusMeta,
           status.isAcceptableOrUnknown(data['Status']!, _statusMeta));
+    }
+    if (data.containsKey('IsNewItem')) {
+      context.handle(_isNewItemMeta,
+          isNewItem.isAcceptableOrUnknown(data['IsNewItem']!, _isNewItemMeta));
     }
     if (data.containsKey('WhsCode')) {
       context.handle(_whsCodeMeta,
@@ -4193,6 +4472,8 @@ class $CheckListMasterTableTable extends CheckListMasterTable
           .read(DriftSqlType.string, data['${effectivePrefix}RackCode']),
       status: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}Status']),
+      isNewItem: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}IsNewItem']),
       whsCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}WhsCode']),
       whsName: attachedDatabase.typeMapping
@@ -4260,6 +4541,7 @@ class CheckListMasterTableData extends DataClass
   final String? binCode;
   final String? rackCode;
   final int? status;
+  final int? isNewItem;
   final String? whsCode;
   final String? whsName;
   final String? zoneCode;
@@ -4291,6 +4573,7 @@ class CheckListMasterTableData extends DataClass
       this.binCode,
       this.rackCode,
       this.status,
+      this.isNewItem,
       this.whsCode,
       this.whsName,
       this.zoneCode,
@@ -4333,6 +4616,9 @@ class CheckListMasterTableData extends DataClass
     }
     if (!nullToAbsent || status != null) {
       map['Status'] = Variable<int>(status);
+    }
+    if (!nullToAbsent || isNewItem != null) {
+      map['IsNewItem'] = Variable<int>(isNewItem);
     }
     if (!nullToAbsent || whsCode != null) {
       map['WhsCode'] = Variable<String>(whsCode);
@@ -4428,6 +4714,9 @@ class CheckListMasterTableData extends DataClass
           : Value(rackCode),
       status:
           status == null && nullToAbsent ? const Value.absent() : Value(status),
+      isNewItem: isNewItem == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isNewItem),
       whsCode: whsCode == null && nullToAbsent
           ? const Value.absent()
           : Value(whsCode),
@@ -4514,6 +4803,7 @@ class CheckListMasterTableData extends DataClass
       binCode: serializer.fromJson<String?>(json['binCode']),
       rackCode: serializer.fromJson<String?>(json['rackCode']),
       status: serializer.fromJson<int?>(json['status']),
+      isNewItem: serializer.fromJson<int?>(json['isNewItem']),
       whsCode: serializer.fromJson<String?>(json['whsCode']),
       whsName: serializer.fromJson<String?>(json['whsName']),
       zoneCode: serializer.fromJson<String?>(json['zoneCode']),
@@ -4551,6 +4841,7 @@ class CheckListMasterTableData extends DataClass
       'binCode': serializer.toJson<String?>(binCode),
       'rackCode': serializer.toJson<String?>(rackCode),
       'status': serializer.toJson<int?>(status),
+      'isNewItem': serializer.toJson<int?>(isNewItem),
       'whsCode': serializer.toJson<String?>(whsCode),
       'whsName': serializer.toJson<String?>(whsName),
       'zoneCode': serializer.toJson<String?>(zoneCode),
@@ -4586,6 +4877,7 @@ class CheckListMasterTableData extends DataClass
           Value<String?> binCode = const Value.absent(),
           Value<String?> rackCode = const Value.absent(),
           Value<int?> status = const Value.absent(),
+          Value<int?> isNewItem = const Value.absent(),
           Value<String?> whsCode = const Value.absent(),
           Value<String?> whsName = const Value.absent(),
           Value<String?> zoneCode = const Value.absent(),
@@ -4617,6 +4909,7 @@ class CheckListMasterTableData extends DataClass
         binCode: binCode.present ? binCode.value : this.binCode,
         rackCode: rackCode.present ? rackCode.value : this.rackCode,
         status: status.present ? status.value : this.status,
+        isNewItem: isNewItem.present ? isNewItem.value : this.isNewItem,
         whsCode: whsCode.present ? whsCode.value : this.whsCode,
         whsName: whsName.present ? whsName.value : this.whsName,
         zoneCode: zoneCode.present ? zoneCode.value : this.zoneCode,
@@ -4666,6 +4959,7 @@ class CheckListMasterTableData extends DataClass
       binCode: data.binCode.present ? data.binCode.value : this.binCode,
       rackCode: data.rackCode.present ? data.rackCode.value : this.rackCode,
       status: data.status.present ? data.status.value : this.status,
+      isNewItem: data.isNewItem.present ? data.isNewItem.value : this.isNewItem,
       whsCode: data.whsCode.present ? data.whsCode.value : this.whsCode,
       whsName: data.whsName.present ? data.whsName.value : this.whsName,
       zoneCode: data.zoneCode.present ? data.zoneCode.value : this.zoneCode,
@@ -4726,6 +5020,7 @@ class CheckListMasterTableData extends DataClass
           ..write('binCode: $binCode, ')
           ..write('rackCode: $rackCode, ')
           ..write('status: $status, ')
+          ..write('isNewItem: $isNewItem, ')
           ..write('whsCode: $whsCode, ')
           ..write('whsName: $whsName, ')
           ..write('zoneCode: $zoneCode, ')
@@ -4762,6 +5057,7 @@ class CheckListMasterTableData extends DataClass
         binCode,
         rackCode,
         status,
+        isNewItem,
         whsCode,
         whsName,
         zoneCode,
@@ -4797,6 +5093,7 @@ class CheckListMasterTableData extends DataClass
           other.binCode == this.binCode &&
           other.rackCode == this.rackCode &&
           other.status == this.status &&
+          other.isNewItem == this.isNewItem &&
           other.whsCode == this.whsCode &&
           other.whsName == this.whsName &&
           other.zoneCode == this.zoneCode &&
@@ -4831,6 +5128,7 @@ class CheckListMasterTableCompanion
   final Value<String?> binCode;
   final Value<String?> rackCode;
   final Value<int?> status;
+  final Value<int?> isNewItem;
   final Value<String?> whsCode;
   final Value<String?> whsName;
   final Value<String?> zoneCode;
@@ -4863,6 +5161,7 @@ class CheckListMasterTableCompanion
     this.binCode = const Value.absent(),
     this.rackCode = const Value.absent(),
     this.status = const Value.absent(),
+    this.isNewItem = const Value.absent(),
     this.whsCode = const Value.absent(),
     this.whsName = const Value.absent(),
     this.zoneCode = const Value.absent(),
@@ -4896,6 +5195,7 @@ class CheckListMasterTableCompanion
     this.binCode = const Value.absent(),
     this.rackCode = const Value.absent(),
     this.status = const Value.absent(),
+    this.isNewItem = const Value.absent(),
     this.whsCode = const Value.absent(),
     this.whsName = const Value.absent(),
     this.zoneCode = const Value.absent(),
@@ -4929,6 +5229,7 @@ class CheckListMasterTableCompanion
     Expression<String>? binCode,
     Expression<String>? rackCode,
     Expression<int>? status,
+    Expression<int>? isNewItem,
     Expression<String>? whsCode,
     Expression<String>? whsName,
     Expression<String>? zoneCode,
@@ -4962,6 +5263,7 @@ class CheckListMasterTableCompanion
       if (binCode != null) 'BinCode': binCode,
       if (rackCode != null) 'RackCode': rackCode,
       if (status != null) 'Status': status,
+      if (isNewItem != null) 'IsNewItem': isNewItem,
       if (whsCode != null) 'WhsCode': whsCode,
       if (whsName != null) 'WhsName': whsName,
       if (zoneCode != null) 'ZoneCode': zoneCode,
@@ -4998,6 +5300,7 @@ class CheckListMasterTableCompanion
       Value<String?>? binCode,
       Value<String?>? rackCode,
       Value<int?>? status,
+      Value<int?>? isNewItem,
       Value<String?>? whsCode,
       Value<String?>? whsName,
       Value<String?>? zoneCode,
@@ -5030,6 +5333,7 @@ class CheckListMasterTableCompanion
       binCode: binCode ?? this.binCode,
       rackCode: rackCode ?? this.rackCode,
       status: status ?? this.status,
+      isNewItem: isNewItem ?? this.isNewItem,
       whsCode: whsCode ?? this.whsCode,
       whsName: whsName ?? this.whsName,
       zoneCode: zoneCode ?? this.zoneCode,
@@ -5077,6 +5381,9 @@ class CheckListMasterTableCompanion
     }
     if (status.present) {
       map['Status'] = Variable<int>(status.value);
+    }
+    if (isNewItem.present) {
+      map['IsNewItem'] = Variable<int>(isNewItem.value);
     }
     if (whsCode.present) {
       map['WhsCode'] = Variable<String>(whsCode.value);
@@ -5168,6 +5475,7 @@ class CheckListMasterTableCompanion
           ..write('binCode: $binCode, ')
           ..write('rackCode: $rackCode, ')
           ..write('status: $status, ')
+          ..write('isNewItem: $isNewItem, ')
           ..write('whsCode: $whsCode, ')
           ..write('whsName: $whsName, ')
           ..write('zoneCode: $zoneCode, ')
@@ -6956,6 +7264,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $DriftItemMasterTable(this);
   late final $DriftLineMasterTable driftLineMaster =
       $DriftLineMasterTable(this);
+  late final $DriftlabelprintscandataTable driftlabelprintscandata =
+      $DriftlabelprintscandataTable(this);
   late final $DriftBinMasterTable driftBinMaster = $DriftBinMasterTable(this);
   late final $DriftItemCodeMasterTable driftItemCodeMaster =
       $DriftItemCodeMasterTable(this);
@@ -6975,6 +7285,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         driftItemMaster,
         driftLineMaster,
+        driftlabelprintscandata,
         driftBinMaster,
         driftItemCodeMaster,
         checkListHeaderTable,
@@ -8157,6 +8468,165 @@ typedef $$DriftLineMasterTableProcessedTableManager = ProcessedTableManager<
     ),
     DriftLineMasterData,
     PrefetchHooks Function()>;
+typedef $$DriftlabelprintscandataTableCreateCompanionBuilder
+    = DriftlabelprintscandataCompanion Function({
+  Value<int> IMid,
+  Value<String?> serialNo,
+  Value<String?> itemCode,
+  Value<String?> quantity,
+});
+typedef $$DriftlabelprintscandataTableUpdateCompanionBuilder
+    = DriftlabelprintscandataCompanion Function({
+  Value<int> IMid,
+  Value<String?> serialNo,
+  Value<String?> itemCode,
+  Value<String?> quantity,
+});
+
+class $$DriftlabelprintscandataTableFilterComposer
+    extends Composer<_$AppDatabase, $DriftlabelprintscandataTable> {
+  $$DriftlabelprintscandataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get IMid => $composableBuilder(
+      column: $table.IMid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get serialNo => $composableBuilder(
+      column: $table.serialNo, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get itemCode => $composableBuilder(
+      column: $table.itemCode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get quantity => $composableBuilder(
+      column: $table.quantity, builder: (column) => ColumnFilters(column));
+}
+
+class $$DriftlabelprintscandataTableOrderingComposer
+    extends Composer<_$AppDatabase, $DriftlabelprintscandataTable> {
+  $$DriftlabelprintscandataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get IMid => $composableBuilder(
+      column: $table.IMid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get serialNo => $composableBuilder(
+      column: $table.serialNo, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get itemCode => $composableBuilder(
+      column: $table.itemCode, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get quantity => $composableBuilder(
+      column: $table.quantity, builder: (column) => ColumnOrderings(column));
+}
+
+class $$DriftlabelprintscandataTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DriftlabelprintscandataTable> {
+  $$DriftlabelprintscandataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get IMid =>
+      $composableBuilder(column: $table.IMid, builder: (column) => column);
+
+  GeneratedColumn<String> get serialNo =>
+      $composableBuilder(column: $table.serialNo, builder: (column) => column);
+
+  GeneratedColumn<String> get itemCode =>
+      $composableBuilder(column: $table.itemCode, builder: (column) => column);
+
+  GeneratedColumn<String> get quantity =>
+      $composableBuilder(column: $table.quantity, builder: (column) => column);
+}
+
+class $$DriftlabelprintscandataTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DriftlabelprintscandataTable,
+    DriftlabelprintscandataData,
+    $$DriftlabelprintscandataTableFilterComposer,
+    $$DriftlabelprintscandataTableOrderingComposer,
+    $$DriftlabelprintscandataTableAnnotationComposer,
+    $$DriftlabelprintscandataTableCreateCompanionBuilder,
+    $$DriftlabelprintscandataTableUpdateCompanionBuilder,
+    (
+      DriftlabelprintscandataData,
+      BaseReferences<_$AppDatabase, $DriftlabelprintscandataTable,
+          DriftlabelprintscandataData>
+    ),
+    DriftlabelprintscandataData,
+    PrefetchHooks Function()> {
+  $$DriftlabelprintscandataTableTableManager(
+      _$AppDatabase db, $DriftlabelprintscandataTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DriftlabelprintscandataTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DriftlabelprintscandataTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DriftlabelprintscandataTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<String?> serialNo = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> quantity = const Value.absent(),
+          }) =>
+              DriftlabelprintscandataCompanion(
+            IMid: IMid,
+            serialNo: serialNo,
+            itemCode: itemCode,
+            quantity: quantity,
+          ),
+          createCompanionCallback: ({
+            Value<int> IMid = const Value.absent(),
+            Value<String?> serialNo = const Value.absent(),
+            Value<String?> itemCode = const Value.absent(),
+            Value<String?> quantity = const Value.absent(),
+          }) =>
+              DriftlabelprintscandataCompanion.insert(
+            IMid: IMid,
+            serialNo: serialNo,
+            itemCode: itemCode,
+            quantity: quantity,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DriftlabelprintscandataTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $DriftlabelprintscandataTable,
+        DriftlabelprintscandataData,
+        $$DriftlabelprintscandataTableFilterComposer,
+        $$DriftlabelprintscandataTableOrderingComposer,
+        $$DriftlabelprintscandataTableAnnotationComposer,
+        $$DriftlabelprintscandataTableCreateCompanionBuilder,
+        $$DriftlabelprintscandataTableUpdateCompanionBuilder,
+        (
+          DriftlabelprintscandataData,
+          BaseReferences<_$AppDatabase, $DriftlabelprintscandataTable,
+              DriftlabelprintscandataData>
+        ),
+        DriftlabelprintscandataData,
+        PrefetchHooks Function()>;
 typedef $$DriftBinMasterTableCreateCompanionBuilder = DriftBinMasterCompanion
     Function({
   Value<String?> areaCode,
@@ -8677,6 +9147,7 @@ typedef $$CheckListMasterTableTableCreateCompanionBuilder
   Value<String?> binCode,
   Value<String?> rackCode,
   Value<int?> status,
+  Value<int?> isNewItem,
   Value<String?> whsCode,
   Value<String?> whsName,
   Value<String?> zoneCode,
@@ -8711,6 +9182,7 @@ typedef $$CheckListMasterTableTableUpdateCompanionBuilder
   Value<String?> binCode,
   Value<String?> rackCode,
   Value<int?> status,
+  Value<int?> isNewItem,
   Value<String?> whsCode,
   Value<String?> whsName,
   Value<String?> zoneCode,
@@ -8762,6 +9234,9 @@ class $$CheckListMasterTableTableFilterComposer
 
   ColumnFilters<int> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get isNewItem => $composableBuilder(
+      column: $table.isNewItem, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get whsCode => $composableBuilder(
       column: $table.whsCode, builder: (column) => ColumnFilters(column));
@@ -8867,6 +9342,9 @@ class $$CheckListMasterTableTableOrderingComposer
 
   ColumnOrderings<int> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get isNewItem => $composableBuilder(
+      column: $table.isNewItem, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get whsCode => $composableBuilder(
       column: $table.whsCode, builder: (column) => ColumnOrderings(column));
@@ -8977,6 +9455,9 @@ class $$CheckListMasterTableTableAnnotationComposer
 
   GeneratedColumn<int> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get isNewItem =>
+      $composableBuilder(column: $table.isNewItem, builder: (column) => column);
 
   GeneratedColumn<String> get whsCode =>
       $composableBuilder(column: $table.whsCode, builder: (column) => column);
@@ -9089,6 +9570,7 @@ class $$CheckListMasterTableTableTableManager extends RootTableManager<
             Value<String?> binCode = const Value.absent(),
             Value<String?> rackCode = const Value.absent(),
             Value<int?> status = const Value.absent(),
+            Value<int?> isNewItem = const Value.absent(),
             Value<String?> whsCode = const Value.absent(),
             Value<String?> whsName = const Value.absent(),
             Value<String?> zoneCode = const Value.absent(),
@@ -9122,6 +9604,7 @@ class $$CheckListMasterTableTableTableManager extends RootTableManager<
             binCode: binCode,
             rackCode: rackCode,
             status: status,
+            isNewItem: isNewItem,
             whsCode: whsCode,
             whsName: whsName,
             zoneCode: zoneCode,
@@ -9155,6 +9638,7 @@ class $$CheckListMasterTableTableTableManager extends RootTableManager<
             Value<String?> binCode = const Value.absent(),
             Value<String?> rackCode = const Value.absent(),
             Value<int?> status = const Value.absent(),
+            Value<int?> isNewItem = const Value.absent(),
             Value<String?> whsCode = const Value.absent(),
             Value<String?> whsName = const Value.absent(),
             Value<String?> zoneCode = const Value.absent(),
@@ -9188,6 +9672,7 @@ class $$CheckListMasterTableTableTableManager extends RootTableManager<
             binCode: binCode,
             rackCode: rackCode,
             status: status,
+            isNewItem: isNewItem,
             whsCode: whsCode,
             whsName: whsName,
             zoneCode: zoneCode,
@@ -10045,6 +10530,9 @@ class $AppDatabaseManager {
       $$DriftItemMasterTableTableManager(_db, _db.driftItemMaster);
   $$DriftLineMasterTableTableManager get driftLineMaster =>
       $$DriftLineMasterTableTableManager(_db, _db.driftLineMaster);
+  $$DriftlabelprintscandataTableTableManager get driftlabelprintscandata =>
+      $$DriftlabelprintscandataTableTableManager(
+          _db, _db.driftlabelprintscandata);
   $$DriftBinMasterTableTableManager get driftBinMaster =>
       $$DriftBinMasterTableTableManager(_db, _db.driftBinMaster);
   $$DriftItemCodeMasterTableTableManager get driftItemCodeMaster =>

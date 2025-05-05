@@ -12,7 +12,7 @@ class CheckListtMasterApi {
     int resCode = 500;
 
     try {
-      // log('ConstantValues.token::${ConstantValues.token}');
+      log('${Url.queryApi + "Verifyt/v1/GetAuditChecklistMaster"}ConstantValues.token::${ConstantValues.token}');
       final response = await http.get(
         Uri.parse(Url.queryApi + "Verifyt/v1/GetAuditChecklistMaster"),
         headers: {
@@ -22,7 +22,7 @@ class CheckListtMasterApi {
       );
 
       log("CheckListtMasterApi sts:::" "${response.statusCode.toString()}");
-      // log("CheckListtMasterApi Res:::" "${response.body.toString()}");
+      log("GetAuditChecklistMaster Res:::" "${response.body.toString()}");
 
       resCode = response.statusCode;
       if (response.statusCode == 200) {

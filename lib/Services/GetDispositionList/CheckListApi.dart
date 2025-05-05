@@ -22,7 +22,7 @@ class CheckListtApi {
       );
 
       log("CheckListtApi sts:::" "${response.statusCode.toString()}");
-      // log("CheckListtApi Res:::" "${response.body.toString()}");
+      log("CheckListtApi Res:::" "${response.body.toString()}");
 
       resCode = response.statusCode;
       if (response.statusCode == 200) {

@@ -223,7 +223,7 @@ Delete from $scanpostTabled
     final List<Map<String, Object?>> result = await db.rawQuery('''
 SELECT * from $scanpostTabled  where Auditid="$auditId"
 ''');
-    // log("scanpost1111 Result::${result.toString()}");
+    log("scanpost1111 Result::${result.toString()}");
     return result;
   }
 
@@ -231,6 +231,14 @@ SELECT * from $scanpostTabled  where Auditid="$auditId"
       Database db, String binCode, String auditID) async {
     final List<Map<String, Object?>> result = await db.rawQuery('''
 SELECT * from $scanpostTabled  where Bincode='$binCode' and Auditid='$auditID'
+''');
+    // log("scanpost1111 Result::${result.toString()}");
+    return result;
+  }
+  static Future<List<Map<String, Object?>>> deletescandata(
+      Database db, String binCode, String auditID,String itemcode,String serial) async {
+    final List<Map<String, Object?>> result = await db.rawQuery('''
+delete from $scanpostTabled  where Bincode='$binCode' and Auditid='$auditID' and ItemCode='$itemcode' and Serialbatch='$serial'
 ''');
     // log("scanpost1111 Result::${result.toString()}");
     return result;
@@ -260,6 +268,10 @@ SELECT * from $scanpostTabled where Auditid='$auditid'
     log('''
 SELECT * from $scanpostTabled where Serialbatch="$serialbatch" and ItemCode="$itemCode"
 ''');
+ final List<Map<String, Object?>> result222 = await db.rawQuery('''
+SELECT * from $scanpostTabled 
+''');
+ log("aaaaaaa Result::${result222.toString()}");
     final List<Map<String, Object?>> result = await db.rawQuery('''
 SELECT * from $scanpostTabled where Auditid =$auditId and Serialbatch="$serialbatch" and ItemCode="$itemCode" 
 ''');

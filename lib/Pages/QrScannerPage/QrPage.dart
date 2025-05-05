@@ -1,9 +1,11 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:verifytapp/Controllers/AuditController/AuditControllers.dart';
+import 'package:verifytapp/Controllers/LebelprintController/LabelprintController.dart';
 
 import '../../Controllers/SearchController/SerchControllers.dart';
 
@@ -20,7 +22,9 @@ class ScannerPageState extends State<ScannerPage> {
   List<Barcode> barcodes = [];
   static bool bincodeScan = false;
   static bool batchCodeScan = false;
+  static bool itemcodeScan = false;
   static bool searchScan = false;
+  static bool labelprintscan = false;
   void dispose() {
     cameraController.dispose();
     super.dispose();
@@ -50,6 +54,12 @@ class ScannerPageState extends State<ScannerPage> {
                   } else if (searchScan == true) {
                     log('search.rawValue::${barcode.rawValue}');
                     scanSearchData(barcode.rawValue!);
+                  } else if (itemcodeScan == true) {
+                    log('search.rawValue::${barcode.rawValue}');
+                    scanitemcode(barcode.rawValue!);
+                  }else if (labelprintscan == true) {
+                    log('search.rawValue::${barcode.rawValue}');
+                    scanlabelprint(barcode.rawValue!);
                   }
                   // else if (itemCodeScan == true) {
                   //   log('itemcode.rawValue::${barcode.rawValue}');
@@ -99,10 +109,74 @@ class ScannerPageState extends State<ScannerPage> {
     bincodeScan = false;
     // context.read<AuditCtrlProvider>().disableKeyBoard(context);
   }
+scanlabelprint(String binValues) {
+    Get.back();
+    setState(() {
+      
+  context.read<LabelPrintcontrller>().checkitemcode(binValues, context);
+    });
+  }
+  scanitemcode(String binValues) {
+    Get.back();
+    bool isdataavailable = false;
+    int? index;
+    isdataavailable = false;
+    index = null;
+    setState(() {
+      for (int i = 0;
+          i < context.read<AuditCtrlProvider>().getheaderresultsearch.length;
+          i++) {
+        if (context
+                .read<AuditCtrlProvider>()
+                .getheaderresultsearch[i]
+                .itemCode ==
+            binValues) {
+          setState(() {
+            isdataavailable = true;
+            index = i;
+          });
+          break;
+        }
+      }
+      if (isdataavailable == true && index != null) {
+        setState(() {
+          context.read<AuditCtrlProvider>().mycontroller[4].text = context
+              .read<AuditCtrlProvider>()
+              .getheaderresultsearch[index!]
+              .itemCode
+              .toString();
+          context.read<AuditCtrlProvider>().serachitemcode = false;
+          context.read<AuditCtrlProvider>().getcheckdata();
+          context.read<AuditCtrlProvider>().disableKeyBoard(context);
+        });
+      } else {
+        setState(() {
+          showtoastproduct("Item code Not Availble", Colors.red);
+        });
+      }
+    });
+    setState(() {
+      itemcodeScan =false;
+    });
+    
+
+  }
+
+  void showtoastproduct(String msg, Color color) {
+    Fluttertoast.showToast(
+        msg: "$msg",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: color,
+        textColor: Colors.white,
+        fontSize: 14.0);
+  }
 
   scanBatchCode(ThemeData theme, String binValues) {
     Get.back();
     setState(() {
+      context.read<AuditCtrlProvider>().isManualtype=false;
       context.read<AuditCtrlProvider>().filenamedet = [];
 
       if (context.read<AuditCtrlProvider>().formkey2.currentState!.validate()) {
@@ -121,7 +195,8 @@ class ScannerPageState extends State<ScannerPage> {
                   .read<AuditCtrlProvider>()
                   .fetchAuditForDetails!
                   .docEntry
-                  .toString()));
+                  .toString()),
+              context.read<AuditCtrlProvider>().formkey3);
           // context
           //     .read<AuditCtrlProvider>()
           //     .afterScanSerialBatch(

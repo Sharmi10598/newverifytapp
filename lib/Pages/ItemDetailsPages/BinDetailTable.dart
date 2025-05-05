@@ -38,6 +38,9 @@ class _BinDetailstableState extends State<BinDetailstable> {
         DataColumn(
           label: Text('Notes'),
         ),
+         DataColumn(
+          label: Text('Delete'),
+        ),
       ];
 
       // });
@@ -64,6 +67,15 @@ class _BinDetailstableState extends State<BinDetailstable> {
         )));
         cells.add(DataCell(Text(item.stockstatus.toString())));
         cells.add(DataCell(Text(item.notes.toString())));
+         cells.add(DataCell(InkWell(
+          onTap: (){
+            setState(() {
+              context.read<AuditCtrlProvider>().  deletescandetails(item.bincode.toString(),item.auditid.toString(),item.itemCode.toString(),item.serialbatch.toString());
+          
+            });
+          },
+          
+          child: Icon(Icons.delete,color: Colors.red,))));
         rows.add(DataRow(cells: cells));
       });
       return rows;
@@ -82,6 +94,7 @@ class _BinDetailstableState extends State<BinDetailstable> {
             children: [
               Container(
                 width: Screens.width(context),
+                height: Screens.padingHeight(context)*0.55,
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(
@@ -94,30 +107,33 @@ class _BinDetailstableState extends State<BinDetailstable> {
                           offset: const Offset(2, 0))
                     ]),
                 child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        DataTable(
-                          // headingRowColor:  MaterialStateColor.resolveWith((states) => theme.primaryColor),
-                          columnSpacing: 7.0,
-                          headingRowHeight:
-                              Screens.padingHeight(context) * 0.05,
-                          dataRowHeight: Screens.padingHeight(context) * 0.045,
-                          border: TableBorder.symmetric(
-                              inside: BorderSide(
-                                  color: theme.primaryColor.withOpacity(0.1))),
-                          columns: _generateColumns(widget.tablerColumn),
-                          rows: _generateRows(widget.tablerColumn),
-
-                          headingTextStyle: theme.textTheme.bodyMedium!
-                              .copyWith(
-                                  color: theme.primaryColor,
-                                  fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    )),
+                   physics: const BouncingScrollPhysics(),
+                  child: SingleChildScrollView(
+                       physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          DataTable(
+                            // headingRowColor:  MaterialStateColor.resolveWith((states) => theme.primaryColor),
+                            columnSpacing: 7.0,
+                            headingRowHeight:
+                                Screens.padingHeight(context) * 0.05,
+                            dataRowHeight: Screens.padingHeight(context) * 0.045,
+                            border: TableBorder.symmetric(
+                                inside: BorderSide(
+                                    color: theme.primaryColor.withOpacity(0.1))),
+                            columns: _generateColumns(widget.tablerColumn),
+                            rows: _generateRows(widget.tablerColumn),
+                  
+                            headingTextStyle: theme.textTheme.bodyMedium!
+                                .copyWith(
+                                    color: theme.primaryColor,
+                                    fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )),
+                ),
               ),
             ],
           );

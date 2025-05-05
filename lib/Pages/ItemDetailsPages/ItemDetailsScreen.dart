@@ -29,9 +29,12 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
     context
         .read<AuditCtrlProvider>()
         .callTimeEnableMethod(context, widget.theme);
+          context
+                                          .read<AuditCtrlProvider>()
+                                          . getitemcodeforsuggestion();
     context.read<AuditCtrlProvider>().nextdisable = false;
     context.read<AuditCtrlProvider>().scandata = [];
-    context.read<AuditCtrlProvider>().scantotaldeviceqty();
+    // context.read<AuditCtrlProvider>().scantotaldeviceqty();
 
     if (context.read<AuditCtrlProvider>().mycontroller[2].text.isNotEmpty) {
       context.read<AuditCtrlProvider>().binTableDetails(
@@ -43,7 +46,42 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
+  DateTime? lastInputTime;
+  //   void onTextChanged(String value) {
+  //   final provider = context.read<AuditCtrlProvider>();
+  //   DateTime now = DateTime.now();
 
+  //   if (lastInputTime != null) {
+  //     Duration difference = now.difference(lastInputTime!);
+  //     bool isScanned = difference.inMilliseconds < 50; // Scanned input is very fast
+
+  //     log("Time Diff: ${difference.inMilliseconds}ms | Is Scanned: $isScanned");
+
+  //     provider.setManualType(!isScanned);
+  //   }
+
+  //   lastInputTime = now;
+  // }
+int lastLength = 0;
+  void onTextChanged(String value) {
+    DateTime now = DateTime.now();
+    if (lastInputTime != null) {
+      Duration difference = now.difference(lastInputTime!);
+      
+       bool isScanned = (value.length > lastLength + 3) || (difference.inMilliseconds < 50);
+
+      if (isScanned) {
+        log("Detected SCAN input");
+        context.read<AuditCtrlProvider>().setManualType(false);
+      } else {
+        log("Detected MANUAL input");
+        context.read<AuditCtrlProvider>().setManualType(true);
+      }
+    }
+
+    lastInputTime = now;
+    lastLength = value.length;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +144,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                             thickness: 1.5,
                           )),
                       Text(
-                          'Total Scanned Count / Qty - ${context.watch<AuditCtrlProvider>().totalscandevicecount ?? 0}/ ${context.watch<AuditCtrlProvider>().totalscandeviceQty ?? 0}',
+                          'Total Scanned Count / Qty - ${context.read<AuditCtrlProvider>().totalscandevicecount ?? 0}/ ${context.watch<AuditCtrlProvider>().totalscandeviceQty ?? 0}',
                           style: widget.theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold, fontSize: 15))
                     ],
@@ -311,6 +349,10 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                   alignment: Alignment.center,
                   child: TextFormField(
                     autofocus: true,
+                    onFieldSubmitted:(v){
+                      log("AKLLALA::"+v.toString());
+
+                    },
                     focusNode: context.watch<AuditCtrlProvider>().focus2,
                     readOnly: context
                             .watch<AuditCtrlProvider>()
@@ -322,7 +364,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                     controller:
                         context.watch<AuditCtrlProvider>().mycontroller[3],
                     onChanged: (value) {
-                      log(context
+                      log("hhhhhh"+context
                           .read<AuditCtrlProvider>()
                           .mycontroller[3]
                           .text);
@@ -360,9 +402,31 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                         context.read<AuditCtrlProvider>().mycontroller[5].text =
                             '';
                       }
-                      context.read<AuditCtrlProvider>().isManualtype = true;
+    //                   if (context
+    //                       .read<AuditCtrlProvider>()
+    //                       .mycontroller[3]
+    //                       .text
+    //                       .isNotEmpty && (context
+    //                       .read<AuditCtrlProvider>()
+    //                       .mycontroller[3]
+    //                       .text
+    //                       .endsWith("\n") || context
+    //                       .read<AuditCtrlProvider>()
+    //                       .mycontroller[3]
+    //                       .text.endsWith("\t"))) {
+    // context
+    //                       .read<AuditCtrlProvider>()
+    //                       .setManualType(false);
+    //   log("Confirmed SCANNED on EditComplete");
+    // }else{
+    //     log("Confirmed SCANNED on Manualenter");
+    // }
+                      onTextChanged(value);
+                      // context.read<AuditCtrlProvider>().isManualtype = true;
                     },
                     onEditingComplete: () async {
+                      
+                       log("hiiii"+context.read<AuditCtrlProvider>().isManualtype.toString());
                       context.read<AuditCtrlProvider>().filenamedet = [];
                       setState(() {
                         if (context
@@ -380,6 +444,7 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                                 .groupValueSelected = 0;
 
                             context.read<AuditCtrlProvider>().focus2.unfocus();
+                            
 
                             context.read<AuditCtrlProvider>().checkAlreadyItem(
                                 context,
@@ -392,7 +457,9 @@ class ItemDetailsState extends State<ItemDetails> with WidgetsBindingObserver {
                                     .read<AuditCtrlProvider>()
                                     .fetchAuditForDetails!
                                     .docEntry
-                                    .toString()));
+                                    .toString()),context
+                                    .read<AuditCtrlProvider>()
+                                    .formkey3);
                             // context
                             //     .read<AuditCtrlProvider>()
                             //     .afterScanSerialBatch(

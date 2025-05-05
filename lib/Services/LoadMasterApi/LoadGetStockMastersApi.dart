@@ -25,7 +25,7 @@ class GetLoadStocksMastersApi {
       );
 
       log("StockMaster sts:::" "${response.statusCode.toString()}");
-      // log("StockMaster Res:::" "${response.body.toString()}");
+      log("StockMaster Res:::" "${response.body.toString()}");
 
       resCode = response.statusCode;
       if (response.statusCode == 200) {

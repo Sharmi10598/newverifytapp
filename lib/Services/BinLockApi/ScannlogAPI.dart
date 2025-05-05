@@ -23,7 +23,7 @@ class ScannLockedAPiApi {
         "notes": scandata.notes,
         "devicecode": scandata.devicecode,
         "scandatetime": scandata.scandatetime,
-        "ismanual": 0,
+        "ismanual": scandata.ismanual,
         "templateid": scandata.templateid,
         "scanguid": scandata.scanguid,
         "checklist": scandata.checklist!.map((e) => e.tojson2()).toList(),
@@ -57,6 +57,27 @@ class ScannLockedAPiApi {
 //             ]
 //             );
     try {
+      log("hhhhh::"+ jsonEncode(
+              // scandata.map((e) => e.tojson()).toList(),
+              [
+                {
+                  "auditid": scandata.auditid,
+                  "whscode": scandata.whscode,
+                  "bincode": scandata.bincode,
+                  "itemcode": scandata.itemCode,
+                  "serialbatch": scandata.serialbatch,
+                  "quantity": scandata.quantity,
+                  "stockstatus": scandata.stockstatus,
+                  "notes": scandata.notes,
+                  "devicecode": scandata.devicecode,
+                  "scandatetime": scandata.scandatetime,
+                  "ismanual": scandata.ismanual,
+                  "templateid": scandata.templateid,
+                  "scanguid": scandata.scanguid,
+                  "checklist":
+                      scandata.checklist!.map((e) => e.tojson2()).toList(),
+                }
+              ]));
       log('ConstantValues.token::${ConstantValues.token}');
       log(Url.queryApi + 'Verifyt/v1/PostAuditScanLog');
       final response = await http.post(
@@ -80,7 +101,7 @@ class ScannLockedAPiApi {
                   "notes": scandata.notes,
                   "devicecode": scandata.devicecode,
                   "scandatetime": scandata.scandatetime,
-                  "ismanual": 0,
+                  "ismanual": scandata.ismanual,
                   "templateid": scandata.templateid,
                   "scanguid": scandata.scanguid,
                   "checklist":

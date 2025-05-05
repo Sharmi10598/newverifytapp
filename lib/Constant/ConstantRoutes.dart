@@ -7,4 +7,5 @@ class ConstantRoutes {
 
   static String audit = "/Audit";
   static String login = "/Login";
+  static String lableprint = "/lableprint";
 }

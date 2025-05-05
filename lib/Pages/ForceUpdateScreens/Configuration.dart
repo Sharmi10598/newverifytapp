@@ -12,7 +12,9 @@ class CheckVersionConfig {
       PlayStoreSearchAPI playStoreSearchAPI = PlayStoreSearchAPI();
       Document? result2 =
           await playStoreSearchAPI.lookupById(myAppBundleId, country: 'IN');
+          log("result2LLL::"+result2.toString());
       if (result2 != null) storeVersion = playStoreSearchAPI.version(result2);
+       log("storeVersionstoreVersion::"+storeVersion.toString());
       // log('PlayStore version: $storeVersion}');
       // } else if (Platform.isIOS) {
 

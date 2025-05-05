@@ -338,9 +338,11 @@ class LineData {
   String? updatedBy;
   String? updatedDatetime;
   String? traceid;
+  String? itemName;
   LineData(
       {this.autoId,
       this.binCode,
+      this.itemName,
       this.itemDisposition,
       this.createdBy,
       this.inDate,

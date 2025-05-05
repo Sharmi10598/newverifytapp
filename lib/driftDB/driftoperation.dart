@@ -3,6 +3,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:drift/drift.dart';
 import 'package:verifytapp/Model/AuditModel/AuditActionModel.dart';
 import 'package:verifytapp/Model/LoadItemsItemCodeModel/LoadItemCodeModel.dart';
+import 'package:verifytapp/Model/labelscanModel/LabelscandataModel.dart';
 import 'package:verifytapp/driftDB/driftTablecreation.dart';
 import '../Controllers/AuditController/AuditControllers.dart';
 import '../Model/CheckListModel/CheckListMaster.dart';
@@ -77,6 +78,36 @@ class driftoperation {
 
     stopwatch.stop();
     log('Inserted ${dataList.length} records in ${stopwatch.elapsedMilliseconds} ms');
+  }
+
+  
+  static Future<void> insertdriftlablescandataedb(
+      List<Labelscandata> dataList, AppDatabase database) async {
+    final stopwatch = Stopwatch()..start();
+    // final database = AppDatabase.instance;
+    const int batchSize = 10000; // Adjust based on your performance tests
+
+    await database.transaction(() async {
+      for (int i = 0; i < dataList.length; i += batchSize) {
+        await database.batch((Batch batch) {
+          for (int j = i; j < i + batchSize && j < dataList.length; j++) {
+            final data = dataList[j];
+            batch.insert(
+              database.driftlabelprintscandata,
+              DriftlabelprintscandataCompanion(
+                serialNo : drift.Value(data.serialNo!),
+                itemCode: drift.Value(data.itemCode),
+                quantity : drift.Value(data.quantity),
+                
+              ),
+            );
+          }
+        });
+      }
+    });
+
+    stopwatch.stop();
+    log('Inserted itemcode ${dataList.length} records in ${stopwatch.elapsedMilliseconds} ms');
   }
 
   static Future<void> insertdriftitemcodedb(
@@ -270,6 +301,7 @@ class driftoperation {
                 areaCode: drift.Value(data.areaCode),
                 brand: drift.Value(data.brand),
                 docEntry: drift.Value(data.docEntry),
+                isNewItem: drift.Value(data.IsNewItem),
                 binCode: drift.Value(data.binCode),
                 rackCode: drift.Value(data.rackCode),
                 status: drift.Value(data.status),
@@ -293,7 +325,7 @@ class driftoperation {
                 serialBatch: drift.Value(data.serialBatch),
                 sizeCapacity: drift.Value(data.sizeCapacity),
                 specification: drift.Value(data.specification),
-                subCategory: drift.Value(data.sizeCapacity),
+                subCategory: drift.Value(data.subCategory),
                 updatedBy: drift.Value(data.updatedBy),
                 updatedDateTime: drift.Value(data.updatedDateTime),
                 whileOffline: drift.Value(data.whileOffline),
@@ -309,6 +341,20 @@ class driftoperation {
     log('Checklistmaster ${dataList.length} records in ${stopwatch.elapsedMilliseconds} ms');
   }
 
+  static Future<List<Labelscandata>> getlablescandataHeader(
+      AppDatabase database) async {
+    final result =
+        await database.customSelect("Select * from driflabelprintscandata").get();
+    log("driftchecklistmaster result22::${result.length}");
+
+    return result.map((row) {
+      return Labelscandata(
+          serialNo: row.read<String?>('SerialNo') ?? '',
+          itemCode: row.read<String?>('ItemCode') ?? '',
+          quantity: row.read<String?>('Quantity') ?? '',
+          );
+    }).toList();
+  }
   static Future<List<CheckListHeader>> getcheckListHeader(
       AppDatabase database) async {
     final result =
@@ -393,30 +439,34 @@ class driftoperation {
       String disposition,
       int whileoffline,
       int manualtype) async {
-//     log('dispositiondisposition qry:::' +
-//         '''Select d.ChecklistTemplate From driftstocksnapmaster a
-//        left join drifitemmaster b on a.ItemCode = b.ItemCode
-//        left join driftbinmaster c on a.BinCode = c.Bincode
-//        left join driftchecklistmaster d on (a.BinCode = d.BinCode or  'all' = Lower(d.BinCode))
-//         AND(c.RackCode = d.RackCode or  'all' = Lower(d.RackCode))
-//         AND(c.AreaCode = d.AreaCode or  'all' = Lower(d.AreaCode))
-//        AND(c.ZoneCode = d.ZoneCode or  'all' = Lower(d.ZoneCode))
-//         AND(a.WhsCode = d.WhsCode or  'all' = Lower(d.WhsCode))
-//        AND(b.Category = d.Category or  'all' = Lower(d.Category))
-//        AND(b.SubCategory = d.SubCategory or  'all' = Lower(d.SubCategory))
-//        AND (b.Brand = d.Brand or  'all' = Lower(d.Brand))
-//        AND(b.hasExpiryDate = d.hasExpiryDate or  'all' = Lower(IfNULL (d.hasExpiryDate,'')))
-//        AND(b.isFragile = d.isFragile or  'all' = IfNULL (d.isFragile,''))
-//       AND (b.itemcode = d.itemcode or  'all' = Lower(d.itemcode))
-//       AND (b.Status = d.ItemStatus or  'all' = Lower(d.ItemStatus))
-//        AND(b.ManageBy = d.ManageBy or  'all' = Lower(d.ManageBy))
-//       AND (a.SerailBatch = d.SerialBatch or 'all' = Lower(d.SerialBatch))
-//        AND(d.Disposition = '$disposition' or 'all' = Lower(d.Disposition))
-//       AND IFNULL(julianday('now') - julianday(COALESCE(a.indate, 'now')), 1) >= COALESCE(d.ForAgesAbove, 1)
-//       AND (d.SerialBatchManualTyped = '$manualtype' or 'all' = Lower(IfNULL (d.SerialBatchManualTyped , '')))
-//       AND (d.WhileOffline = '$whileoffline' or 'all' = Lower(IfNULL (d.WhileOffline , '')))
-//        where a.SerailBatch ='$serialbatch' LIMIT 1
-// ''');
+        // log()
+        // final result222 =await database.customSelect("select * from driftchecklistmaster").get();
+        // log(result222);
+    log('dispositiondisposition qry:::' +
+        '''Select d.ChecklistTemplate From driftstocksnapmaster a 
+       left join drifitemmaster b on a.ItemCode = b.ItemCode 
+       left join driftbinmaster c on a.BinCode = c.Bincode 
+       left join driftchecklistmaster d on (a.BinCode = d.BinCode or  'all' = Lower(d.BinCode))  
+        AND(c.RackCode = d.RackCode or  'all' = Lower(d.RackCode))  
+        AND(c.AreaCode = d.AreaCode or  'all' = Lower(d.AreaCode))  
+       AND(c.ZoneCode = d.ZoneCode or  'all' = Lower(d.ZoneCode))  
+        AND(a.WhsCode = d.WhsCode or  'all' = Lower(d.WhsCode))  
+       AND(b.Category = d.Category or  'all' = Lower(d.Category))  
+       AND(b.SubCategory = d.SubCategory or  'all' = Lower(d.SubCategory))  
+       AND (b.Brand = d.Brand or  'all' = Lower(d.Brand)) 
+       AND(b.hasExpiryDate = d.hasExpiryDate or  '2' = Lower(IfNULL (d.hasExpiryDate,'')))  
+       AND(b.isFragile = d.isFragile or  2 = IfNULL (d.isFragile,''))  
+      AND (b.itemcode = d.itemcode or  'all' = Lower(d.itemcode))  
+      AND (b.Status = d.ItemStatus or  'all' = Lower(d.ItemStatus))  
+       AND(b.ManageBy = d.ManageBy or  'a' = Lower(d.ManageBy))  
+       AND (julianday('now') - julianday(a.InDate)) >= ForAgesAbove
+      AND (a.SerailBatch = d.SerialBatch or 'all' = Lower(d.SerialBatch))  
+       AND(d.Disposition = '$disposition' or 'all' = Lower(d.Disposition))  
+      AND (d.SerialBatchManualTyped = '$manualtype' or '2' = Lower(IfNULL (d.SerialBatchManualTyped , '')))  
+      AND (d.WhileOffline = '$whileoffline' or '2' = Lower(IfNULL (d.WhileOffline , '')))
+       where (d.IsNewItem = '1' And '$serialbatch' not in (select SerailBatch from driftstocksnapmaster))
+			or (d.IsNewItem = '0' And '$serialbatch' = a.SerailBatch ) LIMIT 1
+''');
 
     // isnull(datediff(day, isnull(a.indate, getdate()), getdate()),1) >= isNull(d.ForAgesAbove,1) and
     // --  (b.Brand = d.Brand or  'All' = d.Brand) AND
@@ -432,18 +482,21 @@ class driftoperation {
        AND(b.Category = d.Category or  'all' = Lower(d.Category))  
        AND(b.SubCategory = d.SubCategory or  'all' = Lower(d.SubCategory))  
        AND (b.Brand = d.Brand or  'all' = Lower(d.Brand)) 
-       AND(b.hasExpiryDate = d.hasExpiryDate or  'all' = Lower(IfNULL (d.hasExpiryDate,'')))  
-       AND(b.isFragile = d.isFragile or  'all' = IfNULL (d.isFragile,''))  
+       AND(b.hasExpiryDate = d.hasExpiryDate or  '2' = Lower(IfNULL (d.hasExpiryDate,'')))  
+       AND(b.isFragile = d.isFragile or  2 = IfNULL (d.isFragile,''))  
       AND (b.itemcode = d.itemcode or  'all' = Lower(d.itemcode))  
       AND (b.Status = d.ItemStatus or  'all' = Lower(d.ItemStatus))  
-       AND(b.ManageBy = d.ManageBy or  'all' = Lower(d.ManageBy))  
+       AND(b.ManageBy = d.ManageBy or  'a' = Lower(d.ManageBy))  
+       AND (julianday('now') - julianday(a.InDate)) >= ForAgesAbove
       AND (a.SerailBatch = d.SerialBatch or 'all' = Lower(d.SerialBatch))  
        AND(d.Disposition = '$disposition' or 'all' = Lower(d.Disposition))  
-      AND (d.SerialBatchManualTyped = '$manualtype' or 'all' = Lower(IfNULL (d.SerialBatchManualTyped , '')))  
-      AND (d.WhileOffline = '$whileoffline' or 'all' = Lower(IfNULL (d.WhileOffline , '')))
-       where a.SerailBatch ='$serialbatch' LIMIT 1
+      AND (d.SerialBatchManualTyped = '$manualtype' or '2' = Lower(IfNULL (d.SerialBatchManualTyped , '')))  
+      AND (d.WhileOffline = '$whileoffline' or '2' = Lower(IfNULL (d.WhileOffline , '')))
+       where (d.IsNewItem = '1' And '$serialbatch' not in (select SerailBatch from driftstocksnapmaster))
+			or (d.IsNewItem = '0' And '$serialbatch' = a.SerailBatch ) LIMIT 1
+      
 ''').get();
-
+// where a.SerailBatch ='$serialbatch' LIMIT 1
     // AND julianday('now')  - julianday(coalesce(a.indate,'now')) >= COALESCE(d.ForAgesAbove, 0)
 
     return result.map((row) {
@@ -849,14 +902,14 @@ class driftoperation {
   }
 
 //InDate ExpDate
-  static Future<List<LineData>> getdriftallserialLineColumn(
+static Future<List<LineData>> getdriftallserialLineColumn(
     AppDatabase database,
     String columnVal,
   ) async {
     log('columnVal2columnValSerailBatch::${columnVal.toLowerCase()}');
     final result = await database
         .customSelect(
-            "SELECT * from driftstocksnapmaster where Upper(SerailBatch)=Upper('$columnVal')")
+            "SELECT di.ItemName, ds.* from driftstocksnapmaster ds inner join drifitemmaster di on di.itemcode = ds.itemcode where Upper(SerailBatch)=Upper('$columnVal')")
         .get();
     log("lineSerColumn resultresult::${result.length}");
     return result.map((row) {
@@ -866,6 +919,7 @@ class driftoperation {
         binCode: row.read<String?>('BinCode') ?? '',
         itemDisposition: row.read<int?>('ItemDisposition') ?? 0,
         inDate: row.read<String?>('InDate') ?? '',
+        itemName: row.read<String?>('ItemName') ?? '',
         expDate: row.read<String?>('ExpDate') ?? '',
         createdBy: row.read<int?>('CreatedBy') ?? 0,
         createdDatetime: row.read<String?>('CreatedDatetime') ?? '',
@@ -882,6 +936,42 @@ class driftoperation {
       );
     }).toList();
   }
+
+
+  // static Future<List<LineData>> getdriftallserialLineColumn(
+  //   AppDatabase database,
+  //   String columnVal,
+  // ) async {
+  //   log('columnVal2columnValSerailBatch::${columnVal.toLowerCase()}');
+  //   final result = await database
+  //       .customSelect(
+  //           "SELECT * from driftstocksnapmaster where Upper(SerailBatch)=Upper('$columnVal')")
+  //       .get();
+  //   log("lineSerColumn resultresult::${result.length}");
+  //   return result.map((row) {
+  //     log("checkserialbatch result::${row.read<String?>('AltSerialBatch')}");
+  //     return LineData(
+  //       autoId: row.read<int?>('AutoID') ?? 0,
+  //       binCode: row.read<String?>('BinCode') ?? '',
+  //       itemDisposition: row.read<int?>('ItemDisposition') ?? 0,
+  //       inDate: row.read<String?>('InDate') ?? '',
+  //       itemName: row.read<String?>('ItemName') ?? '',
+  //       expDate: row.read<String?>('ExpDate') ?? '',
+  //       createdBy: row.read<int?>('CreatedBy') ?? 0,
+  //       createdDatetime: row.read<String?>('CreatedDatetime') ?? '',
+  //       itemCode: row.read<String?>('ItemCode') ?? '',
+  //       quantity: row.read<double?>('Quantity') ?? 0.0,
+  //       scheduleId: row.read<int?>('ScheduleID') ?? 0,
+  //       altSerialBatch: row.read<String?>('AltSerialBatch') ?? '',
+  //       serailBatch: row.read<String?>('SerailBatch') ?? '',
+  //       traceid: row.read<String?>('traceid') ?? '',
+  //       uoM: row.read<String?>('UoM') ?? '',
+  //       updatedBy: row.read<String?>('UpdatedBy') ?? '',
+  //       updatedDatetime: row.read<String?>('UpdatedDatetime') ?? '',
+  //       whsCode: row.read<String?>('WhsCode') ?? '',
+  //     );
+  //   }).toList();
+  // }
 
   static Future<List<LineData>> geAlterserialLineColumn(
     AppDatabase database,

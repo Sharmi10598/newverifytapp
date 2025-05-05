@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:drift/drift.dart';
@@ -72,6 +73,16 @@ class DriftItemMaster extends Table {
   String get tableName => 'drifitemmaster';
 }
 
+class Driftlabelprintscandata extends Table {
+  IntColumn get IMid => integer().autoIncrement()();
+  TextColumn get serialNo =>
+      text().named("SerialNo").nullable()();
+  TextColumn get itemCode => text().named("ItemCode").nullable()();
+  TextColumn get quantity => text().named("Quantity").nullable()();
+
+  @override
+  String get tableName => 'driflabelprintscandata';
+}
 class DriftItemCodeMaster extends Table {
   IntColumn get IMid => integer().autoIncrement()();
   IntColumn get auditScheduleID =>
@@ -193,6 +204,7 @@ class CheckListMasterTable extends Table {
   TextColumn get binCode => text().named("BinCode").nullable()();
   TextColumn get rackCode => text().named("RackCode").nullable()();
   IntColumn get status => integer().named("Status").nullable()();
+  IntColumn get isNewItem => integer().named("IsNewItem").nullable()();
   TextColumn get whsCode => text().named("WhsCode").nullable()();
   TextColumn get whsName => text().named("WhsName").nullable()();
   TextColumn get zoneCode => text().named("ZoneCode").nullable()();
@@ -275,6 +287,7 @@ LazyDatabase openConnection() {
 @DriftDatabase(tables: [
   DriftItemMaster,
   DriftLineMaster,
+  Driftlabelprintscandata,
   DriftBinMaster,
   DriftItemCodeMaster,
   CheckListHeaderTable,
@@ -301,7 +314,8 @@ class AppDatabase extends _$AppDatabase {
     final directory = await getApplicationDocumentsDirectory();
     if (_instance == null) {
       // final directory = await getApplicationDocumentsDirectory();
-      final path = join(directory.path, 'db.sqlite');
+      log("directory.path::"+directory.path.toString());
+      final path = join(directory.path, 'Verifyt22.db');
 
       _instance = AppDatabase(NativeDatabase(File(path)));
     }

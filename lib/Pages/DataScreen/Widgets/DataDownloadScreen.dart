@@ -54,7 +54,7 @@ class _DataScreenPageState extends State<DataScreenPage> {
                   right: Screens.width(context) * 0.04,
                   left: Screens.width(context) * 0.08),
               width: Screens.width(context),
-              height: Screens.padingHeight(context) * 0.85,
+              height: Screens.padingHeight(context) * 0.80,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

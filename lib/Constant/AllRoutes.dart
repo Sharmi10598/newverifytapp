@@ -4,6 +4,7 @@ import 'package:verifytapp/Constant/ConstantRoutes.dart';
 import 'package:verifytapp/Pages/AuditPages/Widgets/AuditOpenPage.dart';
 import 'package:verifytapp/Pages/DashBoardPages/Screens/DashBoardScreens.dart';
 import 'package:verifytapp/Pages/DashBoardPages/Widgets/HomePage.dart';
+import 'package:verifytapp/Pages/LabelPrinting/Screens/LabelPrintingPage.dart';
 import 'package:verifytapp/Pages/LoginPage/Screens/LoginScreens.dart';
 import 'package:verifytapp/Pages/SplashScree/SplashPage.dart';
 
@@ -15,6 +16,11 @@ class Routes {
     GetPage<dynamic>(
         name: ConstantRoutes.login,
         page: () => LoginPageScreens(),
+        transition: Transition.fade,
+        transitionDuration: const Duration(seconds: 1)),
+         GetPage<dynamic>(
+        name: ConstantRoutes.lableprint,
+        page: () => Lebelprint(),
         transition: Transition.fade,
         transitionDuration: const Duration(seconds: 1)),
     GetPage<dynamic>(

@@ -16,8 +16,7 @@ class GetImageFilePage extends StatefulWidget {
 }
 
 class _GetImageFilePageState extends State<GetImageFilePage> {
-  List<TextEditingController> chkListController =
-      List.generate(100, (i) => TextEditingController());
+ 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -70,7 +69,7 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                             child: TextFormField(
                               readOnly: true,
                               autofocus: true,
-                              controller: chkListController[index],
+                              controller:context.read<AuditCtrlProvider>(). chkListController[index],
                               decoration: InputDecoration(
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
@@ -93,9 +92,9 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                           .read<AuditCtrlProvider>()
                                           .filenamedet
                                           .add(FileNameDet(
-                                              name: '', indexId: indexx));
-                                      log('litstagexlitstagex::${litstagex[indexx].toString()}');
-                                      log('filenamedet length::${context.read<AuditCtrlProvider>().filenamedet.length.toString()}');
+                                              name: '', indexId: index));
+                                      // log('litstagexlitstagex::${litstagex[indexx].toString()}');
+                                      // log('filenamedet length::${context.read<AuditCtrlProvider>().filenamedet.length.toString()}');
                                       return Container(
                                         child: Row(
                                           children: [
@@ -160,45 +159,49 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                                         true) {
                                                       log('Image checklistdata length::${context.read<AuditCtrlProvider>().checklistdata.length}');
 
-                                                      log('index::${index}');
+                                                      log('index::${index}IIii${indexx}');
                                                       setState(() {
                                                         context
                                                             .read<
                                                                 AuditCtrlProvider>()
                                                             .imageBottomSheet(
                                                                 context,
-                                                                indexx);
+                                                                index);
+// context.read<AuditCtrlProvider>(). chkListController[index].text  =context.read<AuditCtrlProvider>().urlImage.toString();
+                                                        context.read<AuditCtrlProvider>().   onTapattach(index,context
+                                                                .read<
+                                                                    AuditCtrlProvider>()
+                                                                .isSelectedCusTag,);
 
-                                                        log('urlImageurlImage:${context.read<AuditCtrlProvider>().urlImage}');
-
-                                                        context.read<AuditCtrlProvider>().checklistdata.add(DispListData(
-                                                            attachurl: context
-                                                                    .read<
-                                                                        AuditCtrlProvider>()
-                                                                    .urlImage
-                                                                    .isNotEmpty
-                                                                ? context
-                                                                    .read<
-                                                                        AuditCtrlProvider>()
-                                                                    .urlImage
-                                                                : '',
-                                                            auditid: context
-                                                                .read<
-                                                                    AuditCtrlProvider>()
-                                                                .getckeckDataListForm55[
-                                                                    index]
-                                                                .docEntry,
-                                                            checklistcode: context
-                                                                .read<
-                                                                    AuditCtrlProvider>()
-                                                                .getckeckDataListForm55[
-                                                                    index]
-                                                                .checklistCode,
-                                                            checklistvalue: context
-                                                                .read<
-                                                                    AuditCtrlProvider>()
-                                                                .isSelectedCusTag,
-                                                            scanguid: ''));
+                                                        log('urlImageurlImage:${context.read<AuditCtrlProvider>().chkListController[index]}');
+                                                        // context.read<AuditCtrlProvider>().checklistdata.add(DispListData(
+                                                        //     attachurl: context
+                                                        //             .read<
+                                                        //                 AuditCtrlProvider>()
+                                                        //             .urlImage
+                                                        //             .isNotEmpty
+                                                        //         ? context
+                                                        //             .read<
+                                                        //                 AuditCtrlProvider>()
+                                                        //             .urlImage
+                                                        //         : '',
+                                                        //     auditid: context
+                                                        //         .read<
+                                                        //             AuditCtrlProvider>()
+                                                        //         .getckeckDataListForm55[
+                                                        //             index]
+                                                        //         .docEntry,
+                                                        //     checklistcode: context
+                                                        //         .read<
+                                                        //             AuditCtrlProvider>()
+                                                        //         .getckeckDataListForm55[
+                                                        //             index]
+                                                        //         .checklistCode,
+                                                        //     checklistvalue: context
+                                                        //         .read<
+                                                        //             AuditCtrlProvider>()
+                                                        //         .isSelectedCusTag,
+                                                        //     scanguid: ''));
                                                       });
                                                     } else {
                                                       setState(() {
@@ -252,7 +255,7 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                                                         .isNotEmpty
                                                 ? Text(context
                                                     .read<AuditCtrlProvider>()
-                                                    .filenamedet[indexx]
+                                                    .filenamedet[index]
                                                     .name
                                                     .toString())
                                                 : Container(),
@@ -281,10 +284,40 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                     .checklistdata
                     .isNotEmpty) {
                   setState(() {
-                    context.read<AuditCtrlProvider>().insertCheckListData();
+                    context.read<AuditCtrlProvider>().checkMandatory(theme,context,
+                    context
+                                            .read<AuditCtrlProvider>()
+                                            .mycontroller[3]
+                                            .text,context
+                                            .read<AuditCtrlProvider>()
+                                            .mycontroller[4]
+                                            .text,context
+                                            .read<AuditCtrlProvider>()
+                                            .fetchAuditForDetails!
+                                            .docEntry
+                                            .toString()
+                    );
+                    //  context.read<AuditCtrlProvider>().checknextbtn(
+                    //                     context,
+                    //                     theme,
+                    //                     context
+                    //                         .read<AuditCtrlProvider>()
+                    //                         .mycontroller[3]
+                    //                         .text,
+                    //                     context
+                    //                         .read<AuditCtrlProvider>()
+                    //                         .mycontroller[4]
+                    //                         .text,
+                    //                     int.parse(context
+                    //                         .read<AuditCtrlProvider>()
+                    //                         .fetchAuditForDetails!
+                    //                         .docEntry
+                    //                         .toString()));
+                    // context.read<AuditCtrlProvider>().insertCheckListData();
                   });
-                  Get.back();
+                  // Get.back();
                 } else {
+                  // context.read<AuditCtrlProvider>(). checkMandatory();
                   showDialog(
                       barrierDismissible: false,
                       context: context,
@@ -325,6 +358,7 @@ class _GetImageFilePageState extends State<GetImageFilePage> {
                 child: Text('OK'),
               ),
             ),
+         
           ],
         ),
       ),
